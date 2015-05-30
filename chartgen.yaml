@@ -1,0 +1,170 @@
+countries:
+        4290:
+                alias: Sverige 
+                startyear: 1951
+                endyear: 2012
+        4050:
+                alias: Danmark 
+                startyear: 1951
+                endyear: 2011     
+        4310:
+                alias: England/Wales 
+                startyear: 1950
+                endyear: 2012
+        4280:
+                alias: Spanien 
+                startyear: 1951
+                endyear: 2012 
+        4140:
+                alias: Grekland 
+                startyear: 1961
+                endyear: 2012  
+        4240:
+                alias: Portugal 
+                startyear: 1955
+                endyear: 2012  
+        4070:
+                alias: Finland
+                startyear: 1952
+                endyear: 2012
+        4080:
+                alias: Frankrike 
+                startyear: 1952
+                endyear: 2010
+        4180:
+                alias: Italien 
+                startyear: 1951
+                endyear: 2011
+        4210:
+                alias: Nederländerna
+                startyear: 1950
+                endyear: 2012  
+        4220:
+                alias: Norge
+                startyear: 1951
+                endyear: 2012  
+        3160:
+                alias: Japan
+                startyear: 1950
+                endyear: 2011
+        2450:
+                alias: USA 
+                startyear: 1950
+                endyear: 2007
+        5020:
+                alias: Australien 
+                startyear: 1950
+                endyear: 2011
+        5150:
+                alias: Nya Zeeland 
+                startyear: 1950
+                endyear: 2010
+        2090:
+                alias: Kanada 
+                startyear: 1950
+                endyear: 2005
+        4300:
+                alias: Schweiz 
+                startyear: 1951
+                endyear: 2010
+        4020:
+                alias: Belgien 
+                startyear: 1954
+                endyear: 2010
+        4010:
+                alias: Österrike 
+                startyear: 1955
+                endyear: 2012
+        4170:
+                alias: Irland 
+                startyear: 1950
+                endyear: 2009
+        4320:
+                alias: Nordirland 
+                startyear: 1950
+                endyear: 2010
+        4330:
+                alias: Skottland 
+                startyear: 1950
+                endyear: 2011
+#        3150:
+#                alias: Israel
+#                ctry_extrasql: and (Admin1='' or Year<1975) 
+#                startyear: 1957
+#                endyear: 2011
+        4085:
+                alias: Tyskland 
+                ctry_extrasql: or (Country=4100 and Year<1990) 
+                startyear: 1952
+                endyear: 2012
+causes:
+        all:
+                sex: 0
+        lfinf:
+                sex: 0
+        tum:
+                sex: 0
+        lc:
+                sex: 0
+                skip: [Pop38mean]
+        bc:
+                sex: 2
+                skip: [Pop38mean]
+        circ:
+                sex: 0
+        ihd:
+                sex: 0
+                skip: [Pop38mean]
+        str:
+                sex: 0
+                skip: [Pop38mean]
+        hd:
+                sex: 0
+        tb:
+                sex: 0
+        stihiv:
+                sex: 0
+        infrest:
+                sex: 0
+        circnonihd:
+                sex: 0
+                skip: [Pop38mean]
+        pc:
+                sex: 1
+                skip: [Pop38mean,Pop914mean]
+        circnonath:
+                sex: 0
+                skip: [Pop38mean]
+        othath:
+                sex: 0
+                skip: [Pop38mean]
+        illdef:
+                sex: 0
+        ext:
+                sex: 0
+        diab:
+                sex: 0
+        chresp:
+                sex: 0
+                skip: [Pop38mean]
+        genbact:
+                sex: 0
+        gastrinf:
+                sex: 0
+ages:
+#        Pop38mean:
+#                ptype: rate
+        Pop914mean:
+                ptype: rate
+        Pop1518mean:
+                ptype: rate
+        Pop1920mean:
+                ptype: rate
+        Pop2122mean:
+                ptype: rate
+        Pop1:
+                ptype: perc 
+#        Pop222sum:
+#                ptype: perc 
+#        Pop2325sum:
+#                ptype: perc 

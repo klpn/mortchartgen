@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset='utf-8' />
+	<style>body {background-color:LightGreen;}</style>
+	<script src='//code.jquery.com/jquery-1.11.1.min.js'></script>
+	<script src='chartchoice.js?version=0.112'></script>
+	<title>Mortalitetsdiagram</title>
+	<link rel='icon' type='image/png' href='mortchartico.png' />
+</head>
+<body>
+	<h1>Mortalitetsdiagram</h1>
+	<p>Kombinera parametrar och välj sedan <em>Visa diagram</em>. För total dödlighet visas alltid dödstal. För specifika dödsorsaksgrupper finns möjlighet att välja att visa trender för dödstal eller andel av den totala dödligheten.</p>
+	<form name='chartParams'>
+		Befolkning: <select id='popSel'>
+			<option value='{"name":"4290","startyear":"1951","endyear":"2012"}'>Sverige</option>
+			<option value='{"name":"5020","startyear":"1950","endyear":"2011"}'>Australien</option>
+			<option value='{"name":"4020","startyear":"1954","endyear":"2010"}'>Belgien</option>
+			<option value='{"name":"4050","startyear":"1951","endyear":"2011"}'>Danmark</option>
+			<option value='{"name":"4310","startyear":"1950","endyear":"2012"}'>England/Wales</option>
+			<option value='{"name":"4070","startyear":"1952","endyear":"2012"}'>Finland</option>
+			<option value='{"name":"4080","startyear":"1952","endyear":"2010"}'>Frankrike</option>
+			<option value='{"name":"4140","startyear":"1961","endyear":"2012"}'>Grekland</option>
+			<option value='{"name":"4170","startyear":"1950","endyear":"2009"}'>Irland</option>
+			<option value='{"name":"3150","startyear":"1957","endyear":"2011"}'>Israel</option>
+			<option value='{"name":"4180","startyear":"1951","endyear":"2011"}'>Italien</option>
+			<option value='{"name":"3160","startyear":"1950","endyear":"2011"}'>Japan</option>
+			<option value='{"name":"2090","startyear":"1950","endyear":"2005"}'>Kanada</option>
+			<option value='{"name":"4210","startyear":"1950","endyear":"2012"}'>Nederländerna</option>
+			<option value='{"name":"4320","startyear":"1950","endyear":"2010"}'>Nordirland</option>
+			<option value='{"name":"4220","startyear":"1951","endyear":"2012"}'>Norge</option>
+			<option value='{"name":"5150","startyear":"1950","endyear":"2010"}'>Nya Zeeland</option>
+			<option value='{"name":"4240","startyear":"1955","endyear":"2012"}'>Portugal</option>
+			<option value='{"name":"4300","startyear":"1951","endyear":"2010"}'>Schweiz</option>
+			<option value='{"name":"4330","startyear":"1950","endyear":"2011"}'>Skottland</option>
+			<option value='{"name":"4280","startyear":"1951","endyear":"2012"}'>Spanien</option>
+			<option value='{"name":"4085","startyear":"1952","endyear":"2012"}'>Tyskland</option>
+			<option value='{"name":"2450","startyear":"1950","endyear":"2007"}'>USA</option>
+			<option value='{"name":"4010","startyear":"1955","endyear":"2012"}'>Österrike</option>
+		</select>
+		Orsak: <select id='causeSel'>
+			<option value='{"name":"all","sex":"0"}'>Totalt</option>
+			<optgroup label='Infektioner'>
+				<option value='{"name":"tb","sex":"0"}'>Tuberkulos</option>
+				<option value='{"name":"stihiv","sex":"0"}'>Könssjukdomar/HIV</option>
+				<option value='{"name":"lfinf","sex":"0"}'>Luftvägsinfektioner</option>
+				<option value='{"name":"gastrinf","sex":"0"}'>Magtarminfektioner</option>
+				<option value='{"name":"genbact","sex":"0"}'>Allmänna bakterieinfektioner</option>
+				<option value='{"name":"infrest","sex":"0"}'>Övriga infektioner</option>
+			</optgroup>
+			<optgroup label='Tumörer'>
+				<option value='{"name":"tum","sex":"0"}'>Tumörer generellt</option>
+				<option value='{"name":"lc","sex":"0","skip":["Pop38mean"]}'>Lungcancer</option>
+				<option value='{"name":"bc","sex":"2","skip":["Pop38mean"]}'>Bröstcancer</option>
+				<option value='{"name":"pc","sex":"1","skip":["Pop38mean","Pop914mean"]}'>Prostatacancer</option>
+			</optgroup>
+			<option value='{"name":"diab","sex":"0"}'>Diabetes</option>
+			<optgroup label='Cirkulation'>
+				<option value='{"name":"circ","sex":"0"}'>Cirkulation generellt</option>
+				<option value='{"name":"hd","sex":"0"}'>Hjärtsjukdom generellt</option>
+				<option value='{"name":"ihd","sex":"0","skip":["Pop38mean"]}'>Ischemisk hjärtsjukdom (IHD)</option>
+				<option value='{"name":"str","sex":"0","skip":["Pop38mean"]}'>Slaganfall</option>
+				<option value='{"name":"othath","sex":"0","skip":["Pop38mean"]}'>Övrig artärsjukdom</option>
+				<option value='{"name":"circnonihd","sex":"0","skip":["Pop38mean"]}'>Cirkulation utom IHD</option>
+				<option value='{"name":"circnonath","sex":"0","skip":["Pop38mean"]}'>Cirkulation &rdquo;icke ateroskleros&rdquo;</option>
+			</optgroup>
+			<option value='{"name":"chresp","sex":"0","skip":["Pop38mean"]}'>Kronisk lungsjukdom</option>
+			<option value='{"name":"illdef","sex":"0"}'>Illa definierade orsaker</option>
+			<option value='{"name":"ext","sex":"0"}'>Yttre orsaker</option>
+		</select>
+		<span id='ptypeSp' style='display:none;'>Mått: <select id='ptypeSel'>
+			<option value='rate'>Dödstal</option>
+			<option value='perc'>Andel av totaldödlighet</option>
+			</select>
+		</span>
+		Åldersgrupp: <select id='ageSel'>
+			<option value='Pop914mean'>15&ndash;44</option>
+			<option value='Pop1518mean'>45&ndash;64</option>
+			<option value='Pop1920mean'>65&ndash;74</option>
+			<option value='Pop2122mean'>75&ndash;84</option>
+		</select>
+		<input type='button' id='showChart' value='Visa diagram' />
+	</form>
+
+	<img id='chart' src='charts/all4290rate0Pop914mean19512012.svg' alt='Valt diagram' />                                                                         
+	<p>Denna sida drivs av <a href="mailto:karl_pettersson_1998@yahoo.com">Karl Pettersson</a>. Sidan är under konstruktion och fler diagram kommer att läggas upp. Se <a href="mortchartdoc.pdf">dokumentation</a> (i PDF-format) för beskrivning av sidan med information om mått, dödsorsaksgrupper och källdata.</p>
+</body>
+</html>

@@ -43,7 +43,7 @@ $(document).ready(function(){
 		var cause=jQuery.parseJSON($('#causeSel').val());
 		var age=$('#ageSel').val();
 		var ptype=$('#ptypeSel').val();
-		var chartPath='charts/'+cause.name+pop.name+ptype+cause.sex+age+pop.startyear+pop.endyear+'.svg';
+		var chartPath='charts/'+cause.name+pop.name+ptype+cause.sex+age+'.svg';
 		$('#chart').attr('src',chartPath);
 	})
 })

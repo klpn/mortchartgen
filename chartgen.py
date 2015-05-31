@@ -1,14 +1,17 @@
+#! /usr/bin/python
 import mysql.connector
 import pandas as pd
 import matplotlib.pyplot as plt
 import yaml
 import time
+import os 
 
 def batchplot():
     f=open('chartgen.yaml')
     combs=yaml.safe_load(f)
     f.close()
-    
+
+    os.makedirs('site/charts',exist_ok=True)
 
     for country,countryval in combs['countries'].items():
         start_time = time.time()
@@ -21,7 +24,7 @@ def propplot(sex,country,countryval,ptype,cause,age,icdlist):
     ptypealias={'rate':'Dödstal','perc':'Andel dödsfall'}
     plt.legend(framealpha=0.5)
     plt.ylim(ymin=0)
-    plt.title(ptypealias[ptype]+' '+caalias[cause]+' '+countryval['alias'],y=1.02)
+    plt.title(ptypealias[ptype]+' '+caalias[cause]+' '+countryval['alias']+' '+str(countryval['startyear'])+'\u2013'+str(countryval['endyear']),y=1.02)
     plt.xlabel('År')
     plt.ticklabel_format(scilimits=(-4,0),axis='y')
     plt.ylabel(ptypealias[ptype]+' '+agealias[age])
@@ -30,7 +33,7 @@ def propplot(sex,country,countryval,ptype,cause,age,icdlist):
         if index==countryval['startyear'] or (index-1 in icdlist and value != icdlist.loc[index-1]):
             plt.text(index,0,value,rotation=90,va='bottom',ha='center',color='red')
 
-    plt.savefig('site/charts/'+cause+str(country)+ptype+str(sex)+age+str(countryval['startyear'])+str(countryval['endyear'])+'.svg')
+    plt.savefig('site/charts/'+cause+str(country)+ptype+str(sex)+age+'.svg')
     plt.close()
 
 def propiter(country,countryval,causes,ages):
@@ -147,3 +150,6 @@ def build_query(sex,country,startyear,endyear,qtype,ctry_extrasql='',cause='all'
     conn.close()
 
     return df
+
+if __name__=='__main__':
+    batchplot()

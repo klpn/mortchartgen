@@ -1,20 +1,20 @@
 countries:
-        4290:
-                alias: Sverige 
-                startyear: 1951
-                endyear: 2012
+#        4290:
+#                alias: Sverige 
+#                startyear: 1951
+#                endyear: 2013
         4050:
                 alias: Danmark 
                 startyear: 1951
-                endyear: 2011     
-        4310:
-                alias: England/Wales 
-                startyear: 1950
-                endyear: 2012
+                endyear: 2011
+#        4310:
+#                alias: England/Wales 
+#                startyear: 1950
+#                endyear: 2012
         4280:
                 alias: Spanien 
                 startyear: 1951
-                endyear: 2012 
+                endyear: 2013 
         4140:
                 alias: Grekland 
                 startyear: 1961
@@ -22,11 +22,11 @@ countries:
         4240:
                 alias: Portugal 
                 startyear: 1955
-                endyear: 2012  
+                endyear: 2013  
         4070:
                 alias: Finland
                 startyear: 1952
-                endyear: 2012
+                endyear: 2013
         4080:
                 alias: Frankrike 
                 startyear: 1952
@@ -34,19 +34,19 @@ countries:
         4180:
                 alias: Italien 
                 startyear: 1951
-                endyear: 2011
+                endyear: 2012
         4210:
                 alias: Nederländerna
                 startyear: 1950
-                endyear: 2012  
+                endyear: 2013  
         4220:
                 alias: Norge
                 startyear: 1951
-                endyear: 2012  
+                endyear: 2013  
         3160:
                 alias: Japan
                 startyear: 1950
-                endyear: 2011
+                endyear: 2013
         2450:
                 alias: USA 
                 startyear: 1950
@@ -58,7 +58,7 @@ countries:
         5150:
                 alias: Nya Zeeland 
                 startyear: 1950
-                endyear: 2010
+                endyear: 2011
         2090:
                 alias: Kanada 
                 startyear: 1950
@@ -66,15 +66,15 @@ countries:
         4300:
                 alias: Schweiz 
                 startyear: 1951
-                endyear: 2010
+                endyear: 2012
         4020:
                 alias: Belgien 
                 startyear: 1954
-                endyear: 2010
+                endyear: 2012
         4010:
                 alias: Österrike 
                 startyear: 1955
-                endyear: 2012
+                endyear: 2013
         4170:
                 alias: Irland 
                 startyear: 1950
@@ -82,21 +82,21 @@ countries:
         4320:
                 alias: Nordirland 
                 startyear: 1950
-                endyear: 2010
+                endyear: 2013
         4330:
                 alias: Skottland 
                 startyear: 1950
-                endyear: 2011
-#        3150:
-#                alias: Israel
-#                ctry_extrasql: and (Admin1='' or Year<1975) 
-#                startyear: 1957
-#                endyear: 2011
+                endyear: 2013
+        3150:
+                alias: Israel
+                ctry_extrasql: and (Admin1='' or Year<1975) 
+                startyear: 1957
+                endyear: 2012
         4085:
                 alias: Tyskland 
                 ctry_extrasql: or (Country=4100 and Year<1990) 
                 startyear: 1952
-                endyear: 2012
+                endyear: 2013
 causes:
         all:
                 sex: 0
@@ -164,7 +164,7 @@ ages:
                 ptype: rate
         Pop1:
                 ptype: perc 
-#        Pop222sum:
-#                ptype: perc 
-#        Pop2325sum:
-#                ptype: perc 
+        Pop222sum:
+                ptype: perc 
+        Pop2325sum:
+                ptype: perc 

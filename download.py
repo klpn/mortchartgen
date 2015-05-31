@@ -5,7 +5,8 @@ import zipfile
 import os
 
 def download(dldir=''):
-    preurl='http://www.who.int/entity/healthinfo/statistics/'
+    preurl_default='http://www.who.int/entity/healthinfo/statistics/'
+    preurl_pop='http://www.who.int/entity/healthinfo/'
     filesuff='.zip'
     urlparams={'ua':1}
     filelist=['documentation','availability','country_codes','notes','Pop','morticd07','morticd08','morticd09','Morticd10_part1','Morticd10_part2']
@@ -13,6 +14,10 @@ def download(dldir=''):
     for filename in filelist:
         filefullname=filename+filesuff
         dlpath=os.path.join(dldir,filefullname)
+        if filename=='Pop':
+            preurl=preurl_pop
+        else:
+            preurl=preurl_default
         url=preurl+filefullname
         print(url)
         print(dlpath)

@@ -1,16 +1,16 @@
 countries:
-#        4290:
-#                alias: Sverige 
-#                startyear: 1951
-#                endyear: 2013
+        4290:
+                alias: Sverige 
+                startyear: 1951
+                endyear: 2013
         4050:
                 alias: Danmark 
                 startyear: 1951
                 endyear: 2011
-#        4310:
-#                alias: England/Wales 
-#                startyear: 1950
-#                endyear: 2012
+        4310:
+                alias: England/Wales 
+                startyear: 1950
+                endyear: 2012
         4280:
                 alias: Spanien 
                 startyear: 1951
@@ -98,59 +98,68 @@ countries:
                 startyear: 1952
                 endyear: 2013
 causes:
-        all:
-                sex: 0
-        lfinf:
-                sex: 0
-        tum:
-                sex: 0
-        lc:
-                sex: 0
-                skip: [Pop38mean]
-        bc:
-                sex: 2
-                skip: [Pop38mean]
-        circ:
-                sex: 0
-        ihd:
+#        all:
+#                sex: 0
+#        lfinf:
+#                sex: 0
+#        tum:
+#                sex: 0
+#        lc:
+#                sex: 0
+#                skip: [Pop38mean]
+        sc:
                 sex: 0
                 skip: [Pop38mean]
-        str:
-                sex: 0
-                skip: [Pop38mean]
-        hd:
-                sex: 0
-        tb:
-                sex: 0
-        stihiv:
-                sex: 0
-        infrest:
-                sex: 0
-        circnonihd:
-                sex: 0
-                skip: [Pop38mean]
-        pc:
-                sex: 1
-                skip: [Pop38mean,Pop914mean]
-        circnonath:
-                sex: 0
-                skip: [Pop38mean]
-        othath:
-                sex: 0
-                skip: [Pop38mean]
-        illdef:
-                sex: 0
-        ext:
-                sex: 0
-        diab:
-                sex: 0
-        chresp:
-                sex: 0
-                skip: [Pop38mean]
-        genbact:
-                sex: 0
-        gastrinf:
-                sex: 0
+#        bc:
+#                sex: 2
+#                skip: [Pop38mean]
+#        circ:
+#                sex: 0
+#        ihd:
+#                sex: 0
+#                skip: [Pop38mean]
+#        str:
+#                sex: 0
+#                skip: [Pop38mean]
+#        hd:
+#                sex: 0
+#        tb:
+#                sex: 0
+#        stihiv:
+#                sex: 0
+#        infrest:
+#                sex: 0
+#        circnonihd:
+#                sex: 0
+#                skip: [Pop38mean]
+#        pc:
+#                sex: 1
+#                skip: [Pop38mean,Pop914mean]
+#        circnonath:
+#                sex: 0
+#                skip: [Pop38mean]
+#        othath:
+#                sex: 0
+#                skip: [Pop38mean]
+#        illdef:
+#                sex: 0
+#        ext:
+#                sex: 0
+#        diab:
+#                sex: 0
+#        chresp:
+#                sex: 0
+#                skip: [Pop38mean]
+#        genbact:
+#                sex: 0
+#        gastrinf:
+#                sex: 0
+#        sui:
+#                sex: 0
+#        tracc:
+#                sex: 0
+#        fallacc:
+#                sex: 0
 ages:
 #        Pop38mean:
 #                ptype: rate

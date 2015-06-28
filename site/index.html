@@ -50,6 +50,7 @@
 			</optgroup>
 			<optgroup label='Tumörer'>
 				<option value='{"name":"tum","sex":"0"}'>Tumörer generellt</option>
+				<option value='{"name":"sc","sex":"0","skip":["Pop38mean"]}'>Magsäckscancer</option>
 				<option value='{"name":"lc","sex":"0","skip":["Pop38mean"]}'>Lungcancer</option>
 				<option value='{"name":"bc","sex":"2","skip":["Pop38mean"]}'>Bröstcancer</option>
 				<option value='{"name":"pc","sex":"1","skip":["Pop38mean","Pop914mean"]}'>Prostatacancer</option>
@@ -66,7 +67,12 @@
 			</optgroup>
 			<option value='{"name":"chresp","sex":"0","skip":["Pop38mean"]}'>Kronisk lungsjukdom</option>
 			<option value='{"name":"illdef","sex":"0"}'>Illa definierade orsaker</option>
-			<option value='{"name":"ext","sex":"0"}'>Yttre orsaker</option>
+			<optgroup label='Yttre orsaker'>
+				<option value='{"name":"ext","sex":"0"}'>Yttre orsaker generellt</option>
+				<option value='{"name":"tracc","sex":"0"}'>Transportolyckor</option>
+				<option value='{"name":"fallacc","sex":"0"}'>Fallolyckor</option>
+				<option value='{"name":"sui","sex":"0"}'>Självmord</option>
+			</optgroup>
 		</select>
 		<span id='ptypeSp' style='display:none;'>Mått: <select id='ptypeSel'>
 			<option value='rate'>Dödstal</option>

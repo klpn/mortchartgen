@@ -12,7 +12,7 @@ def tableimp(dldir=''):
         else:
             temppath=os.path.join(dldir,'Deaths')
         os.rename(dlpath,temppath)
-        subprocess.call(['mysqlimport','--defaults-extra-file=tableimp.cnf','Morticd',temppath])
+        subprocess.call(['mysqlimport','--defaults-extra-file=tableimpsec.cnf','Morticd',temppath])
         os.rename(temppath,dlpath)
 
 if __name__=='__main__':

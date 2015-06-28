@@ -2,11 +2,13 @@
 import mysql.connector
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 import yaml
 import time
 import os 
 
 def batchplot():
+    mpl.rcParams['axes.formatter.use_locale']=True
     f=open('chartgen.yaml')
     combs=yaml.safe_load(f)
     f.close()
@@ -19,7 +21,11 @@ def batchplot():
         print(str(country) +': '+str(time.time() - start_time)+' sekunder')
 
 def propplot(sex,country,countryval,ptype,cause,age,icdlist):
-    caalias={'all':'totalt','inf':'infektioner','tb':'tuberkulos','lfinf':'luftvägsinfektioner','stihiv':'könssjukdomar/HIV','gastrinf':'magtarminfektioner','genbact':'allmänna bakterieinfektioner','infrest':'övriga infektioner','tum':'tumörer','bc':'bröstcancer','femc':'cancer kvinnliga könsorgan','malec':'cancer manliga könsorgan','pc':'prostatacancer','lc':'lungcancer','diab':'diabetes','circ':'cirkulationsorgan','hd':'hjärtsjukdom','ihd':'ischemisk hjärtsjukdom','str':'slaganfall','circnonihd':'cirkulationsorgan utom IHD','othath':'artärsjukdom utom IHD/slaganfall','circnonath':'cirkulationsorgan icke ateroskleros','chresp':'kronisk lungsjukdom','illdef':'illa definierade orsaker','ext':'yttre orsaker'}
+    caalias={'all':'totalt',
+            'inf':'infektioner','tb':'tuberkulos','lfinf':'luftvägsinfektioner','stihiv':'könssjukdomar/HIV','gastrinf':'magtarminfektioner','genbact':'allmänna bakterieinfektioner','infrest':'övriga infektioner',
+            'tum':'tumörer','sc':'magsäckscancer','bc':'bröstcancer','femc':'cancer kvinnliga könsorgan','malec':'cancer manliga könsorgan','pc':'prostatacancer','lc':'lungcancer',
+            'diab':'diabetes','circ':'cirkulationsorgan','hd':'hjärtsjukdom','ihd':'ischemisk hjärtsjukdom','str':'slaganfall','circnonihd':'cirkulationsorgan utom IHD','othath':'artärsjukdom utom IHD/slaganfall','circnonath':'cirkulationsorgan icke ateroskleros',
+            'chresp':'kronisk lungsjukdom','illdef':'illa definierade orsaker','ext':'yttre orsaker','tracc':'transportolyckor','fallacc':'fallolyckor','sui':'självmord'}
     agealias={'Pop1':'alla åldrar','Pop2':'spädbarn','Pop38mean':'1\u201314 (genomsnitt över åldrar)','Pop914mean':'15\u201344 (genomsnitt över åldrar)','Pop1518mean':'45\u201364 (genomsnitt över åldrar)','Pop1920mean':'65\u201374 (genomsnitt över åldrar)','Pop2122mean':'75\u201384 (genomsnitt över åldrar)','Pop222sum':'0\u201384','Pop2325sum':'85\u2013'}
     ptypealias={'rate':'Dödstal','perc':'Andel dödsfall'}
     plt.legend(framealpha=0.5)
@@ -117,6 +123,7 @@ def build_query(sex,country,startyear,endyear,qtype,ctry_extrasql='',cause='all'
                 'genbact':{'07A':'A(0(1[5,7-9]|2[0-7]|71)|110)','08A':'A(0(1[1-9]|2[0-1]|72)|107)','09B':'B(03$|220|351)','101':'10(0[7-9]|1[0-2]|59)','10':'(A[2-4]|G0[0,3]|N1[0-2])'},
                 'infrest':{'07A':'A0(2[8-9]|3|4[0-3])','08A':'A0(2[2-9]|3[0-3,9]|4[0-4])','09B':'B(0[4,5,7])$','101':'10(1[4-9]|2[1-5])','10':'(A(6[5-9]|[7-9])|B([0-1]|2[5-9]|[3-9]))'},
                 'tum':{'07A':'A0(4[4-9]|5|60)','08A':'A0(4[5-9]|5|6[0-1])','09B':'B(0[8-9]$|1[0-7]$)','101':'1026','10':'(C|D[0-4])'},
+                'sc':{'07A':'A046','08A':'A047','09B':'B091','101':'1029','10':'C16'},
                 'bc':{'07A':'A051','08A':'A054','09B':'B113','101':'1036','10':'C50'},
                 'femc':{'07A':'A05[2-3]|17[5-6]','08A':'18[0-4]$','09B':'B12[0-3]|184','101':'103[7-9]','10':'C5[1-8]'},
                 'malec':{'07A':'A054|17[8-9]$','08A':'A057|18[6-7]$','09B':'B12[4-5]|187$','101':'1040','10':'C6[0-3]'},
@@ -132,7 +139,10 @@ def build_query(sex,country,startyear,endyear,qtype,ctry_extrasql='',cause='all'
                 'circnonath':{'07A':'A0(79|8[0,2-4,6])','08A':'A08[0-2,4,7-8]','09B':'B(2[5-6,8]|30[3-9])$','101':'10(6[5-6,9]|71])','10':'I([0-1]|2[6-9]|[3-5,8-9])'},
                 'chresp':{'07A':'A09[3-7]','08A':'A09[3-6]','09B':'B32[3-9]','101':'107[6,7]','10':'J[3-9]'},
                 'illdef':{'07A':'A13[6,7]','08A':'A13[6,7]','09B':'B46$','101':'1094','10':'R'},
-                'ext':{'07A':'A1(3[8,9]|[4,5])','08A':'A1(3[8,9]|[4,5])','09B':'B(4[7-9]|5[0-6])$','101':'1095','10':'[V-Y]'}}
+                'ext':{'07A':'A1(3[8,9]|[4,5])','08A':'A1(3[8,9]|[4,5])','09B':'B(4[7-9]|5[0-6])$','101':'1095','10':'[V-Y]'},
+                'tracc':{'07A':'A13[8-9]','08A':'A13[8-9]','09B':'B47$','101':'1096','10':'V'},
+                'fallacc':{'07A':'A141','08A':'A141','09B':'B50','101':'1097','10':'W[0-1]'},
+                'sui':{'07A':'A148','08A':'A147','09B':'B54','101':'1101','10':'X([6-7]|8[0-4])'}}
         sqlqkeys={'sex':sex,'country':country,'startyear':startyear,'endyear':endyear,'ca07a':causeexpr[cause]['07A'],'ca08a':causeexpr[cause]['08A'],'ca09b':causeexpr[cause]['09B'],'ca101':causeexpr[cause]['101'],'ca10':causeexpr[cause]['10']}
         selstat='Year,List,Sum(Deaths1) AS Pop1, Sum(Deaths2) AS Pop2, Sum(Deaths3) AS Pop3, Sum(Deaths4) AS Pop4, Sum(Deaths5) AS Pop5, Sum(Deaths6) AS Pop6, Sum(Deaths7) AS Pop7, Sum(Deaths8) AS Pop8, Sum(Deaths9) AS Pop9, Sum(Deaths10) AS Pop10, Sum(Deaths11) AS Pop11, Sum(Deaths12) AS Pop12, Sum(Deaths13) AS Pop13, Sum(Deaths14) AS Pop14, Sum(Deaths15) AS Pop15, Sum(Deaths16) AS Pop16, Sum(Deaths17) AS Pop17, Sum(Deaths18) AS Pop18, Sum(Deaths19) AS Pop19, Sum(Deaths20) AS Pop20, Sum(Deaths21) AS Pop21, Sum(Deaths22) AS Pop22, Sum(Deaths23) AS Pop23, Sum(Deaths24) AS Pop24, Sum(Deaths25) AS Pop25, Sum(Deaths26) AS Pop26'
         sqlq='select '+selstat+' from Deaths where (case when List=\'07A\' then Cause REGEXP %(ca07a)s  when List=\'08A\' then Cause REGEXP %(ca08a)s when List REGEXP \'09(B|N)\' then Cause REGEXP %(ca09b)s when List=\'101\' then Cause REGEXP %(ca101)s when List REGEXP \'10(M|[3-4])\' then Cause REGEXP %(ca10)s end) and Sex=%(sex)s and (Country=%(country)s '+ctry_extrasql+') and Year>=%(startyear)s and Year<=%(endyear)s group by Year,List order by Year'

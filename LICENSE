@@ -12,3 +12,8 @@ WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
+--- 
+
+The file docs/PMMall.tex is a modified version of pandoc's LaTeX
+template: if this file is redistributed, the notice docs/README.markdown
+should be included.

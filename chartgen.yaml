@@ -1,3 +1,6 @@
+settings:
+        savecsv: true
+
 countries:
         4290:
                 alias: Sverige 
@@ -98,82 +101,115 @@ countries:
                 startyear: 1952
                 endyear: 2013
 causes:
-#        all:
-#                sex: 0
-#        lfinf:
-#                sex: 0
-#        tum:
-#                sex: 0
-#        lc:
-#                sex: 0
-#                skip: [Pop38mean]
+        all:
+                sex: 0
+                alias: totalt
+        lfinf:
+                sex: 0
+                alias: luftvägsinfektioner 
+        tum:
+                sex: 0
+                alias: tumörer 
+        lc:
+                sex: 0
+                skip: [Pop38mean]
+                alias: lungcancer
         sc:
                 sex: 0
                 skip: [Pop38mean]
-#        bc:
-#                sex: 2
-#                skip: [Pop38mean]
-#        circ:
-#                sex: 0
-#        ihd:
-#                sex: 0
-#                skip: [Pop38mean]
-#        str:
-#                sex: 0
-#                skip: [Pop38mean]
-#        hd:
-#                sex: 0
-#        tb:
-#                sex: 0
-#        stihiv:
-#                sex: 0
-#        infrest:
-#                sex: 0
-#        circnonihd:
-#                sex: 0
-#                skip: [Pop38mean]
-#        pc:
-#                sex: 1
-#                skip: [Pop38mean,Pop914mean]
-#        circnonath:
-#                sex: 0
-#                skip: [Pop38mean]
-#        othath:
-#                sex: 0
-#                skip: [Pop38mean]
-#        illdef:
-#                sex: 0
-#        ext:
-#                sex: 0
-#        diab:
-#                sex: 0
-#        chresp:
-#                sex: 0
-#                skip: [Pop38mean]
-#        genbact:
-#                sex: 0
-#        gastrinf:
-#                sex: 0
-#        sui:
-#                sex: 0
-#        tracc:
-#                sex: 0
-#        fallacc:
-#                sex: 0
+                alias: magsäckscancer 
+        bc:
+                sex: 2
+                skip: [Pop38mean]
+                alias: bröstcancer 
+        circ:
+                sex: 0
+                alias: cirkulationsorgan
+        ihd:
+                sex: 0
+                skip: [Pop38mean]
+                alias: ischemisk hjärtsjukdom 
+        str:
+                sex: 0
+                skip: [Pop38mean]
+                alias: slaganfall
+        hd:
+                sex: 0
+                alias: hjärtsjukdom 
+        tb:
+                sex: 0
+                alias: tuberkulos 
+        stihiv:
+                sex: 0
+                alias: könssjukdomar/HIV 
+        infrest:
+                sex: 0
+                alias: övriga infektioner 
+        circnonihd:
+                sex: 0
+                skip: [Pop38mean]
+                alias: cirkulationsorgan utom IHD
+        pc:
+                sex: 1
+                skip: [Pop38mean,Pop914mean]
+                alias: prostatacancer 
+        circnonath:
+                sex: 0
+                skip: [Pop38mean]
+                alias: cirkulationsorgan icke ateroskleros  
+        othath:
+                sex: 0
+                skip: [Pop38mean]
+                alias: artärsjukdom utom IHD/slaganfall
+        illdef:
+                sex: 0
+                alias: illa definierade orsaker
+        ext:
+                sex: 0
+                alias: yttre orsaker
+        diab:
+                sex: 0
+                alias: diabetes 
+        chresp:
+                sex: 0
+                skip: [Pop38mean]
+                alias: kronisk lungsjukdom
+        genbact:
+                sex: 0
+                alias: allmänna bakterieinfektioner
+        gastrinf:
+                sex: 0
+                alias: magtarminfektioner
+        sui:
+                sex: 0
+                alias: självmord
+        tracc:
+                sex: 0
+                alias: transportolyckor
+        fallacc:
+                sex: 0
+                alias: fallolyckor
 ages:
 #        Pop38mean:
 #                ptype: rate
         Pop914mean:
                 ptype: rate
+                alias: "15\u201344 (genomsnitt över åldrar)"
         Pop1518mean:
                 ptype: rate
+                alias: "45\u201364 (genomsnitt över åldrar)"
         Pop1920mean:
                 ptype: rate
+                alias: "65\u201374 (genomsnitt över åldrar)"
         Pop2122mean:
                 ptype: rate
+                alias: "75\u201384 (genomsnitt över åldrar)"
         Pop1:
-                ptype: perc 
+                ptype: perc
+                alias: "alla åldrar"
         Pop222sum:
                 ptype: perc 
+                alias: "0\u201384"
         Pop2325sum:
                 ptype: perc 
+                alias: 85\u2013

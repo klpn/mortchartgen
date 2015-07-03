@@ -15,3 +15,8 @@ Call the function `batchplot()` in `chartgen.py` in order to generate the charts
 
 ##Generate docs
 Run `make pdfbib` in `docs` in order to generate PDF documentation from the Markdown source. This requires a LaTeX distribution as well as [pandoc](https://github.com/jgm/pandoc) (in order to convert Markdown).
+
+##CSV generation
+If `savecsv` under `settings` in `chartgen.yaml` is `true`, `chartgen.py` will save the dataframes used to generate the charts as CSV files in the subdirectory `csv`, so that they can be further analysed in other programs.
+
+The R script `specchartgen.r` demonstrates how the generated CSV files can be used. It contains the functions `agetrends.plot` which generates charts showing secular trends for a given combination of sex, cause and a interval of 5-year age groups and `ctrisyear.plot` which generates charts giving a comparison of mortality between countries for a given cause and year. It can generate scatterplots of female vs male mortality or bar charts for a single sex. The function `ctriesyr.batchplot` uses `ctrisyear.plot` to generates charts for all causes and age groups in `chartgen.yaml` and for all years in a given sequence. All these charts are generated using [ggplot2](https://github.com/hadley/ggplot2), and the script also uses the packages [tidyr](https://github.com/hadley/tidyr) and [yaml](http://cran.r-project.org/web/packages/yaml/).

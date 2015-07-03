@@ -1,4 +1,15 @@
 $(document).ready(function(){
+	$('#charttypeSel').change(function(){
+		var charttype=$('#charttypeSel').val();
+		if (charttype=='trend') {
+			$('#compyrSp').hide();
+			$('#popSp').show();
+		}
+		else {
+			$('#compyrSp').show();
+			$('#popSp').hide();
+		}
+	})
 	$('#causeSel').change(function(){
 		var cause=jQuery.parseJSON($('#causeSel').val());	
 		if (cause.name=='all') {
@@ -13,7 +24,7 @@ $(document).ready(function(){
 					$(this).attr('disabled',true);
 					$(this).attr('selected',false);
 				}
-				else{
+				else {
 					$(this).attr('disabled',false);
 				}
 		})
@@ -39,11 +50,18 @@ $(document).ready(function(){
 
 	})
 	$('#showChart').click(function(){
+		var charttype=$('#charttypeSel').val();
 		var pop=jQuery.parseJSON($('#popSel').val());
 		var cause=jQuery.parseJSON($('#causeSel').val());
 		var age=$('#ageSel').val();
 		var ptype=$('#ptypeSel').val();
-		var chartPath='charts/'+cause.name+pop.name+ptype+cause.sex+age+'.svg';
+		var compyr=$('#compyrSel').val();
+		if (charttype=='trend') {
+			var chartPath='charts/'+cause.name+pop.name+ptype+cause.sex+age+'.svg';
+		}
+		else {
+			var chartPath='charts/ctriesyr/'+cause.name+ptype+age+'comp'+compyr+'.svg';
+		}
 		$('#chart').attr('src',chartPath);
 	})
 })

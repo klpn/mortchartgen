@@ -17,32 +17,33 @@ def batchplot():
 
     for country,countryval in combs['countries'].items():
         start_time = time.time()
-        propiter(country,countryval,combs['causes'],combs['ages'])
+        propiter(country,countryval,combs['causes'],combs['ages'],combs['settings']['savecsv'])
         print(str(country) +': '+str(time.time() - start_time)+' sekunder')
 
-def propplot(sex,country,countryval,ptype,cause,age,icdlist):
-    caalias={'all':'totalt',
-            'inf':'infektioner','tb':'tuberkulos','lfinf':'luftvägsinfektioner','stihiv':'könssjukdomar/HIV','gastrinf':'magtarminfektioner','genbact':'allmänna bakterieinfektioner','infrest':'övriga infektioner',
-            'tum':'tumörer','sc':'magsäckscancer','bc':'bröstcancer','femc':'cancer kvinnliga könsorgan','malec':'cancer manliga könsorgan','pc':'prostatacancer','lc':'lungcancer',
-            'diab':'diabetes','circ':'cirkulationsorgan','hd':'hjärtsjukdom','ihd':'ischemisk hjärtsjukdom','str':'slaganfall','circnonihd':'cirkulationsorgan utom IHD','othath':'artärsjukdom utom IHD/slaganfall','circnonath':'cirkulationsorgan icke ateroskleros',
-            'chresp':'kronisk lungsjukdom','illdef':'illa definierade orsaker','ext':'yttre orsaker','tracc':'transportolyckor','fallacc':'fallolyckor','sui':'självmord'}
-    agealias={'Pop1':'alla åldrar','Pop2':'spädbarn','Pop38mean':'1\u201314 (genomsnitt över åldrar)','Pop914mean':'15\u201344 (genomsnitt över åldrar)','Pop1518mean':'45\u201364 (genomsnitt över åldrar)','Pop1920mean':'65\u201374 (genomsnitt över åldrar)','Pop2122mean':'75\u201384 (genomsnitt över åldrar)','Pop222sum':'0\u201384','Pop2325sum':'85\u2013'}
+def propplot(country,countryval,cause,causeval,age,ageval,icdlist):
+#    caalias={'all':'totalt',
+#            'inf':'infektioner','tb':'tuberkulos','lfinf':'luftvägsinfektioner','stihiv':'könssjukdomar/HIV','gastrinf':'magtarminfektioner','genbact':'allmänna bakterieinfektioner','infrest':'övriga infektioner',
+#            'tum':'tumörer','sc':'magsäckscancer','bc':'bröstcancer','femc':'cancer kvinnliga könsorgan','malec':'cancer manliga könsorgan','pc':'prostatacancer','lc':'lungcancer',
+ #           'diab':'diabetes','circ':'cirkulationsorgan','hd':'hjärtsjukdom','ihd':'ischemisk hjärtsjukdom','str':'slaganfall','circnonihd':'cirkulationsorgan utom IHD','othath':'artärsjukdom utom IHD/slaganfall','circnonath':'cirkulationsorgan icke ateroskleros',
+#            'chresp':'kronisk lungsjukdom','illdef':'illa definierade orsaker','ext':'yttre orsaker','tracc':'transportolyckor','fallacc':'fallolyckor','sui':'självmord'}
+#    agealias={'Pop1':'alla åldrar','Pop2':'spädbarn','Pop38mean':'1\u201314 (genomsnitt över åldrar)','Pop914mean':'15\u201344 (genomsnitt över åldrar)','Pop1518mean':'45\u201364 (genomsnitt över åldrar)','Pop1920mean':'65\u201374 (genomsnitt över åldrar)','Pop2122mean':'75\u201384 (genomsnitt över åldrar)','Pop222sum':'0\u201384','Pop2325sum':'85\u2013'}
+    ptype=ageval['ptype']
     ptypealias={'rate':'Dödstal','perc':'Andel dödsfall'}
     plt.legend(framealpha=0.5)
     plt.ylim(ymin=0)
-    plt.title(ptypealias[ptype]+' '+caalias[cause]+' '+countryval['alias']+' '+str(countryval['startyear'])+'\u2013'+str(countryval['endyear']),y=1.02)
+    plt.title(ptypealias[ptype]+' '+causeval['alias']+' '+countryval['alias']+' '+str(countryval['startyear'])+'\u2013'+str(countryval['endyear']),y=1.02)
     plt.xlabel('År')
     plt.ticklabel_format(scilimits=(-4,0),axis='y')
-    plt.ylabel(ptypealias[ptype]+' '+agealias[age])
+    plt.ylabel(ptypealias[ptype]+' '+ageval['alias'])
 
     for index,value in icdlist.iteritems(): 
         if index==countryval['startyear'] or (index-1 in icdlist and value != icdlist.loc[index-1]):
             plt.text(index,0,value,rotation=90,va='bottom',ha='center',color='red')
 
-    plt.savefig('site/charts/'+cause+str(country)+ptype+str(sex)+age+'.svg')
+    plt.savefig('site/charts/'+cause+str(country)+ptype+str(causeval['sex'])+age+'.svg')
     plt.close()
 
-def propiter(country,countryval,causes,ages):
+def propiter(country,countryval,causes,ages,save_csv=True):
     startyear=countryval['startyear']
     endyear=countryval['endyear']
     sexalias={0:'båda',1:'män',2:'kvinnor'}
@@ -71,7 +72,7 @@ def propiter(country,countryval,causes,ages):
                         causerate[age].plot(label=sexalias[causeval['sex']])
                     elif ageval['ptype']=='perc':
                         causeperc[age].plot(label=sexalias[causeval['sex']])
-                    propplot(causeval['sex'],country,countryval,ageval['ptype'],cause,age,countrydall_fem['List'])
+                    propplot(country,countryval,cause,causeval,age,ageval,countrydall_fem['List'])
 
         elif causeval['sex']==0:
             if cause=='all':
@@ -93,7 +94,20 @@ def propiter(country,countryval,causes,ages):
                         elif ageval['ptype']=='perc':
                             causeperc_fem[age].plot(label=sexalias[2]) 
                             causeperc_male[age].plot(label=sexalias[1])    
-                        propplot(causeval['sex'],country,countryval,ageval['ptype'],cause,age,countrydall_fem['List'])
+                        propplot(country,countryval,cause,causeval,age,ageval,countrydall_fem['List'])
+
+        if save_csv:
+            os.makedirs('csv',exist_ok=True)
+            if causeval['sex']==0:
+                causerate_male.to_csv('csv/'+cause+str(country)+'rate1.csv')
+                causerate_fem.to_csv('csv/'+cause+str(country)+'rate2.csv')
+                if cause!='all':
+                    causeperc_male.to_csv('csv/'+cause+str(country)+'perc1.csv')
+                    causeperc_fem.to_csv('csv/'+cause+str(country)+'perc2.csv')
+
+            elif causeval['sex']>0:
+                causerate.to_csv('csv/'+cause+str(country)+'rate'+str(causeval['sex'])+'.csv')
+                causeperc.to_csv('csv/'+cause+str(country)+'perc'+str(causeval['sex'])+'.csv')
 
 def propframe(popnom,popdenom):
     popnom['Pop222sum']=popnom.loc[:,'Pop2':'Pop22'].sum(1)

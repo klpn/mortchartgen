@@ -21,12 +21,6 @@ def batchplot():
         print(str(country) +': '+str(time.time() - start_time)+' sekunder')
 
 def propplot(country,countryval,cause,causeval,age,ageval,icdlist):
-#    caalias={'all':'totalt',
-#            'inf':'infektioner','tb':'tuberkulos','lfinf':'luftvägsinfektioner','stihiv':'könssjukdomar/HIV','gastrinf':'magtarminfektioner','genbact':'allmänna bakterieinfektioner','infrest':'övriga infektioner',
-#            'tum':'tumörer','sc':'magsäckscancer','bc':'bröstcancer','femc':'cancer kvinnliga könsorgan','malec':'cancer manliga könsorgan','pc':'prostatacancer','lc':'lungcancer',
- #           'diab':'diabetes','circ':'cirkulationsorgan','hd':'hjärtsjukdom','ihd':'ischemisk hjärtsjukdom','str':'slaganfall','circnonihd':'cirkulationsorgan utom IHD','othath':'artärsjukdom utom IHD/slaganfall','circnonath':'cirkulationsorgan icke ateroskleros',
-#            'chresp':'kronisk lungsjukdom','illdef':'illa definierade orsaker','ext':'yttre orsaker','tracc':'transportolyckor','fallacc':'fallolyckor','sui':'självmord'}
-#    agealias={'Pop1':'alla åldrar','Pop2':'spädbarn','Pop38mean':'1\u201314 (genomsnitt över åldrar)','Pop914mean':'15\u201344 (genomsnitt över åldrar)','Pop1518mean':'45\u201364 (genomsnitt över åldrar)','Pop1920mean':'65\u201374 (genomsnitt över åldrar)','Pop2122mean':'75\u201384 (genomsnitt över åldrar)','Pop222sum':'0\u201384','Pop2325sum':'85\u2013'}
     ptype=ageval['ptype']
     ptypealias={'rate':'Dödstal','perc':'Andel dödsfall'}
     plt.legend(framealpha=0.5)

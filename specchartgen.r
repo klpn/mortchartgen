@@ -121,7 +121,7 @@ ctriesyr.plot<-function(cause,compyear,ageorig,type)
 	else
 	{
 		title<-sprintf('%s %s %s %s %d',typealias,caalias,sexalias,agealias,compyear)
-		df.plot<-ggplot(data=df.sub,aes(x=countryalias,y=mort))+xlab('Befolkning')+ylab(typealias)+scale_y_continuous(label=comma.lab)+ggtitle(title)+geom_bar(stat='identity')+theme(axis.text.x=element_text(angle=90))
+		df.plot<-ggplot(data=df.sub,aes(x=countryalias,y=mort))+xlab('Befolkning')+ylab(typealias)+scale_y_continuous(label=comma.lab)+ggtitle(title)+geom_bar(stat='identity')+theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
 	}
 	
 	return(df.plot)

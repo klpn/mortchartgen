@@ -172,6 +172,7 @@ ctriesyr.plot<-function(cause,compyear,ageorig,type)
 		}
 		df.country$country<-country
 		df.country$countryalias<-conf[['countries']][[country]][['alias']]
+		df.country$countryiso<-conf[['countries']][[country]][['iso3166']]
 		df<-rbind(df,df.country)
 	}
 	df.sub<-subset(df,Year==compyear)
@@ -180,8 +181,8 @@ ctriesyr.plot<-function(cause,compyear,ageorig,type)
 
 	if(sex==0)
 	{
-		title<-sprintf('%s %s %s %d',typealias,caalias,agealias,compyear)
-		df.plot<-ggplot(data=df.sub,aes(x=femmort,y=malemort))+xlab(sprintf('%s kvinnor',typealias))+ylab(sprintf('%s män',typealias))+scale_x_continuous(label=comma.lab)+scale_y_continuous(label=comma.lab)+ggtitle(title)+geom_text(aes(label=countryalias),size=3.5,alpha=1/2)+geom_point(alpha=1/4,size=4)
+		title<-sprintf('%s %s\n%s %d',typealias,caalias,agealias,compyear)
+		df.plot<-ggplot(data=df.sub,aes(x=femmort,y=malemort))+xlab(sprintf('%s kvinnor',typealias))+ylab(sprintf('%s män',typealias))+scale_x_continuous(label=comma.lab)+scale_y_continuous(label=comma.lab)+ggtitle(title)+geom_text(aes(label=countryiso),size=3.5,alpha=1/2)+geom_point(alpha=1/8,size=4)
 	}
 	else
 	{

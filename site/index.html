@@ -4,13 +4,14 @@
 	<meta charset='utf-8' />
 	<style>body {background-color:LightGreen;}</style>
 	<script src='//code.jquery.com/jquery-1.11.1.min.js'></script>
-	<script src='chartchoice.js?version=0.12'></script>
+	<script src='chartchoice.js?version=0.121'></script>
 	<title>Mortalitetsdiagram</title>
 	<link rel='icon' type='image/png' href='mortchartico.png' />
 </head>
 <body>
 	<h1>Mortalitetsdiagram</h1>
 	<p>Kombinera parametrar och välj sedan <em>Visa diagram</em>. För total dödlighet visas alltid dödstal. För specifika dödsorsaksgrupper finns möjlighet att välja att visa trender för dödstal eller andel av den totala dödligheten.</p>
+	<p>Om punktdiagrammen som visar kvinnors vs mäns utfall i olika befolkningar är svårlästa, för muspekaren över punkterna för att visa befolkning med värden.</p>
 	<form name='chartParams'>
 		Typ av översikt: <select id='charttypeSel'>
 			<option value='trend'>Tidstrend i befolkning</option>
@@ -102,7 +103,7 @@
 		<input type='button' id='showChart' value='Visa diagram' />
 	</form>
 
-	<img id='chart' src='charts/all4290rate0Pop914mean.svg' alt='Valt diagram' />                                                                         
+	<object id='chart' data='charts/all4290rate0Pop914mean.svg' type='image/svg+xml'>Valt diagram</object>                                                                         
 	<p>Denna sida drivs av <a href='mailto:karl_pettersson_1998@yahoo.com'>Karl Pettersson</a>. Sidan är under konstruktion och fler diagram kommer att läggas upp. Se <a href='mortchartdoc.pdf'>dokumentation</a> (i PDF-format) för beskrivning av sidan med information om mått, dödsorsaksgrupper och källdata. Det skript som används för att generera diagrammen är tillgängligt via <a href='https://github.com/klpn/mortchartgen'>GitHub-förråd</a>.</p>
 </body>
 </html>

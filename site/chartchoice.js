@@ -62,6 +62,6 @@ $(document).ready(function(){
 		else {
 			var chartPath='charts/ctriesyr/'+cause.name+ptype+age+'comp'+compyr+'.svg';
 		}
-		$('#chart').attr('src',chartPath);
+		$('#chart').attr('data',chartPath);
 	})
 })

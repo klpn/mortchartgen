@@ -1,6 +1,10 @@
 library(ggplot2)
 library(tidyr)
 library(yaml)
+library(XML)
+library(gridSVG)
+library(rjson)
+
 
 agetrends.plot<-function(country,cause,sex,startyear,endyear,startage,endage,type,ageformat)
 {
@@ -48,23 +52,32 @@ ctriesyr.batchplot<-function(compyrseq=seq(1952,2012,by=10))
 	causenames<-names(conf[['causes']])
 	agenames<-names(conf[['ages']])
 	svgdir<-'site/charts/ctriesyr'
+	xmlprefix<-'<?xml version="1.0" encoding="UTF-8"?>\n'
 	dir.create(svgdir,showWarnings=FALSE)
 	
 	for(year in compyrseq)
 	{
 		for(cause in causenames)
 		{
+			causeconf<-conf[['causes']][[cause]]
 			for(age in agenames)
 			{
 				
-				if((age %in% conf[['causes']][[cause]][['skip']])==FALSE)
+				if((age %in% causeconf[['skip']])==FALSE)
 				   {
 					   type<-conf[['ages']][[age]][['ptype']]
 					   if(!(cause=='all' & type=='perc')){
 					   svgpath<-sprintf('%s/%s%s%scomp%d.svg',svgdir,cause,type,age,year)
-					   svg(svgpath)
-					   print(ctriesyr.plot(cause,year,age,type))
+					   curgrid<-ctriesyr.plot(cause,year,age,type)
+					   print(curgrid)
+					   if(causeconf[['sex']]==0)
+					   {
+					   curgrid.svg<-grid.export(addClasses=TRUE)
+					   cat(xmlprefix,gsub('</svg>$','',saveXML(curgrid.svg$svg)),svgscript(curgrid$data),file=svgpath)
+					   }
+					   else grid.export(svgpath)
 					   dev.off()
+
 					   }
 				   }
 			}
@@ -73,6 +86,57 @@ ctriesyr.batchplot<-function(compyrseq=seq(1952,2012,by=10))
 
 }
 
+svgscript<-function(graphdata)
+{
+	notice<-'<!-- Adapted from http://timelyportfolio.github.io/gridSVG_intro/ -->'
+	d3.script<-'<script xlink:href="http://d3js.org/d3.v3.js"></script>'
+	jsonarr<-rjson::toJSON(apply(graphdata,MARGIN=1,FUN=function(x)return(list(x))))
+	dataarr.script<-sprintf('var dataarr=%s;',jsonarr)
+	datamap.script<-'var dataToBind = d3.entries(dataarr.map(function(d,i) {return d[0]}));'
+	databind.script<-'var scatterPoints = d3.select(".points").selectAll("use");\nscatterPoints.data(dataToBind);'
+	tool.script<-'scatterPoints  
+    .on("mouseover", function(d) {      
+      //Create the tooltip label
+      var tooltip = d3.select(this.parentNode).append("g");
+      tooltip
+        .attr("id","tooltip")
+       tooltip.append("text")
+        .attr("transform","scale(1,-1)")
+        .attr("x",100)
+        .attr("y",-600)
+        .attr("text-anchor","start")
+        .attr("stroke","gray")
+        .attr("fill","gray")      
+        .attr("fill-opacity",1)
+        .attr("opacity",1)
+        .text(d.value.countryalias + ":");       
+      tooltip.append("text")
+        .attr("transform","scale(1,-1)")
+        .attr("x",100)
+        .attr("y",-580)
+        .attr("text-anchor","start")
+        .attr("stroke","gray")
+        .attr("fill","gray")
+        .attr("fill-opacity",1)
+        .attr("opacity",1)
+        .text("kv: " + d.value.femmort.replace(".",","));
+      tooltip.append("text")
+        .attr("transform","scale(1,-1)")
+        .attr("x",100)
+        .attr("y",-560)
+        .attr("text-anchor","start")
+        .attr("stroke","gray")
+        .attr("fill","gray")      
+        .attr("fill-opacity",1)
+        .attr("opacity",1)
+        .text("m: " + d.value.malemort.replace(".",","));
+    })              
+    .on("mouseout", function(d) {       
+        d3.select("#tooltip").remove();  
+    });'
+   return(sprintf('%s\n%s\n<script>\n%s\n%s\n%s\n%s\n</script>\n</svg>',notice,d3.script,dataarr.script,datamap.script,databind.script,tool.script))
+
+}
 
 ctriesyr.plot<-function(cause,compyear,ageorig,type)
 {
@@ -111,12 +175,13 @@ ctriesyr.plot<-function(cause,compyear,ageorig,type)
 		df<-rbind(df,df.country)
 	}
 	df.sub<-subset(df,Year==compyear)
+	rownames(df.sub)<-NULL
 	comma.lab<-function(x){format(x,decimal.mark=',')}
 
 	if(sex==0)
 	{
 		title<-sprintf('%s %s %s %d',typealias,caalias,agealias,compyear)
-		df.plot<-ggplot(data=df.sub,aes(x=femmort,y=malemort))+xlab(sprintf('%s kvinnor',typealias))+ylab(sprintf('%s män',typealias))+scale_x_continuous(label=comma.lab)+scale_y_continuous(label=comma.lab)+ggtitle(title)+geom_point(shape=1)+geom_text(aes(label=countryalias),size=3.5,alpha=1/2)
+		df.plot<-ggplot(data=df.sub,aes(x=femmort,y=malemort))+xlab(sprintf('%s kvinnor',typealias))+ylab(sprintf('%s män',typealias))+scale_x_continuous(label=comma.lab)+scale_y_continuous(label=comma.lab)+ggtitle(title)+geom_text(aes(label=countryalias),size=3.5,alpha=1/2)+geom_point(alpha=1/4,size=4)
 	}
 	else
 	{

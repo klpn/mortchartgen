@@ -40,7 +40,6 @@ def propplot(country,countryval,cause,causeval,age,ageval,icdlist):
 def propiter(country,countryval,causes,ages,sexes,save_csv=True):
     startyear=countryval['startyear']
     endyear=countryval['endyear']
-    #sexalias={0:'båda',1:'män',2:'kvinnor'}
     femalias=sexes[2]['alias']
     malealias=sexes[1]['alias']
 

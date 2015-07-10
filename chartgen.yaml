@@ -142,6 +142,10 @@ causes:
                 sex: 0
                 skip: [Pop38mean]
                 alias: magsäckscancer 
+        panc:
+                sex: 0
+                skip: [Pop38mean]
+                alias: pankreascancer 
         bc:
                 sex: 2
                 skip: [Pop38mean]
@@ -237,3 +241,11 @@ ages:
         Pop2325sum:
                 ptype: perc 
                 alias: "85\u2013"
+
+sexes:
+        0:
+                alias: "båda"
+        1:
+                alias: "män"
+        2:
+                alias: "kvinnor"

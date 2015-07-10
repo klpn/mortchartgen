@@ -17,7 +17,7 @@ def batchplot():
 
     for country,countryval in combs['countries'].items():
         start_time = time.time()
-        propiter(country,countryval,combs['causes'],combs['ages'],combs['settings']['savecsv'])
+        propiter(country,countryval,combs['causes'],combs['ages'],combs['sexes'],combs['settings']['savecsv'])
         print(str(country) +': '+str(time.time() - start_time)+' sekunder')
 
 def propplot(country,countryval,cause,causeval,age,ageval,icdlist):
@@ -37,10 +37,13 @@ def propplot(country,countryval,cause,causeval,age,ageval,icdlist):
     plt.savefig('site/charts/'+cause+str(country)+ptype+str(causeval['sex'])+age+'.svg')
     plt.close()
 
-def propiter(country,countryval,causes,ages,save_csv=True):
+def propiter(country,countryval,causes,ages,sexes,save_csv=True):
     startyear=countryval['startyear']
     endyear=countryval['endyear']
-    sexalias={0:'båda',1:'män',2:'kvinnor'}
+    #sexalias={0:'båda',1:'män',2:'kvinnor'}
+    femalias=sexes[2]['alias']
+    malealias=sexes[1]['alias']
+
     if 'ctry_extrasql' in countryval:
         ctry_extrasql=countryval['ctry_extrasql']
     else:
@@ -63,9 +66,9 @@ def propiter(country,countryval,causes,ages,save_csv=True):
             for age,ageval in ages.items():
                 if 'skip' not in causeval or age not in causeval['skip']:
                     if ageval['ptype']=='rate':
-                        causerate[age].plot(label=sexalias[causeval['sex']])
+                        causerate[age].plot(label=sexes[causeval['sex']]['alias'])
                     elif ageval['ptype']=='perc':
-                        causeperc[age].plot(label=sexalias[causeval['sex']])
+                        causeperc[age].plot(label=sexes[causeval['sex']]['alias'])
                     propplot(country,countryval,cause,causeval,age,ageval,countrydall_fem['List'])
 
         elif causeval['sex']==0:
@@ -83,11 +86,11 @@ def propiter(country,countryval,causes,ages,save_csv=True):
                 if 'skip' not in causeval or age not in causeval['skip']:
                     if (ageval['ptype']=='rate') or (cause!='all'):
                         if ageval['ptype']=='rate':
-                            causerate_fem[age].plot(label=sexalias[2])
-                            causerate_male[age].plot(label=sexalias[1])
+                            causerate_fem[age].plot(label=femalias)
+                            causerate_male[age].plot(label=malealias)
                         elif ageval['ptype']=='perc':
-                            causeperc_fem[age].plot(label=sexalias[2]) 
-                            causeperc_male[age].plot(label=sexalias[1])    
+                            causeperc_fem[age].plot(label=femalias) 
+                            causeperc_male[age].plot(label=malealias)    
                         propplot(country,countryval,cause,causeval,age,ageval,countrydall_fem['List'])
 
         if save_csv:
@@ -133,6 +136,7 @@ def build_query(sex,country,startyear,endyear,qtype,ctry_extrasql='',cause='all'
                 'tum':{'07A':'A0(4[4-9]|5|60)','08A':'A0(4[5-9]|5|6[0-1])','09B':'B(0[8-9]$|1[0-7]$)','101':'1026','10':'(C|D[0-4])'},
                 'sc':{'07A':'A046','08A':'A047','09B':'B091','101':'1029','10':'C16'},
                 'bc':{'07A':'A051','08A':'A054','09B':'B113','101':'1036','10':'C50'},
+                'panc':{'07A':'157','08A':'157','09B':'B096','101':'1032','10':'C25'},
                 'femc':{'07A':'A05[2-3]|17[5-6]','08A':'18[0-4]$','09B':'B12[0-3]|184','101':'103[7-9]','10':'C5[1-8]'},
                 'malec':{'07A':'A054|17[8-9]$','08A':'A057|18[6-7]$','09B':'B12[4-5]|187$','101':'1040','10':'C6[0-3]'},
                 'pc':{'07A':'A054','08A':'A057','09B':'B124','101':'1040','10':'C61'},

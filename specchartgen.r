@@ -5,6 +5,20 @@ library(XML)
 library(gridSVG)
 library(rjson)
 
+sexratio.trends.plot<-function(country,cause,sex1,sex2,startyear,endyear,startage,endage,type,ageformat)
+{
+	conf<-yaml.load_file('chartgen.yaml')
+	sex1alias<-conf[['sexes']][[sex1]][['alias']]
+	sex2alias<-conf[['sexes']][[sex2]][['alias']]
+	sex1<-agetrends.plot(country,cause,sex1,startyear,endyear,startage,endage,type,ageformat)
+	sex2<-agetrends.plot(country,cause,sex2,startyear,endyear,startage,endage,type,ageformat)
+	title<-gsub(sex1alias,sprintf('%s/%s',sex1alias,sex2alias),sex1$labels$title)
+	df<-sex1$data
+	df$ratio<-sex1$data$mort/sex2$data$mort
+	df.plot<-ggplot(data=df,aes(x=Year,y=ratio,group=agealias,colour=agealias))+xlab('År')+ylab('Kvot')+ggtitle(title)+geom_point()+geom_smooth()+scale_colour_discrete(name='Åldersgrupp')+theme(axis.text.x=element_text(angle=45))
+	return(df.plot)
+}
+
 
 agetrends.plot<-function(country,cause,sex,startyear,endyear,startage,endage,type,ageformat)
 {
@@ -13,17 +27,16 @@ agetrends.plot<-function(country,cause,sex,startyear,endyear,startage,endage,typ
 	df<-read.csv(csvname,header=TRUE)
 	caalias<-conf[['causes']][[cause]][['alias']]
 	ctryalias<-conf[['countries']][[sprintf('%d',country)]][['alias']]
+	sexalias<-conf[['sexes']][[sex]][['alias']]
 	age<-c(seq(5,95,by=5),85)
 	agealias<-sprintf('%d\u2013%s',age,c(seq(9,94,by=5),'w','w'))
 	ageorig<-sprintf('Pop%s',c(seq(7,25),'2325sum'))
 	ages<-data.frame(age,agealias,ageorig)
 
-	if(sex==1) sexalias<-'män'
-	else if(sex==2) sexalias<-'kvinnor'
 	if(type=='rate')
 	{
 	       	typealias<-'Dödstal'
-	       	yl<-'log(dödstal)'
+		yl<-'log(dödstal)'
 		yfunc<-quote(log(mort))
 	}
 	if(type=='perc')
@@ -41,7 +54,7 @@ agetrends.plot<-function(country,cause,sex,startyear,endyear,startage,endage,typ
 	df.long.sub<-subset(df.long,Year>=startyear & Year<=endyear & age %in% seq(startage,endage,by=5))
 	env<-environment()
 
-	df.plot<-ggplot(data=df.long.sub,aes(x=Year,eval(yfunc),group=agealias,colour=agealias),environment=env)+xlab('År')+ylab(yl)+ggtitle(title)+geom_point()+geom_line()+scale_colour_discrete(name='Åldersgrupp')+theme(axis.text.x=element_text(angle=45))
+	df.plot<-ggplot(data=df.long.sub,aes(x=Year,y=eval(yfunc),group=agealias,colour=agealias),environment=env)+xlab('År')+ylab(yl)+ggtitle(title)+geom_point()+geom_smooth()+scale_colour_discrete(name='Åldersgrupp')+theme(axis.text.x=element_text(angle=45))
 
 	return(df.plot)
 }

@@ -28,6 +28,15 @@ $(document).ready(function(){
 					$(this).attr('disabled',false);
 				}
 		})
+		$('#compyrSel > option').each(function(){
+				if(cause.hasOwnProperty('skipyrs') && $.inArray(parseInt($(this).val()),cause.skipyrs)>-1){
+					$(this).attr('disabled',true);
+					$(this).attr('selected',false);
+				}
+				else {
+					$(this).attr('disabled',false);
+				}
+		})
 		
 	})
 	$('#ptypeSel').change(function(){

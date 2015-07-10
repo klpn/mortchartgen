@@ -4,27 +4,27 @@
 	<meta charset='utf-8' />
 	<style>body {background-color:LightGreen;}</style>
 	<script src='//code.jquery.com/jquery-1.11.1.min.js'></script>
-	<script src='chartchoice.js?version=0.121'></script>
+	<script src='chartchoice.js?version=0.122'></script>
 	<title>Mortalitetsdiagram</title>
 	<link rel='icon' type='image/png' href='mortchartico.png' />
 </head>
 <body>
 	<h1>Mortalitetsdiagram</h1>
 	<p>Kombinera parametrar och välj sedan <em>Visa diagram</em>. För total dödlighet visas alltid dödstal. För specifika dödsorsaksgrupper finns möjlighet att välja att visa trender för dödstal eller andel av den totala dödligheten.</p>
-	<p>I punktdiagrammen med kvinnors vs mäns utfall (vid val av <em>Årsjämförelse av befolkningar</em> för dödsorsaker som visas för både kvinnor och män) visas för läsbarhetens skull landskoder enligt ISO 3166-2. För muspekaren över en punkt för att visa fullständiga namn på aktuell befolkning tillsammans med utfallsmått.</p>
+	<p>I punktdiagrammen med kvinnors vs mäns utfall (vid val av <em>Årsjämförelse av befolkningar</em> för dödsorsaker som visas för både kvinnor och män) visas för läsbarhetens skull landskoder enligt ISO 3166-2. För muspekaren över en punkt för att visa fullständigt namn på aktuell befolkning tillsammans med utfallsmått.</p>
 	<form name='chartParams'>
 		Typ av översikt: <select id='charttypeSel'>
 			<option value='trend'>Tidstrend i befolkning</option>
 			<option value='comp'>Årsjämförelse av befolkningar</option>
 		</select>
 		<span id='compyrSp' style='display:none;'>År: <select id='compyrSel'>
-				<option>1952</option>
-				<option>1962</option>
-				<option>1972</option>
-				<option>1982</option>
-				<option>1992</option>
-				<option>2002</option>
-				<option>2012</option>
+				<option value='1952'>1952</option>
+				<option value='1962'>1962</option>
+				<option value='1972'>1972</option>
+				<option value='1982'>1982</option>
+				<option value='1992'>1992</option>
+				<option value='2002'>2002</option>
+				<option value='2012'>2012</option>
 			</select></span>
 			
 		<span id='popSp'>Befolkning: <select id='popSel'>
@@ -66,6 +66,7 @@
 			<optgroup label='Tumörer'>
 				<option value='{"name":"tum","sex":"0"}'>Tumörer generellt</option>
 				<option value='{"name":"sc","sex":"0","skip":["Pop38mean"]}'>Magsäckscancer</option>
+				<option value='{"name":"panc","sex":"0","skip":["Pop38mean"],"skipyrs":[1952]}'>Pankreascancer</option>
 				<option value='{"name":"lc","sex":"0","skip":["Pop38mean"]}'>Lungcancer</option>
 				<option value='{"name":"bc","sex":"2","skip":["Pop38mean"]}'>Bröstcancer</option>
 				<option value='{"name":"pc","sex":"1","skip":["Pop38mean","Pop914mean"]}'>Prostatacancer</option>

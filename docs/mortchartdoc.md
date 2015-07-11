@@ -15,7 +15,7 @@ Det finns sedan tidigare flera webbplatser med visualiseringar av mortalitetstre
 Föreliggande sida är gjord för att snabbt och enkelt ta fram relevanta visualiseringar av mortalitetstrender från mitten av 1900-talet fram till våra dagar. Den innehåller ingen kod som körs på serversidan med kopplingar till några databaser. Alla diagram över tidstrender är färdiga SVG-filer, som jag genererat lokalt med hjälp av ett Pythonskript, som använder sig av matplotlib (@Hunter:2007). Gränssnittet för val av diagram bygger på jQuery. Skriptet har nu möjlighet att exportera de datatabeller som skapas till CSV-filer för användning i andra program. På detta sätt har diagram för årsjämförelse av dödstal eller andel dödsfall mellan befolkningar skapats med hjälp av R [@rproj] och ggplot2 [@wickham09]. 
 
 #Mått på dödlighet
-*Dödstal* är ett grundläggande mått på dödlighet. Dödstalet i en orsak $c$ i en befolkning $x$ under en tidsperiod t, $m_{c,t}(x)$, beräknas enligt $m_{c,t}(x)=n_{c,t}(x)/p_t(x)$, där $n_{c,t}$ är antalet dödsfall i $c$ under $t$ och $p_t(x)$ är medelfolkmängden i $x$ under $t$. Om $x$ utgör ett brett åldersintervall kommer dödstalen i olika orsaker ofta att påverkas av trender i åldersfördelningen. Stigande medelålder hos befolkningen ger ofta ökade dödstal i åldersrelaterade sjukdomsgrupper som cancer, hjärtsjukdomar och demens. @whomort tillhandahåller data över folkmängd och antal dödsfall i 5-åriga åldersintervall, med vilka det är möjligt att beräkna dödstal som inte är så känsliga för dessa trender, och därför ger ett bättre mått på direkta effekter av sådant som sjukvård och miljöfaktorer på dödlighet. Dödstal i snäva åldersintervall drabbas dock ofta av slumpmässiga förändringar i mindre befolkningar. På denna sida redovisas ovägda medelvärden av åldersspecifika dödstal i de 5-årsintervall som ingår i bredare åldersintervall (för närvarande 15--44, 45--64, 65--74 och 75--84 år).
+*Dödstal* är ett grundläggande mått på dödlighet. Dödstalet i en orsak $c$ i en befolkning $x$ under en tidsperiod $t$, $m_{c,t}(x)$, beräknas enligt $m_{c,t}(x)=n_{c,t}(x)/p_t(x)$, där $n_{c,t}$ är antalet dödsfall i $c$ under $t$ och $p_t(x)$ är medelfolkmängden i $x$ under $t$. Om $x$ utgör ett brett åldersintervall kommer dödstalen i olika orsaker ofta att påverkas av trender i åldersfördelningen. Stigande medelålder hos befolkningen ger ofta ökade dödstal i åldersrelaterade sjukdomsgrupper som cancer, hjärtsjukdomar och demens. @whomort tillhandahåller data över folkmängd och antal dödsfall i 5-åriga åldersintervall, med vilka det är möjligt att beräkna dödstal som inte är så känsliga för dessa trender, och därför ger ett bättre mått på direkta effekter av sådant som sjukvård och miljöfaktorer på dödlighet. Dödstal i snäva åldersintervall drabbas dock ofta av slumpmässiga förändringar i mindre befolkningar. På denna sida redovisas ovägda medelvärden av åldersspecifika dödstal i de 5-årsintervall som ingår i bredare åldersintervall (för närvarande 15--44, 45--64, 65--74 och 75--84 år). Dessutom redovisas andelen dödsfall i alla åldrar och för åldersgrupperna under och över 85 år (vilket kan användas för att bedöma om trender för andelar i hela befolkningen är relaterade till trender i de högsta åldersgrupperna, vars tolkning kan vara vansklig).
 
 Tillgängliga data utgår från en binär könskategorisering. För de flesta dödsorsaker varierar dödstalen signifikant mellan kvinnor och män (och även tidstrenderna divergerar ofta, t.ex.\ när det gäller ischemisk hjärtsjukdom och lungcancer), och alla diagram redovisar därför könsspecifika trender.
 
@@ -43,7 +43,7 @@ Luftvägsinfektioner
 :    ICD-6/7: 470--500; ICD-8: 460--486; ICD-9: 460--466, 480--487; ICD-10: J00--J22,  *Inkluderar influensa, lunginflammation och andra luftvägsinfektioner (ej tuberkulos). Ofta känslig för konstlade trender när det gäller rapportering av dessa som underliggande dödsorsak.*
 
 Magtarminfektioner 
-:    ICD-6/7: 040--043, 045--048, 571, 572; ICD-8: 000--003, 004, 006, 008, 009; ICD-9: 001--009; ICD-10: A00--A09  *Inkluderar olika typer av infektioner i magtarmkanalen.*
+:    ICD-6/7: 040--043, 045--048, 571, 572; ICD-8: 000--003, 004, 006, 008, 009; ICD-9: 001--009; ICD-10: A00--A09  *Inkluderar olika typer av infektioner i magtarmkanalen. Kategorin är känslig för konstlade trender genom att dessa tillstånd ibland förts till vissa kategorier i kapitlet för sjukdomar i matsmältningsorganen (och WHO:s kondenserade listor kan inte användas för att skilja ut dessa).*
 
 Allmänna bakterieinfektioner
 :    ICD-6/7: 044, 050--053, 055--058, 060--062, 340, 600; ICD-8: 005, 007, 020--039, 320, 590; ICD-9: 020--041, 320--322, 590; ICD-10: A20--A49, G00, G03, N10--N12 *Inkluderar sepsis och andra bakteriella infektioner i inledningskapitlet i ICD-versionerna som inte ingår i ovanstående kategorier, meningit och njurinfektioner.*
@@ -60,11 +60,15 @@ Magsäckscancer
 Lungcancer
 :    ICD-6/7: 162--163; ICD-8/9: 162; ICD-10: C33--C34 *Inkluderar cancer i luftstrupe och bronk.*
 
+Pankreascancer
+:    ICD-6/7/8/9: 157; ICD-10: C25 *Inkluderar cancer i bukspottskörteln.*
+
 Bröstcancer
 :    ICD-6/7: 170; ICD-8/9: 174; ICD-10: C50
 
 Prostatacancer
 :    ICD-6/7: 177; ICD-8/9: 185; ICD-10: C61 *Inkluderar inte åldersgrupper under 45 år på grund av alltför få fall.*
+
 Diabetes
 :    ICD-6/7: 260; ICD-8/9: 250; ICD-10: E10--E14 *Diabetes mellitus (typ 1 eller typ 2). Benägenheten att rapportera diabetes snarare än komplikationer (t.ex. ischemisk hjärtsjukdom) som underliggande dödsorsak varierar ofta mellan befolkningar och tidsperioder.*
 
@@ -78,7 +82,7 @@ Ischemisk hjärtsjukdom
 :    ICD-6/7: 420--422; ICD-8/9: 410--414; ICD-10: I20--I25 *Inkluderar hjärtinfarkt och andra tillstånd som beror på otillräcklig syreförsörjning av hjärtmuskel. "Kranskärlssjukdom" används ofta som mer eller mindre synonymt uttryck. Den engelska förkortningen IHD ("ischemic heart disease") är också vanlig. Observera att begreppet inte finns i klassifikationer för ICD-8: den närmaste motsvarande kategorin i ICD-6/7, som kan tas fram utifrån de kategorier som finns tillgängliga via @whomort, är "arteriosklerotiska och degenerativa hjärtsjukdomar". För vissa befolkningar (t.ex.\ Italien och Japan) uppstår då tydliga konstlade trender vid övergången till ICD-8.*
 
 Slaganfall
-:    ICD-6/7: 330--334; ICD-8/9: 430--438; ICD-10: F01; I60--I69 *Inkluderar hjärnblödning, hjärninfarkt och andra sjukdomar i hjärnans blodkärl. För ICD-10 inkluderas även vaskulär demens.*
+:    ICD-6/7: 330--334; ICD-8/9: 430--438; ICD-10: F01, I60--I69 *Inkluderar hjärnblödning, hjärninfarkt och andra sjukdomar i hjärnans blodkärl. För ICD-10 inkluderas även vaskulär demens.*
 
 Övrig artärsjukdom
 :    ICD-6/7: 450--456; ICD-8/9: 440--448; ICD-10: I70--I79 *Inkluderar artärsjukdomar som inte ingår i de båda ovanstående grupperna (ateroskleros utanför hjärtat eller hjärnan eller i ospecificerade delar av artärsystemet, aortabråck etc.). Inkluderar inte högt blodtryck.*
@@ -97,6 +101,7 @@ Illa definierade orsaker
 
 Yttre orsaker
 :    ICD-6/7/8/9: E800--E999; ICD-10: V01--Y89 *Inkluderar olyckor, självmord, mord, legala ingripanden och även komplikationer i samband med vård (även om bakomliggande sjukdomar då ofta rapporteras som underliggande dödsorsak).*
+
 Transportolyckor
 :    ICD-6/7: E800--E866; ICD-8: E800--E845; ICD-9: E800--E848; ICD-10: V01--V99 *Inkluderar motorfordonsolyckor och andra typer av transportolyckor.*
 

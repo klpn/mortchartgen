@@ -28,7 +28,13 @@ def propplot(country,countryval,cause,causeval,age,ageval,icdlist):
     plt.title(ptypealias[ptype]+' '+causeval['alias']+' '+countryval['alias']+' '+str(countryval['startyear'])+'\u2013'+str(countryval['endyear']),y=1.02)
     plt.xlabel('År')
     plt.ticklabel_format(scilimits=(-4,0),axis='y')
-    plt.ylabel(ptypealias[ptype]+' '+ageval['alias'])
+
+    if 'note' in ageval:
+        agenote=' ('+ageval['note']+')'
+    else:
+        agenote=''
+
+    plt.ylabel(ptypealias[ptype]+' '+ageval['alias']+agenote)
 
     for index,value in icdlist.iteritems(): 
         if index==countryval['startyear'] or (index-1 in icdlist and value != icdlist.loc[index-1]):

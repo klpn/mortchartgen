@@ -19,15 +19,7 @@ $(document).ready(function(){
 		else {
 			$('#ptypeSp').show();
 		}
-		$('#ageSel > option').each(function(){
-				if(cause.hasOwnProperty('skip') && $.inArray($(this).val(),cause.skip)>-1){
-					$(this).attr('disabled',true);
-					$(this).attr('selected',false);
-				}
-				else {
-					$(this).attr('disabled',false);
-				}
-		})
+		agesUpdate();		
 		$('#compyrSel > option').each(function(){
 				if(cause.hasOwnProperty('skipyrs') && $.inArray(parseInt($(this).val()),cause.skipyrs)>-1){
 					$(this).attr('disabled',true);
@@ -40,37 +32,49 @@ $(document).ready(function(){
 		
 	})
 	$('#ptypeSel').change(function(){
-		var ptype=$('#ptypeSel').val();
-		$('#ageSel').empty();
-		if (ptype=='rate') {
-			$('#ageSel')
-				.append("<option value='Pop914mean'>15&ndash;44</option>")
-				.append("<option value='Pop1518mean'>45&ndash;64</option>")
-				.append("<option value='Pop1920mean'>65&ndash;74</option>")
-				.append("<option value='Pop2122mean'>75&ndash;84</option>")
-			;}
-		else if (ptype=='perc'){
-			$('#ageSel')
-				.append("<option value='Pop1'>Alla åldrar</option>")
-				.append("<option value='Pop222sum'>0&ndash;84</option>")
-				.append("<option value='Pop2325sum'>85&ndash;</option>")
-			;}
-		$('#causeSel').change();
+
+	agesUpdate();	
 
 	})
+
+	function agesUpdate(){
+		var ptype=$('#ptypeSel').val();
+		var cause=jQuery.parseJSON($('#causeSel').val());
+		var skipage;	
+		var firstenabled;	
+		$('#ageSel > option').each(function(){
+			var age=jQuery.parseJSON($(this).val());
+			if((cause.hasOwnProperty('skip') && $.inArray(age.name,cause.skip)>-1) || age.ptype!=ptype)
+				skipage=true;
+			else	
+				skipage=false;
+			if(skipage){
+					$(this).attr('disabled',true);
+					$(this).attr('selected',false);
+			}
+			else {
+					$(this).attr('disabled',false);
+					if(firstenabled==null) firstenabled=$(this).val();
+			}
+		})
+		if($('#ageSel option:selected').val()==null) $('#ageSel').val(firstenabled);
+	}
+			
+
 	$('#showChart').click(function(){
 		var charttype=$('#charttypeSel').val();
 		var pop=jQuery.parseJSON($('#popSel').val());
 		var cause=jQuery.parseJSON($('#causeSel').val());
-		var age=$('#ageSel').val();
+		var age=jQuery.parseJSON($('#ageSel').val());
 		var ptype=$('#ptypeSel').val();
 		var compyr=$('#compyrSel').val();
 		if (charttype=='trend') {
-			var chartPath='charts/'+cause.name+pop.name+ptype+cause.sex+age+'.svg';
+			var chartPath='charts/'+cause.name+pop.name+age.ptype+cause.sex+age.name+'.svg';
 		}
 		else {
-			var chartPath='charts/ctriesyr/'+cause.name+ptype+age+'comp'+compyr+'.svg';
+			var chartPath='charts/ctriesyr/'+cause.name+age.ptype+age.name+'comp'+compyr+'.svg';
 		}
 		$('#chart').attr('data',chartPath);
 	})
+	agesUpdate();
 })

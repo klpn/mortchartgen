@@ -3,8 +3,8 @@
 <head>
 	<meta charset='utf-8' />
 	<link rel="stylesheet" href="mortchartdoc.css" type="text/css" />
-	<script src='//code.jquery.com/jquery-1.11.1.min.js'></script>
-	<script src='chartchoice.js?version=0.122'></script>
+	<script src='https://code.jquery.com/jquery-1.11.1.min.js'></script>
+	<script src='chartchoice.js?version=0.13'></script>
 	<title>Mortalitetsdiagram</title>
 	<link rel='icon' type='image/png' href='mortchartico.png' />
 </head>
@@ -26,69 +26,90 @@
 				<option value='2002'>2002</option>
 				<option value='2012'>2012</option>
 			</select></span>
-			
 		<span id='popSp'>Befolkning: <select id='popSel'>
-			<option value='{"name":"4290"}'>Sverige</option>
-			<option value='{"name":"5020"}'>Australien</option>
-			<option value='{"name":"4020"}'>Belgien</option>
-			<option value='{"name":"4050"}'>Danmark</option>
-			<option value='{"name":"4310"}'>England/Wales</option>
-			<option value='{"name":"4070"}'>Finland</option>
-			<option value='{"name":"4080"}'>Frankrike</option>
-			<option value='{"name":"4140"}'>Grekland</option>
-			<option value='{"name":"4170"}'>Irland</option>
-			<option value='{"name":"3150"}'>Israel</option>
-			<option value='{"name":"4180"}'>Italien</option>
-			<option value='{"name":"3160"}'>Japan</option>
-			<option value='{"name":"2090"}'>Kanada</option>
-			<option value='{"name":"4210"}'>Nederländerna</option>
-			<option value='{"name":"4320"}'>Nordirland</option>
-			<option value='{"name":"4220"}'>Norge</option>
-			<option value='{"name":"5150"}'>Nya Zeeland</option>
-			<option value='{"name":"4240"}'>Portugal</option>
-			<option value='{"name":"4300"}'>Schweiz</option>
-			<option value='{"name":"4330"}'>Skottland</option>
-			<option value='{"name":"4280"}'>Spanien</option>
-			<option value='{"name":"4085"}'>Tyskland</option>
-			<option value='{"name":"2450"}'>USA</option>
-			<option value='{"name":"4010"}'>Österrike</option>
+				<option value='{"name":"4290"}'>Sverige</option>
+				<option value='{"name":"5020"}'>Australien</option>
+				<option value='{"name":"4020"}'>Belgien</option>
+				<option value='{"name":"4050"}'>Danmark</option>
+				<option value='{"name":"4310"}'>England/Wales</option>
+				<option value='{"name":"4070"}'>Finland</option>
+				<option value='{"name":"4080"}'>Frankrike</option>
+				<option value='{"name":"4140"}'>Grekland</option>
+				<option value='{"name":"4170"}'>Irland</option>
+				<option value='{"name":"3150"}'>Israel</option>
+				<option value='{"name":"4180"}'>Italien</option>
+				<option value='{"name":"3160"}'>Japan</option>
+				<option value='{"name":"2090"}'>Kanada</option>
+				<option value='{"name":"4210"}'>Nederländerna</option>
+				<option value='{"name":"4320"}'>Nordirland</option>
+				<option value='{"name":"4220"}'>Norge</option>
+				<option value='{"name":"5150"}'>Nya Zeeland</option>
+				<option value='{"name":"4240"}'>Portugal</option>
+				<option value='{"name":"4300"}'>Schweiz</option>
+				<option value='{"name":"4330"}'>Skottland</option>
+				<option value='{"name":"4280"}'>Spanien</option>
+				<option value='{"name":"4085"}'>Tyskland</option>
+				<option value='{"name":"2450"}'>USA</option>
+				<option value='{"name":"4010"}'>Österrike</option>
 		</select></span>
 		Orsak: <select id='causeSel'>
-			<option value='{"name":"all","sex":"0"}'>Totalt</option>
+			
+			
+			
+				<option value='{"name":"all","sex":"0"}'>Totalt</option>
+			
+			
+			
 			<optgroup label='Infektioner'>
-				<option value='{"name":"tb","sex":"0"}'>Tuberkulos</option>
+				<option value='{"name":"genbact","sex":"0"}'>Allmänna bakterieinfektioner</option>
 				<option value='{"name":"stihiv","sex":"0"}'>Könssjukdomar/HIV</option>
 				<option value='{"name":"lfinf","sex":"0"}'>Luftvägsinfektioner</option>
 				<option value='{"name":"gastrinf","sex":"0"}'>Magtarminfektioner</option>
-				<option value='{"name":"genbact","sex":"0"}'>Allmänna bakterieinfektioner</option>
+				<option value='{"name":"tb","sex":"0"}'>Tuberkulos</option>
 				<option value='{"name":"infrest","sex":"0"}'>Övriga infektioner</option>
 			</optgroup>
+			
+			
+			
 			<optgroup label='Tumörer'>
 				<option value='{"name":"tum","sex":"0"}'>Tumörer generellt</option>
+				<option value='{"name":"bc","sex":"2","skip":["Pop38mean"]}'>Bröstcancer</option>
+				<option value='{"name":"lc","sex":"0","skip":["Pop38mean"]}'>Lungcancer</option>
 				<option value='{"name":"sc","sex":"0","skip":["Pop38mean"]}'>Magsäckscancer</option>
 				<option value='{"name":"panc","sex":"0","skip":["Pop38mean"],"skipyrs":[1952]}'>Pankreascancer</option>
-				<option value='{"name":"lc","sex":"0","skip":["Pop38mean"]}'>Lungcancer</option>
-				<option value='{"name":"bc","sex":"2","skip":["Pop38mean"]}'>Bröstcancer</option>
-				<option value='{"name":"pc","sex":"1","skip":["Pop38mean","Pop914mean"]}'>Prostatacancer</option>
+				<option value='{"name":"pc","sex":"1","skip":["Pop38mean", "Pop914mean"]}'>Prostatacancer</option>
 			</optgroup>
-			<option value='{"name":"diab","sex":"0"}'>Diabetes</option>
+			
+			
+			
 			<optgroup label='Cirkulation'>
-				<option value='{"name":"circ","sex":"0"}'>Cirkulation generellt</option>
-				<option value='{"name":"hd","sex":"0"}'>Hjärtsjukdom generellt</option>
-				<option value='{"name":"ihd","sex":"0","skip":["Pop38mean"]}'>Ischemisk hjärtsjukdom (IHD)</option>
+				<option value='{"name":"circ","sex":"0"}'>Cirkulationsorgan generellt</option>
+				<option value='{"name":"othath","sex":"0","skip":["Pop38mean"]}'>Artärsjukdom utom IHD/slaganfall</option>
+				<option value='{"name":"circnonath","sex":"0","skip":["Pop38mean"]}'>Cirkulationsorgan icke ateroskleros</option>
+				<option value='{"name":"circnonihd","sex":"0","skip":["Pop38mean"]}'>Cirkulationsorgan utom IHD</option>
+				<option value='{"name":"hd","sex":"0"}'>Hjärtsjukdom</option>
+				<option value='{"name":"ihd","sex":"0","skip":["Pop38mean"]}'>Ischemisk hjärtsjukdom</option>
 				<option value='{"name":"str","sex":"0","skip":["Pop38mean"]}'>Slaganfall</option>
-				<option value='{"name":"othath","sex":"0","skip":["Pop38mean"]}'>Övrig artärsjukdom</option>
-				<option value='{"name":"circnonihd","sex":"0","skip":["Pop38mean"]}'>Cirkulation utom IHD</option>
-				<option value='{"name":"circnonath","sex":"0","skip":["Pop38mean"]}'>Cirkulation &rdquo;icke ateroskleros&rdquo;</option>
 			</optgroup>
-			<option value='{"name":"chresp","sex":"0","skip":["Pop38mean"]}'>Kronisk lungsjukdom</option>
-			<option value='{"name":"illdef","sex":"0"}'>Illa definierade orsaker</option>
+			
+			
+			
+			<optgroup label='Övriga'>
+				<option value='{"name":"diab","sex":"0"}'>Diabetes</option>
+				<option value='{"name":"illdef","sex":"0"}'>Illa definierade orsaker</option>
+				<option value='{"name":"chresp","sex":"0","skip":["Pop38mean"]}'>Kronisk lungsjukdom</option>
+			</optgroup>
+			
+			
+			
 			<optgroup label='Yttre orsaker'>
 				<option value='{"name":"ext","sex":"0"}'>Yttre orsaker generellt</option>
-				<option value='{"name":"tracc","sex":"0"}'>Transportolyckor</option>
 				<option value='{"name":"fallacc","sex":"0"}'>Fallolyckor</option>
 				<option value='{"name":"sui","sex":"0"}'>Självmord</option>
+				<option value='{"name":"tracc","sex":"0"}'>Transportolyckor</option>
 			</optgroup>
+			
+			
 		</select>
 		<span id='ptypeSp' style='display:none;'>Mått: <select id='ptypeSel'>
 			<option value='rate'>Dödstal</option>
@@ -96,10 +117,13 @@
 			</select>
 		</span>
 		Åldersgrupp: <select id='ageSel'>
-			<option value='Pop914mean'>15&ndash;44</option>
-			<option value='Pop1518mean'>45&ndash;64</option>
-			<option value='Pop1920mean'>65&ndash;74</option>
-			<option value='Pop2122mean'>75&ndash;84</option>
+				<option value='{"name":"Pop1","ptype":"perc"}'>Alla åldrar</option>
+				<option value='{"name":"Pop222sum","ptype":"perc"}'>0–84</option>
+				<option value='{"name":"Pop2325sum","ptype":"perc"}'>85–</option>
+				<option value='{"name":"Pop914mean","ptype":"rate"}'>15–44</option>
+				<option value='{"name":"Pop1518mean","ptype":"rate"}'>45–64</option>
+				<option value='{"name":"Pop1920mean","ptype":"rate"}'>65–74</option>
+				<option value='{"name":"Pop2122mean","ptype":"rate"}'>75–84</option>
 		</select>
 		<input type='button' id='showChart' value='Visa diagram' />
 	</form>

@@ -26,6 +26,6 @@ for i in causes_sorted:
     i['alias']=alias_cap
 
 env=Environment(loader=FileSystemLoader('sitetempl'))
-indextempl=env.get_template('index.templ.html')
+indextempl=env.get_template('index.jinja')
 indextempl.stream(compyrseq=list(range(1952,2022,10)),countries=countries_sorted,causes=causes_sorted,ages=ages_sorted,causeclasses=combs['causeclasses']).dump('site/index.html')
 

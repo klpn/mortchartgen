@@ -14,7 +14,7 @@ It is assumed that you have a working Python setup, as well as access to a MySQL
 Call the function `batchplot()` in `chartgen.py` in order to generate the charts. This function is automatically called if `chartgen.py` is invoked from the system shell. The charts are saved as SVG files in the subdirectory `site/charts`. If you want to skip certain countries, age groups or causes of death, comment out the relevant lines in `chartgen.yaml`. Some values in the dictionary `conn_config` in `chartgen.py` may also have to be changed in order for the database connection to work. In particular, you should change `host` and `unix_socket` to suit your MySQL server.
 
 ##Generate the site
-By running `indexgen.py` you can generate `site/index.html` based on the settings in `chartgen.yaml` and the template `sitetempl/index.templ.html` (which uses [Jinja2](https://github.com/mitsuhiko/jinja2)).
+By running `indexgen.py` you can generate `site/index.html` based on the settings in `chartgen.yaml` and the template `sitetempl/index.jinja` (which uses [Jinja2](https://github.com/mitsuhiko/jinja2)).
 
 ##Generate docs
 Run `make pdfbib` in `docs` in order to generate PDF documentation from the Markdown source. This requires a LaTeX distribution as well as [pandoc](https://github.com/jgm/pandoc) (in order to convert Markdown). Run `make html` to generate HTML documentation using pandoc.

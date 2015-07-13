@@ -73,10 +73,11 @@ ctriesyr.batchplot<-function(compyrseq=seq(1952,2012,by=10))
 		for(cause in causenames)
 		{
 			causeconf<-conf[['causes']][[cause]]
+			if(!(year %in% causeconf[['skipyrs']])){
 			for(age in agenames)
 			{
 				
-				if((age %in% causeconf[['skip']])==FALSE)
+				if(!(age %in% causeconf[['skip']]))
 				   {
 					   type<-conf[['ages']][[age]][['ptype']]
 					   if(!(cause=='all' & type=='perc')){
@@ -93,7 +94,7 @@ ctriesyr.batchplot<-function(compyrseq=seq(1952,2012,by=10))
 
 					   }
 				   }
-			}
+			}}
 		}
 	}
 
@@ -158,6 +159,8 @@ ctriesyr.plot<-function(cause,compyear,ageorig,type)
 	sex<-as.numeric(conf[['causes']][[cause]][['sex']])
 	caalias<-conf[['causes']][[cause]][['alias']]
 	agealias<-conf[['ages']][[ageorig]][['alias']]
+	if('note' %in% names(conf[['ages']][[ageorig]])) agealias<-sprintf('%s (%s)',agealias,conf[['ages']][[ageorig]][['note']])
+
 	if(type=='rate') typealias<-'Dödstal'
 	else if(type=='perc') typealias<-'Andel dödsfall'
 	if(sex==1) sexalias<-'män'

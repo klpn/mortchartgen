@@ -253,12 +253,12 @@ causes:
         illdef:
                 sex: 0
                 alias: illa definierade orsaker
-                causeclass: 4 
-                classtot: false 
+                causeclass: 5 
+                classtot: true 
         ext:
                 sex: 0
                 alias: yttre orsaker
-                causeclass: 5 
+                causeclass: 6 
                 classtot: true 
         diab:
                 sex: 0
@@ -284,17 +284,17 @@ causes:
         sui:
                 sex: 0
                 alias: självmord
-                causeclass: 5 
+                causeclass: 6 
                 classtot: false 
         tracc:
                 sex: 0
                 alias: transportolyckor
-                causeclass: 5 
+                causeclass: 6 
                 classtot: false 
         fallacc:
                 sex: 0
                 alias: fallolyckor
-                causeclass: 5 
+                causeclass: 6 
                 classtot: false 
 
 causeclasses:
@@ -311,9 +311,12 @@ causeclasses:
                 alias: Cirkulation
                 makegroup: true 
         4:
-                alias: Övriga 
+                alias: Annat sjukdomsrelaterat 
                 makegroup: true 
         5:
+                alias: Illa definierade orsaker 
+                makegroup: false 
+        6:
                 alias: Yttre orsaker 
                 makegroup: true 
                  

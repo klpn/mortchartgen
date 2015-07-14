@@ -1,364 +1,540 @@
-settings:
-        savecsv: true
-
-countries:
-        4290:
-                alias: Sverige
-                iso3166: SE 
-                startyear: 1951
-                endyear: 2013
-                countryclass: 0 
-        4050:
-                alias: Danmark 
-                iso3166: DK 
-                startyear: 1951
-                endyear: 2011
-                countryclass: 1 
-        4310:
-                alias: England/Wales 
-                iso3166: EAW
-                startyear: 1950
-                endyear: 2012
-                countryclass: 1 
-        4280:
-                alias: Spanien 
-                iso3166: ES
-                startyear: 1951
-                endyear: 2013 
-                countryclass: 1 
-        4140:
-                alias: Grekland 
-                iso3166: GR
-                startyear: 1961
-                endyear: 2012  
-                countryclass: 1 
-        4240:
-                alias: Portugal 
-                iso3166: PT
-                startyear: 1955
-                endyear: 2013  
-                countryclass: 1 
-        4070:
-                alias: Finland
-                iso3166: FI
-                startyear: 1952
-                endyear: 2013
-                countryclass: 1 
-        4080:
-                alias: Frankrike 
-                iso3166: FR
-                startyear: 1952
-                endyear: 2010
-                countryclass: 1 
-        4180:
-                alias: Italien 
-                iso3166: IT
-                startyear: 1951
-                endyear: 2012
-                countryclass: 1 
-        4210:
-                alias: Nederländerna
-                iso3166: NL
-                startyear: 1950
-                endyear: 2013  
-                countryclass: 1 
-        4220:
-                alias: Norge
-                iso3166: "NO"
-                startyear: 1951
-                endyear: 2013  
-                countryclass: 1 
-        3160:
-                alias: Japan
-                iso3166: JP
-                startyear: 1950
-                endyear: 2013
-                countryclass: 1 
-        2450:
-                alias: USA 
-                iso3166: US
-                startyear: 1950
-                endyear: 2007
-                countryclass: 1 
-        5020:
-                alias: Australien 
-                iso3166: AU
-                startyear: 1950
-                endyear: 2011
-                countryclass: 1 
-        5150:
-                alias: Nya Zeeland 
-                iso3166: NZ
-                startyear: 1950
-                endyear: 2011
-                countryclass: 1 
-        2090:
-                alias: Kanada 
-                iso3166: CA
-                startyear: 1950
-                endyear: 2005
-                countryclass: 1 
-        4300:
-                alias: Schweiz 
-                iso3166: CH
-                startyear: 1951
-                endyear: 2012
-                countryclass: 1 
-        4020:
-                alias: Belgien 
-                iso3166: BE
-                startyear: 1954
-                endyear: 2012
-                countryclass: 1 
-        4010:
-                alias: Österrike 
-                iso3166: AT
-                startyear: 1955
-                endyear: 2013
-                countryclass: 1 
-        4170:
-                alias: Irland 
-                iso3166: IE
-                startyear: 1950
-                endyear: 2009
-                countryclass: 1 
-        4320:
-                alias: Nordirland 
-                iso3166: NIR
-                startyear: 1950
-                endyear: 2013
-                countryclass: 1 
-        4330:
-                alias: Skottland 
-                iso3166: SCT
-                startyear: 1950
-                endyear: 2013
-                countryclass: 1 
-        3150:
-                alias: Israel
-                iso3166: IL
-                ctry_extrasql: and (Admin1='' or Year<1975) 
-                startyear: 1957
-                endyear: 2012
-                countryclass: 1 
-        4085:
-                alias: Tyskland 
-                iso3166: DE
-                ctry_extrasql: or (Country=4100 and Year<1990) 
-                startyear: 1952
-                endyear: 2013
-                countryclass: 1 
-causes:
-        all:
-                sex: 0
-                alias: totalt
-                causeclass: 0 
-                classtot: true 
-        lfinf:
-                sex: 0
-                alias: luftvägsinfektioner 
-                causeclass: 1 
-                classtot: false 
-        tum:
-                sex: 0
-                alias: tumörer 
-                causeclass: 2
-                classtot: true 
-        lc:
-                sex: 0
-                skip: [Pop38mean]
-                alias: lungcancer
-                causeclass: 2 
-                classtot: false 
-        sc:
-                sex: 0
-                skip: [Pop38mean]
-                alias: magsäckscancer 
-                causeclass: 2 
-                classtot: false 
-        panc:
-                sex: 0
-                skip: [Pop38mean]
-                skipyrs: [1952]
-                alias: pankreascancer 
-                causeclass: 2 
-                classtot: false 
-        bc:
-                sex: 2
-                skip: [Pop38mean]
-                alias: bröstcancer 
-                causeclass: 2 
-                classtot: false 
-        circ:
-                sex: 0
-                alias: cirkulationsorgan
-                causeclass: 3 
-                classtot: true 
-        ihd:
-                sex: 0
-                skip: [Pop38mean]
-                alias: ischemisk hjärtsjukdom 
-                causeclass: 3 
-                classtot: false 
-        str:
-                sex: 0
-                skip: [Pop38mean]
-                alias: slaganfall
-                causeclass: 3 
-                classtot: false 
-        hd:
-                sex: 0
-                alias: hjärtsjukdom 
-                causeclass: 3 
-                classtot: false 
-        tb:
-                sex: 0
-                alias: tuberkulos 
-                causeclass: 1 
-                classtot: false 
-        stihiv:
-                sex: 0
-                alias: könssjukdomar/HIV 
-                causeclass: 1 
-                classtot: false 
-        infrest:
-                sex: 0
-                alias: övriga infektioner 
-                causeclass: 1 
-                classtot: false 
-        circnonihd:
-                sex: 0
-                skip: [Pop38mean]
-                alias: cirkulationsorgan utom IHD
-                causeclass: 3 
-                classtot: false 
-        pc:
-                sex: 1
-                skip: [Pop38mean,Pop914mean]
-                alias: prostatacancer 
-                causeclass: 2 
-                classtot: false 
-        circnonath:
-                sex: 0
-                skip: [Pop38mean]
-                alias: cirkulationsorgan icke ateroskleros  
-                causeclass: 3 
-                classtot: false 
-        othath:
-                sex: 0
-                skip: [Pop38mean]
-                alias: artärsjukdom utom IHD/slaganfall
-                causeclass: 3 
-                classtot: false 
-        illdef:
-                sex: 0
-                alias: illa definierade orsaker
-                causeclass: 5 
-                classtot: true 
-        ext:
-                sex: 0
-                alias: yttre orsaker
-                causeclass: 6 
-                classtot: true 
-        diab:
-                sex: 0
-                alias: diabetes 
-                causeclass: 4 
-                classtot: false 
-        chresp:
-                sex: 0
-                skip: [Pop38mean]
-                alias: kronisk lungsjukdom
-                causeclass: 4 
-                classtot: false 
-        genbact:
-                sex: 0
-                alias: allmänna bakterieinfektioner
-                causeclass: 1 
-                classtot: false 
-        gastrinf:
-                sex: 0
-                alias: magtarminfektioner
-                causeclass: 1 
-                classtot: false 
-        sui:
-                sex: 0
-                alias: självmord
-                causeclass: 6 
-                classtot: false 
-        tracc:
-                sex: 0
-                alias: transportolyckor
-                causeclass: 6 
-                classtot: false 
-        fallacc:
-                sex: 0
-                alias: fallolyckor
-                causeclass: 6 
-                classtot: false 
-
-causeclasses:
-        0:
-                alias: Totalt 
-                makegroup: false 
-        1:
-                alias: Infektioner 
-                makegroup: true 
-        2:
-                alias: Tumörer 
-                makegroup: true 
-        3:
-                alias: Cirkulation
-                makegroup: true 
-        4:
-                alias: Annat sjukdomsrelaterat 
-                makegroup: true 
-        5:
-                alias: Illa definierade orsaker 
-                makegroup: false 
-        6:
-                alias: Yttre orsaker 
-                makegroup: true 
-                 
-
 ages:
-        Pop914mean:
-                ptype: rate
-                alias: "15\u201344"
-                note: "genomsnitt över åldrar"
-                agegroups: "0914"
-        Pop1518mean:
-                ptype: rate
-                alias: "45\u201364"
-                note: "genomsnitt över åldrar"
-                agegroups: "1518" 
-        Pop1920mean:
-                ptype: rate
-                alias: "65\u201374"
-                note: "genomsnitt över åldrar"
-                agegroups: "1920"
-        Pop2122mean:
-                ptype: rate
-                alias: "75\u201384"
-                note: "genomsnitt över åldrar"
-                agegroups: "2122" 
-        Pop1:
-                ptype: perc
-                alias: "alla åldrar"
-                agegroups: "01" 
-        Pop222sum:
-                ptype: perc 
-                alias: "0\u201384"
-                agegroups: "0222"
-        Pop2325sum:
-                ptype: perc 
-                alias: "85\u2013"
-                agegroups: "2325"
-
+  Pop1:
+    agegroups: '01'
+    alias: alla åldrar
+    ptype: perc
+  Pop1518mean:
+    agegroups: '1518'
+    alias: 45–64
+    note: genomsnitt över åldrar
+    ptype: rate
+  Pop1920mean:
+    agegroups: '1920'
+    alias: 65–74
+    note: genomsnitt över åldrar
+    ptype: rate
+  Pop2122mean:
+    agegroups: '2122'
+    alias: 75–84
+    note: genomsnitt över åldrar
+    ptype: rate
+  Pop222sum:
+    agegroups: '0222'
+    alias: 0–84
+    ptype: perc
+  Pop2325sum:
+    agegroups: '2325'
+    alias: 85–
+    ptype: perc
+  Pop914mean:
+    agegroups: 0914
+    alias: 15–44
+    note: genomsnitt över åldrar
+    ptype: rate
+causeclasses:
+  0:
+    alias: Totalt
+    makegroup: false
+  1:
+    alias: Infektioner
+    makegroup: true
+  2:
+    alias: Tumörer
+    makegroup: true
+  3:
+    alias: Cirkulation
+    makegroup: true
+  4:
+    alias: Annat sjukdomsrelaterat
+    makegroup: true
+  5:
+    alias: Illa definierade orsaker
+    makegroup: false
+  6:
+    alias: Yttre orsaker
+    makegroup: true
+causes:
+  all:
+    alias: totalt
+    causeclass: 0
+    causeexpr:
+      07A: A000
+      08A: A000
+      09B: B00
+      '10': AAA
+      '101': '1000'
+    classtot: true
+    sex: 0
+  bc:
+    alias: bröstcancer
+    causeclass: 2
+    causeexpr:
+      07A: A051
+      08A: A054
+      09B: B113
+      '10': C50
+      '101': '1036'
+    classtot: false
+    sex: 2
+    skip:
+    - Pop38mean
+  chresp:
+    alias: kronisk lungsjukdom
+    causeclass: 4
+    causeexpr:
+      07A: A09[3-7]
+      08A: A09[3-6]
+      09B: B32[3-9]
+      '10': J[3-9]
+      '101': 107[6,7]
+    classtot: false
+    sex: 0
+    skip:
+    - Pop38mean
+  circ:
+    alias: cirkulationsorgan
+    causeclass: 3
+    causeexpr:
+      07A: A0(70|79|8[0-6])
+      08A: A08[0-8]
+      09B: B(2[5-9]|30)$
+      '10': (I|F01)
+      '101': '1064'
+    classtot: true
+    sex: 0
+  circnonath:
+    alias: cirkulationsorgan icke ateroskleros
+    causeclass: 3
+    causeexpr:
+      07A: A0(79|8[0,2-4,6])
+      08A: A08[0-2,4,7-8]
+      09B: B(2[5-6,8]|30[3-9])$
+      '10': I([0-1]|2[6-9]|[3-5,8-9])
+      '101': 10(6[5-6,9]|71])
+    classtot: false
+    sex: 0
+    skip:
+    - Pop38mean
+  circnonihd:
+    alias: cirkulationsorgan utom IHD
+    causeclass: 3
+    causeexpr:
+      07A: A0(70|79|8[0,2-6])
+      08A: A08[0-2,4-8]
+      09B: B(2[5-6,8-9]|30)$
+      '10': (I([0-1]|2[6-9]|[3-9])|F01)
+      '101': 10(6[5-6,8-9]|7[0-1])
+    classtot: false
+    sex: 0
+    skip:
+    - Pop38mean
+  diab:
+    alias: diabetes
+    causeclass: 4
+    causeexpr:
+      07A: A063
+      08A: A064
+      09B: B181
+      '10': E1[0-4]
+      '101': '1052'
+    classtot: false
+    sex: 0
+  ext:
+    alias: yttre orsaker
+    causeclass: 6
+    causeexpr:
+      07A: A1(3[8,9]|[4,5])
+      08A: A1(3[8,9]|[4,5])
+      09B: B(4[7-9]|5[0-6])$
+      '10': '[V-Y]'
+      '101': '1095'
+    classtot: true
+    sex: 0
+  fallacc:
+    alias: fallolyckor
+    causeclass: 6
+    causeexpr:
+      07A: A141
+      08A: A141
+      09B: B50
+      '10': W[0-1]
+      '101': '1097'
+    classtot: false
+    sex: 0
+  gastrinf:
+    alias: magtarminfektioner
+    causeclass: 1
+    causeexpr:
+      07A: A(0(1[2-4,6])|104)
+      08A: A0(0[1-5])
+      09B: B01$
+      '10': A0
+      '101': 100[2-4]
+    classtot: false
+    sex: 0
+  genbact:
+    alias: allmänna bakterieinfektioner
+    causeclass: 1
+    causeexpr:
+      07A: A(0(1[5,7-9]|2[0-7]|71)|110)
+      08A: A(0(1[1-9]|2[0-1]|72)|107)
+      09B: B(03$|220|351)
+      '10': (A[2-4]|G0[0,3]|N1[0-2])
+      '101': 10(0[7-9]|1[0-2]|59)
+    classtot: false
+    sex: 0
+  hd:
+    alias: hjärtsjukdom
+    causeclass: 3
+    causeexpr:
+      07A: A0(79|8[0-4])
+      08A: A08[0-4]
+      09B: B2[5-8]$
+      '10': I[0-5]
+      '101': 106[5-8]
+    classtot: false
+    sex: 0
+  ihd:
+    alias: ischemisk hjärtsjukdom
+    causeclass: 3
+    causeexpr:
+      07A: A081
+      08A: A083
+      09B: B27$
+      '10': I2[0-5]
+      '101': '1067'
+    classtot: false
+    sex: 0
+    skip:
+    - Pop38mean
+  illdef:
+    alias: illa definierade orsaker
+    causeclass: 5
+    causeexpr:
+      07A: A13[6,7]
+      08A: A13[6,7]
+      09B: B46$
+      '10': R
+      '101': '1094'
+    classtot: true
+    sex: 0
+  infrest:
+    alias: övriga infektioner
+    causeclass: 1
+    causeexpr:
+      07A: A0(2[8-9]|3|4[0-3])
+      08A: A0(2[2-9]|3[0-3,9]|4[0-4])
+      09B: B(0[4,5,7])$
+      '10': (A(6[5-9]|[7-9])|B([0-1]|2[5-9]|[3-9]))
+      '101': 10(1[4-9]|2[1-5])
+    classtot: false
+    sex: 0
+  lc:
+    alias: lungcancer
+    causeclass: 2
+    causeexpr:
+      07A: A050
+      08A: A051
+      09B: B101
+      '10': C3[3-4]
+      '101': '1034'
+    classtot: false
+    sex: 0
+    skip:
+    - Pop38mean
+  lfinf:
+    alias: luftvägsinfektioner
+    causeclass: 1
+    causeexpr:
+      07A: A0(8[7-9]|9[0-2])
+      08A: A0(89|9[0-2])
+      09B: B3[1,2][0-2]
+      '10': J[0-2]
+      '101': 107[3-5]
+    classtot: false
+    sex: 0
+  othath:
+    alias: artärsjukdom utom IHD/slaganfall
+    causeclass: 3
+    causeexpr:
+      07A: A085
+      08A: A086
+      09B: B30[0-2]
+      '10': I7
+      '101': '1070'
+    classtot: false
+    sex: 0
+    skip:
+    - Pop38mean
+  panc:
+    alias: pankreascancer
+    causeclass: 2
+    causeexpr:
+      07A: '157'
+      08A: '157'
+      09B: B096
+      '10': C25
+      '101': '1032'
+    classtot: false
+    sex: 0
+    skip:
+    - Pop38mean
+    skipyrs:
+    - 1952
+  pc:
+    alias: prostatacancer
+    causeclass: 2
+    causeexpr:
+      07A: A054
+      08A: A057
+      09B: B124
+      '10': C61
+      '101': '1040'
+    classtot: false
+    sex: 1
+    skip:
+    - Pop38mean
+    - Pop914mean
+  sc:
+    alias: magsäckscancer
+    causeclass: 2
+    causeexpr:
+      07A: A046
+      08A: A047
+      09B: B091
+      '10': C16
+      '101': '1029'
+    classtot: false
+    sex: 0
+    skip:
+    - Pop38mean
+  stihiv:
+    alias: könssjukdomar/HIV
+    causeclass: 1
+    causeexpr:
+      07A: A0(0[6-9]|1[0-1])
+      08A: A03[4-8]
+      09B: B(06$|18[4-5])
+      '10': (A(5|6[0-4])|B2[0-4])
+      '101': 10(13|20)
+    classtot: false
+    sex: 0
+  str:
+    alias: slaganfall
+    causeclass: 3
+    causeexpr:
+      07A: A070
+      08A: A085
+      09B: B29$
+      '10': (I6|F01)
+      '101': '1069'
+    classtot: false
+    sex: 0
+    skip:
+    - Pop38mean
+  sui:
+    alias: självmord
+    causeclass: 6
+    causeexpr:
+      07A: A148
+      08A: A147
+      09B: B54
+      '10': X([6-7]|8[0-4])
+      '101': '1101'
+    classtot: false
+    sex: 0
+  tb:
+    alias: tuberkulos
+    causeclass: 1
+    causeexpr:
+      07A: A00[1-5]
+      08A: A0(0[6-9]|10])
+      09B: B02$
+      '10': A1[5-9]
+      '101': 100[5-6]
+    classtot: false
+    sex: 0
+  tracc:
+    alias: transportolyckor
+    causeclass: 6
+    causeexpr:
+      07A: A13[8-9]
+      08A: A13[8-9]
+      09B: B47$
+      '10': V
+      '101': '1096'
+    classtot: false
+    sex: 0
+  tum:
+    alias: tumörer
+    causeclass: 2
+    causeexpr:
+      07A: A0(4[4-9]|5|60)
+      08A: A0(4[5-9]|5|6[0-1])
+      09B: B(0[8-9]$|1[0-7]$)
+      '10': (C|D[0-4])
+      '101': '1026'
+    classtot: true
+    sex: 0
+countries:
+  2090:
+    alias: Kanada
+    countryclass: 1
+    endyear: 2005
+    iso3166: CA
+    startyear: 1950
+  2450:
+    alias: USA
+    countryclass: 1
+    endyear: 2007
+    iso3166: US
+    startyear: 1950
+  3150:
+    alias: Israel
+    countryclass: 1
+    ctry_extrasql: and (Admin1='' or Year<1975)
+    endyear: 2012
+    iso3166: IL
+    startyear: 1957
+  3160:
+    alias: Japan
+    countryclass: 1
+    endyear: 2013
+    iso3166: JP
+    startyear: 1950
+  4010:
+    alias: Österrike
+    countryclass: 1
+    endyear: 2013
+    iso3166: AT
+    startyear: 1955
+  4020:
+    alias: Belgien
+    countryclass: 1
+    endyear: 2012
+    iso3166: BE
+    startyear: 1954
+  4050:
+    alias: Danmark
+    countryclass: 1
+    endyear: 2011
+    iso3166: DK
+    startyear: 1951
+  4070:
+    alias: Finland
+    countryclass: 1
+    endyear: 2013
+    iso3166: FI
+    startyear: 1952
+  4080:
+    alias: Frankrike
+    countryclass: 1
+    endyear: 2010
+    iso3166: FR
+    startyear: 1952
+  4085:
+    alias: Tyskland
+    countryclass: 1
+    ctry_extrasql: or (Country=4100 and Year<1990)
+    endyear: 2013
+    iso3166: DE
+    startyear: 1952
+  4140:
+    alias: Grekland
+    countryclass: 1
+    endyear: 2012
+    iso3166: GR
+    startyear: 1961
+  4170:
+    alias: Irland
+    countryclass: 1
+    endyear: 2009
+    iso3166: IE
+    startyear: 1950
+  4180:
+    alias: Italien
+    countryclass: 1
+    endyear: 2012
+    iso3166: IT
+    startyear: 1951
+  4210:
+    alias: Nederländerna
+    countryclass: 1
+    endyear: 2013
+    iso3166: NL
+    startyear: 1950
+  4220:
+    alias: Norge
+    countryclass: 1
+    endyear: 2013
+    iso3166: 'NO'
+    startyear: 1951
+  4240:
+    alias: Portugal
+    countryclass: 1
+    endyear: 2013
+    iso3166: PT
+    startyear: 1955
+  4280:
+    alias: Spanien
+    countryclass: 1
+    endyear: 2013
+    iso3166: ES
+    startyear: 1951
+  4290:
+    alias: Sverige
+    countryclass: 0
+    endyear: 2013
+    iso3166: SE
+    startyear: 1951
+  4300:
+    alias: Schweiz
+    countryclass: 1
+    endyear: 2012
+    iso3166: CH
+    startyear: 1951
+  4310:
+    alias: England/Wales
+    countryclass: 1
+    endyear: 2012
+    iso3166: EAW
+    startyear: 1950
+  4320:
+    alias: Nordirland
+    countryclass: 1
+    endyear: 2013
+    iso3166: NIR
+    startyear: 1950
+  4330:
+    alias: Skottland
+    countryclass: 1
+    endyear: 2013
+    iso3166: SCT
+    startyear: 1950
+  5020:
+    alias: Australien
+    countryclass: 1
+    endyear: 2011
+    iso3166: AU
+    startyear: 1950
+  5150:
+    alias: Nya Zeeland
+    countryclass: 1
+    endyear: 2011
+    iso3166: NZ
+    startyear: 1950
+settings:
+  conn_config:
+    database: Morticd
+    host: localhost
+    password: whomort
+    unix_socket: /run/mysqld/mysqld.sock
+    user: whomuser
+  savecsv: true
 sexes:
-        0:
-                alias: "båda"
-        1:
-                alias: "män"
-        2:
-                alias: "kvinnor"
+  0:
+    alias: båda
+  1:
+    alias: män
+  2:
+    alias: kvinnor

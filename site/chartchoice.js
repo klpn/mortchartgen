@@ -77,4 +77,7 @@ $(document).ready(function(){
 		$('#chart').attr('data',chartPath);
 	})
 	agesUpdate();
+	$('#charttypeSel').trigger('change');
+	$('#causeSel').trigger('change');
+	agesUpdate();
 })

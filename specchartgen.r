@@ -64,7 +64,7 @@ ctriesyr.batchplot<-function(compyrseq=seq(1952,2012,by=10))
 	conf<-yaml.load_file('chartgen.yaml')
 	causenames<-names(conf[['causes']])
 	agenames<-names(conf[['ages']])
-	svgdir<-'site/charts/ctriesyr'
+	svgdir<-'mortchart-site/charts/ctriesyr'
 	xmlprefix<-'<?xml version="1.0" encoding="UTF-8"?>\n'
 	dir.create(svgdir,showWarnings=FALSE)
 	

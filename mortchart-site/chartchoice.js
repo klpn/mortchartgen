@@ -11,7 +11,7 @@ $(document).ready(function(){
 		}
 	})
 	$('#causeSel').change(function(){
-		var cause=jQuery.parseJSON($('#causeSel').val());	
+		var cause=jQuery.parseJSON($('#causeSel').val().replace(/'/g,"\""));	
 		if (cause.name=='all') {
 			$('#ptypeSp').hide();
 			$('#ptypeSel').val('rate').change();
@@ -39,11 +39,11 @@ $(document).ready(function(){
 
 	function agesUpdate(){
 		var ptype=$('#ptypeSel').val();
-		var cause=jQuery.parseJSON($('#causeSel').val());
+		var cause=jQuery.parseJSON($('#causeSel').val().replace(/'/g,"\""));
 		var skipage;	
 		var firstenabled;	
 		$('#ageSel > option').each(function(){
-			var age=jQuery.parseJSON($(this).val());
+			var age=jQuery.parseJSON($(this).val().replace(/'/g,"\""));
 			if((cause.hasOwnProperty('skip') && $.inArray(age.name,cause.skip)>-1) || age.ptype!=ptype)
 				skipage=true;
 			else	
@@ -63,9 +63,9 @@ $(document).ready(function(){
 
 	$('#showChart').click(function(){
 		var charttype=$('#charttypeSel').val();
-		var pop=jQuery.parseJSON($('#popSel').val());
-		var cause=jQuery.parseJSON($('#causeSel').val());
-		var age=jQuery.parseJSON($('#ageSel').val());
+		var pop=jQuery.parseJSON($('#popSel').val().replace(/'/g,"\""));
+		var cause=jQuery.parseJSON($('#causeSel').val().replace(/'/g,"\""));
+		var age=jQuery.parseJSON($('#ageSel').val().replace(/'/g,"\""));
 		var ptype=$('#ptypeSel').val();
 		var compyr=$('#compyrSel').val();
 		if (charttype=='trend') {

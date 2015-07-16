@@ -13,7 +13,7 @@ def batchplot():
     combs=yaml.safe_load(f)
     f.close()
 
-    os.makedirs('site/charts',exist_ok=True)
+    os.makedirs('mortchart-site/charts',exist_ok=True)
 
     for country,countryval in combs['countries'].items():
         start_time = time.time()
@@ -40,7 +40,7 @@ def propplot(country,countryval,cause,causeval,age,ageval,icdlist):
         if index==countryval['startyear'] or (index-1 in icdlist and value != icdlist.loc[index-1]):
             plt.text(index,0,value,rotation=90,va='bottom',ha='center',color='red')
 
-    plt.savefig('site/charts/'+cause+str(country)+ptype+str(causeval['sex'])+age+'.svg')
+    plt.savefig('mortchart-site/charts/'+cause+str(country)+ptype+str(causeval['sex'])+age+'.svg')
     plt.close()
 
 def propiter(country,countryval,causes,ages,sexes,save_csv=True):

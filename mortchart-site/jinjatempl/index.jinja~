@@ -1,0 +1,58 @@
+---
+title: Huvudsida
+---
+<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="chartchoice.js?version=0.131"></script>
+
+<p>Kombinera parametrar och välj sedan <em>Visa diagram</em>. För total dödlighet visas alltid dödstal. För specifika dödsorsaksgrupper finns möjlighet att välja att visa trender för dödstal eller andel av den totala dödligheten.</p>
+<p>I punktdiagrammen med kvinnors vs mäns utfall (vid val av <em>Årsjämförelse av befolkningar</em> för dödsorsaker som visas för både kvinnor och män) visas för läsbarhetens skull landskoder enligt ISO 3166-2. För muspekaren över en punkt för att visa fullständigt namn på aktuell befolkning tillsammans med utfallsmått.</p>
+
+	<form name="chartParams">
+		Typ av översikt: <select id="charttypeSel">
+			<option value="trend">Tidstrend i befolkning</option>
+			<option value="comp">Årsjämförelse av befolkningar</option>
+		</select>
+		<span id="compyrSp" style="display:none;">År: <select id="compyrSel">
+				{%- for yr in compyrseq %}
+				<option value="{{ yr }}">{{ yr }}</option>
+				{%- endfor %}
+			</select></span>
+		<span id="popSp">Befolkning: <select id="popSel">
+				{%- for country in countries %}
+				<option value="{'name':'{{ country.name }}'}">{{ country.alias }}</option>
+				{%- endfor %}
+		</select></span><br />
+		Orsak: <select id="causeSel">
+			{% macro causeval(cause) -%}
+			"{'name':'{{ cause.name }}','sex':'{{ cause.sex }}'
+				{%- if cause.skip is defined -%},'skip':{{ cause.skip }}{%- endif -%}
+				{%- if cause.skipyrs is defined -%},'skipyrs':{{ cause.skipyrs }}{%- endif -%}}"
+			{%- endmacro %}
+			{% for group in causes|groupby("causeclass") %}
+			{% if causeclasses[group.grouper].makegroup %}
+			<optgroup label="{{ causeclasses[group.grouper].alias }}">
+				{%- for cause in group.list|sort(reverse=True,attribute="classtot") %}
+				<option value={{ causeval(cause) }}>{{ cause.alias }}{% if cause.classtot %} generellt{% endif %}</option>
+				{%- endfor %}
+			</optgroup>
+			{% else %}
+				{%- for cause in group.list|sort(reverse=True,attribute="classtot") %}
+				<option value={{ causeval(cause) }}>{{ cause.alias }}</option>
+				{%- endfor %}
+			{% endif %}
+			{% endfor %}
+		</select><br />
+		<span id="ptypeSp" style="display:none;">Mått: <select id="ptypeSel">
+			<option value="rate">Dödstal</option>
+			<option value="perc">Andel av totaldödlighet</option>
+			</select>
+		</span>
+		Åldersgrupp: <select id="ageSel">
+				{%- for age in ages %}
+				<option value="{'name':'{{ age.name }}','ptype':'{{ age.ptype }}'}">{{ age.alias|capitalize }}</option>
+				{%- endfor %}
+		</select>
+		<input type="button" id="showChart" value="Visa diagram" />
+	</form>
+
+	<object id="chart" data="charts/all4290rate0Pop914mean.svg" type="image/svg+xml">Valt diagram</object>       

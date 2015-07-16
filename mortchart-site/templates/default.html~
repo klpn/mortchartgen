@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>Mortalitetsdiagram - $title$</title>
+        <link rel="stylesheet" type="text/css" href="/css/default.css" />
+	<link rel="icon" type="image/png" href="images/mortchartico.png" />
+	<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="logo">
+                <a href="/">Mortalitetsdiagram</a>
+            </div>
+            <div id="navigation">
+                Dokumentation: <a href="/mortchartdoc.html">HTML</a> <a href="/mortchartdoc.pdf">PDF</a>
+            </div>
+        </div>
+
+        <div id="content">
+
+            $body$
+        </div>
+        <div id="footer">
+		Webbplatsen drivs av <a href="mailto:karl_pettersson_1998@yahoo.com">Karl Pettersson</a> och har genererats med hjälp av  
+	    <a href="http://jaspervdj.be/hakyll">Hakyll</a>. <a href="https://github.com/klpn/mortchartgen">Källkod</a>
+        </div>
+    </body>
+</html>

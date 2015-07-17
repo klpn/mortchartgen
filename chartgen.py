@@ -9,6 +9,7 @@ import os
 
 def batchplot():
     mpl.rcParams['axes.formatter.use_locale']=True
+    mpl.style.use('ggplot')
     f=open('chartgen.yaml')
     combs=yaml.safe_load(f)
     f.close()

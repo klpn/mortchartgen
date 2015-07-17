@@ -1,5 +1,5 @@
 ---
-title: 'Dokumentation till Mortalitetsdiagram'
+title: Dokumentation till Mortalitetsdiagram
 author: Karl Pettersson
 lang: swedish
 mainlang: swedish
@@ -12,7 +12,7 @@ Syftet med denna sida är att erbjuda överskådlig information om orsaksspecifi
 
 Det finns sedan tidigare flera webbplatser med visualiseringar av mortalitetstrender. En av de mest avancerade är @ihmecodviz, som innehåller data för alla världens länder och använder komplicerade algoritmer för att justera för osäkerhet i underliggande data. Denna webbplats genererar diagrammen dynamiskt och kan ibland vara tungrodd. Dessutom sträcker sig visualiseringarna för närvarande inte längre tillbaka än till 1980, samtidigt som @whomort för många befolkningar har data tillgängliga från 1950. @mortrends är en webbplats med en stor mängd statiska diagram baserade på @whomort. Dock underhålls denna webbplats inte längre sedan dess skapare avlidit.
 
-Föreliggande sida är gjord för att snabbt och enkelt ta fram relevanta visualiseringar av mortalitetstrender från mitten av 1900-talet fram till våra dagar. Den innehåller ingen kod som körs på serversidan med kopplingar till några databaser. Alla diagram över tidstrender är färdiga SVG-filer, som jag genererat lokalt med hjälp av ett Pythonskript, som använder sig av matplotlib (@Hunter:2007). Gränssnittet för val av diagram bygger på jQuery. Skriptet har nu möjlighet att exportera de datatabeller som skapas till CSV-filer för användning i andra program. På detta sätt har diagram för årsjämförelse av dödstal eller andel dödsfall mellan befolkningar skapats med hjälp av R [@rproj] och ggplot2 [@wickham09]. 
+Föreliggande sida är gjord för att snabbt och enkelt ta fram relevanta visualiseringar av mortalitetstrender från mitten av 1900-talet fram till våra dagar. Den innehåller ingen kod som körs på serversidan med kopplingar till några databaser. Alla diagram över tidstrender är färdiga SVG-filer, som jag genererat lokalt med hjälp av ett Pythonskript, som använder sig av matplotlib (@Hunter:2007). Gränssnittet för val av diagram bygger på jQuery. Skriptet har nu möjlighet att exportera de datatabeller som skapas till CSV-filer för användning i andra program. På detta sätt har diagram för årsjämförelse av dödstal eller andel dödsfall mellan befolkningar skapats med hjälp av R [@rproj] och ggplot2 [@wickham09]. De skript och andra källfiler som används för att generera diagram och webbplats finns tillgängliga via [GitHub-förråd](https://github.com/klpn/mortchartgen). 
 
 #Mått på dödlighet
 *Dödstal* är ett grundläggande mått på dödlighet. Dödstalet i en orsak $c$ i en befolkning $x$ under en tidsperiod $t$, $m_{c,t}(x)$, beräknas enligt $m_{c,t}(x)=n_{c,t}(x)/p_t(x)$, där $n_{c,t}$ är antalet dödsfall i $c$ under $t$ och $p_t(x)$ är medelfolkmängden i $x$ under $t$. Om $x$ utgör ett brett åldersintervall kommer dödstalen i olika orsaker ofta att påverkas av trender i åldersfördelningen. Stigande medelålder hos befolkningen ger ofta ökade dödstal i åldersrelaterade sjukdomsgrupper som cancer, hjärtsjukdomar och demens. @whomort tillhandahåller data över folkmängd och antal dödsfall i 5-åriga åldersintervall, med vilka det är möjligt att beräkna dödstal som inte är så känsliga för dessa trender, och därför ger ett bättre mått på direkta effekter av sådant som sjukvård och miljöfaktorer på dödlighet. Dödstal i snäva åldersintervall drabbas dock ofta av slumpmässiga förändringar i mindre befolkningar. På denna sida redovisas ovägda medelvärden av åldersspecifika dödstal i de 5-årsintervall som ingår i bredare åldersintervall (för närvarande 15--44, 45--64, 65--74 och 75--84 år). Dessutom redovisas andelen dödsfall i alla åldrar och för åldersgrupperna under och över 85 år (vilket kan användas för att bedöma om trender för andelar i hela befolkningen är relaterade till trender i de högsta åldersgrupperna, vars tolkning kan vara vansklig).
@@ -71,6 +71,10 @@ Pankreascancer
 Prostatacancer
 :    ICD-6/7: 177; ICD-8/9: 185; ICD-10: C61 *Inkluderar inte åldersgrupper under 45 år på grund av alltför få fall.*
 
+Tarmcancer
+:    ICD-6/7/8/9: 152--154; ICD-10: C17--C21 *Inkluderar cancer i tunn-, tjock- och ändtarm.*
+
+
 ##Sjukdomar i cirkulationsorgan
 Cirkulation generellt
 :    ICD-6/7: 330--334, 400--468; ICD-8/9: 390--459; ICD-10: F01, I00--I99 *Inkluderar hjärtsjukdomar, slaganfall (för ICD-10 även vaskulär demens) och andra åkommor i cirkulationsorganen. "Hjärtkärlsjukdom" och "kardiovaskulär sjukdom" används ofta som synonyma uttryck, men de kan även syfta på undergrupper av kategorin.* 
@@ -79,7 +83,7 @@ Artärsjukdom utom IHD/slaganfall
 :    ICD-6/7: 450--456; ICD-8/9: 440--448; ICD-10: I70--I79 *Inkluderar artärsjukdomar som inte ingår i de båda ovanstående grupperna (ateroskleros utanför hjärtat eller hjärnan eller i ospecificerade delar av artärsystemet, aortabråck etc.). Inkluderar inte högt blodtryck.*
 
 Cirkulation "icke ateroskleros"
-:    *Inkluderar alla koder i cirkulationskategorin utom de som ingår i ischemisk hjärtsjukdom, slaganfall eller övrig artärsjukdom. I huvudsak rör det sig om de tillstånd som ingår i hjärtsjukdom ovan bortsett från ischemisk hjärtsjukdom. Benämningen "icke ateroskleros" skall inte tolkas för bokstavligt: denna kategori och ovanstående har medtagits p.g.a. den centrala betydelse ischemisk hjärtsjukdom och andra tillstånd som typiskt hänförts till "ateroskleros", och som ingår under slaganfall eller övrig artärsjukdom, haft när det gäller tidstrender för cirkulationskategorin som helhet i många befolkningar.*
+:    *Inkluderar alla koder i cirkulationskategorin utom de som ingår i ischemisk hjärtsjukdom, slaganfall eller övrig artärsjukdom. I huvudsak rör det sig om de tillstånd som ingår i den allmänna kategorin för hjärtsjukdom bortsett från ischemisk hjärtsjukdom. Benämningen "icke ateroskleros" skall inte tolkas för bokstavligt: denna kategori och ovanstående har medtagits p.g.a. den centrala betydelse ischemisk hjärtsjukdom och andra tillstånd som typiskt hänförts till "ateroskleros", och som ingår under slaganfall eller övrig artärsjukdom, haft när det gäller tidstrender för cirkulationskategorin som helhet i många befolkningar.*
 
 Cirkulation utom IHD
 :    *Inkluderar alla koder i cirkulationskategorin utom de som ingår i ischemisk hjärtsjukdom.*
@@ -107,6 +111,7 @@ Illa definierade orsaker
 ##Yttre orsaker
 Yttre orsaker generellt
 :    ICD-6/7/8/9: E800--E999; ICD-10: V01--Y89 *Inkluderar olyckor, självmord, mord, legala ingripanden och även komplikationer i samband med vård (även om bakomliggande sjukdomar då ofta rapporteras som underliggande dödsorsak).*
+
 Fallolyckor
 :    ICD-6/7: E900--E904; ICD-8: E880--E887; ICD-9: E880--E888; ICD-10: W00--W19 *Trender kan påverkas av benägenheten att rapportera ospecificerade olyckor eller komplikationer vid fall (t.ex. blodpropp eller lunginflammation) som underliggande dödsorsak.*
 

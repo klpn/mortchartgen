@@ -78,6 +78,19 @@ causes:
     sex: 2
     skip:
     - Pop38mean
+  cervc:
+    alias: cervixcancer
+    causeclass: 2
+    causeexpr:
+      07A: A052
+      08A: A055
+      09B: B120
+      '10': C53
+      '101': '1037'
+    classtot: false
+    sex: 2
+    skip:
+    - Pop38mean
   chresp:
     alias: kronisk lungsjukdom
     causeclass: 4

@@ -59,6 +59,9 @@ Tumörer generellt
 Bröstcancer
 :    ICD-6/7: 170; ICD-8/9: 174; ICD-10: C50
 
+Cervixcancer
+:    ICD-6/7: 171; ICD-8/9: 180; ICD-10: C53 *Inkluderar cancer i livmoderhals.*
+
 Lungcancer
 :    ICD-6/7: 162--163; ICD-8/9: 162; ICD-10: C33--C34 *Inkluderar cancer i luftstrupe och bronk.*
 

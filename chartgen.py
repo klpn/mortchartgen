@@ -6,6 +6,7 @@ import matplotlib as mpl
 import yaml
 import time
 import os 
+import statsmodels.api as sm
 
 def batchplot():
     mpl.rcParams['axes.formatter.use_locale']=True
@@ -71,10 +72,11 @@ def propiter(country,countryval,causes,ages,sexes,save_csv=True):
                 causeperc=propframe(causenom,countrydall_male)
             for age,ageval in ages.items():
                 if 'skip' not in causeval or age not in causeval['skip']:
-                    if ageval['ptype']=='rate':
-                        causerate[age].plot(label=sexes[causeval['sex']]['alias'])
-                    elif ageval['ptype']=='perc':
-                        causeperc[age].plot(label=sexes[causeval['sex']]['alias'])
+                    if ageval['ptype']=='rate': plotframe=causerate
+                    elif ageval['ptype']=='perc': plotframe=causeperc
+                    
+                    plotframe[age].plot(label=sexes[causeval['sex']]['alias'])
+                    plt.plot(smoother(plotframe,age)[:,0],smoother(plotframe,age)[:,1],label=sexes[causeval['sex']]['alias']+' jämnad')
                     propplot(country,countryval,cause,causeval,age,ageval,countrydall_fem['List'])
 
         elif causeval['sex']==0:
@@ -92,11 +94,16 @@ def propiter(country,countryval,causes,ages,sexes,save_csv=True):
                 if 'skip' not in causeval or age not in causeval['skip']:
                     if (ageval['ptype']=='rate') or (cause!='all'):
                         if ageval['ptype']=='rate':
-                            causerate_fem[age].plot(label=femalias)
-                            causerate_male[age].plot(label=malealias)
+                            plotframe_fem=causerate_fem
+                            plotframe_male=causerate_male
                         elif ageval['ptype']=='perc':
-                            causeperc_fem[age].plot(label=femalias) 
-                            causeperc_male[age].plot(label=malealias)    
+                            plotframe_fem=causeperc_fem
+                            plotframe_male=causeperc_male
+                        
+                        plotframe_fem[age].plot(label=femalias) 
+                        plt.plot(smoother(plotframe_fem,age)[:,0],smoother(plotframe_fem,age)[:,1],label=femalias+' jämnad')
+                        plotframe_male[age].plot(label=malealias)    
+                        plt.plot(smoother(plotframe_fem,age)[:,0],smoother(plotframe_male,age)[:,1],label=malealias+' jämnad')
                         propplot(country,countryval,cause,causeval,age,ageval,countrydall_fem['List'])
 
         if save_csv:
@@ -111,6 +118,9 @@ def propiter(country,countryval,causes,ages,sexes,save_csv=True):
             elif causeval['sex']>0:
                 causerate.to_csv('csv/'+cause+str(country)+'rate'+str(causeval['sex'])+'.csv')
                 causeperc.to_csv('csv/'+cause+str(country)+'perc'+str(causeval['sex'])+'.csv')
+
+def smoother(frame,col):
+    return sm.nonparametric.lowess(frame[col],frame.index,frac=0.4)
 
 def propframe(popnom,popdenom):
     popnom['Pop222sum']=popnom.loc[:,'Pop2':'Pop22'].sum(1)

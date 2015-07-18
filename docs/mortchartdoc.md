@@ -62,8 +62,17 @@ Bröstcancer
 Cervixcancer
 :    ICD-6/7: 171; ICD-8/9: 180; ICD-10: C53 *Inkluderar cancer i livmoderhals.*
 
+Leukemi
+:    ICD-6/7: 204; ICD-8: 204--207; ICD-9: 204--208; ICD-10: C91--C95 *Inkluderar akut och kronisk leukemi.*
+
+Livmodercancer ej cervix
+:    ICD-6/7: 172--174; ICD-8/9: 181--182; ICD-10: C54--C55, C58 *Inkluderar cancer i livmoderkropp, moderkaka eller ospecificerad del av livmoder (vilket kan inkludera en del fall av ofullständigt klassificerad cervixcancer).*
+
 Lungcancer
 :    ICD-6/7: 162--163; ICD-8/9: 162; ICD-10: C33--C34 *Inkluderar cancer i luftstrupe och bronk.*
+
+Lymfom/myelom
+:    ICD-6/7: 200--203, 205; ICD-8: 200--203, 208, 209; ICD-9: 200--203; ICD-10: C81--C90, C96 *Inkluderar lymfom (Hodgkin och non-Hodgkin), myelom och andra typer av cancer i lymfatisk eller blodbildande vävnad utom leukemi.*
 
 Magsäckscancer
 :    ICD-6/7/8/9: 151; ICD-10: C16
@@ -76,6 +85,9 @@ Prostatacancer
 
 Tarmcancer
 :    ICD-6/7/8/9: 152--154; ICD-10: C17--C21 *Inkluderar cancer i tunn-, tjock- och ändtarm.*
+
+Äggstockscancer
+:    ICD-6/7: 175; ICD-8/9: 183; ICD-10: C56
 
 
 ##Sjukdomar i cirkulationsorgan

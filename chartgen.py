@@ -103,7 +103,7 @@ def propiter(country,countryval,causes,ages,sexes,save_csv=True):
                         plotframe_fem[age].plot(label=femalias) 
                         plt.plot(smoother(plotframe_fem,age)[:,0],smoother(plotframe_fem,age)[:,1],label=femalias+' jämnad')
                         plotframe_male[age].plot(label=malealias)    
-                        plt.plot(smoother(plotframe_fem,age)[:,0],smoother(plotframe_male,age)[:,1],label=malealias+' jämnad')
+                        plt.plot(smoother(plotframe_male,age)[:,0],smoother(plotframe_male,age)[:,1],label=malealias+' jämnad')
                         propplot(country,countryval,cause,causeval,age,ageval,countrydall_fem['List'])
 
         if save_csv:

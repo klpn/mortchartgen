@@ -268,6 +268,17 @@ causes:
     sex: 0
     skip:
     - Pop38mean
+  leuk:
+    alias: leukemi 
+    causeclass: 2
+    causeexpr:
+      07A: A058
+      08A: A059
+      09B: B141
+      '10': C9[1-5]
+      '101': '1045'
+    classtot: false
+    sex: 0
   lfinf:
     alias: luftvägsinfektioner
     causeclass: 1
@@ -277,6 +288,17 @@ causes:
       09B: B3[1,2][0-2]
       '10': J[0-2]
       '101': 107[3-5]
+    classtot: false
+    sex: 0
+  lymc:
+    alias: lymfom/myelom
+    causeclass: 2
+    causeexpr:
+      07A: A059
+      08A: A060
+      09B: B14[09]
+      '10': C(8[1-9]|9[06])
+      '101': '104[34]'
     classtot: false
     sex: 0
   othath:
@@ -292,6 +314,21 @@ causes:
     sex: 0
     skip:
     - Pop38mean
+  ovac:
+    alias: äggstockscancer
+    causeclass: 2
+    causeexpr:
+      07A: 175
+      08A: 183
+      09B: B123
+      '10': C56
+      '101': '1039'
+    classtot: false
+    sex: 2
+    skip:
+    - Pop38mean
+    skipyrs:
+    - 1952
   panc:
     alias: pankreascancer
     causeclass: 2
@@ -402,6 +439,19 @@ causes:
       '101': '1026'
     classtot: true
     sex: 0
+  utc:
+    alias: livmodercancer ej cervix
+    causeclass: 2
+    causeexpr:
+      07A: A053
+      08A: A056
+      09B: B12[12]
+      '10': C5[458]
+      '101': '1038'
+    classtot: false
+    sex: 2
+    skip:
+    - Pop38mean
 countries:
   2090:
     alias: Kanada

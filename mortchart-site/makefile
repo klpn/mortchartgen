@@ -1,17 +1,23 @@
 docsrc:
 	cat ../docs/mortchartdoc.md ../docs/refhead.md>mortchartdoc.md
 
+pdf:
+	cd ../docs; make pdf
+
+pdfbib:
+	cd ../docs; make pdfbib
+
 indexgen:
 	./indexgen.py
 
 siteapp:
 	ghc --make -threaded site.hs -package pandoc-1.14.1
 
-buildinit: docsrc indexgen siteapp
+buildinit: indexgen docsrc siteapp
 	./site build
 
-build: docsrc indexgen
+build: indexgen docsrc
 	./site build
 
-rebuild: docsrc indexgen siteapp
+rebuild: indexgen docsrc siteapp
 	./site rebuild

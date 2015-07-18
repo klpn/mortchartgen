@@ -34,5 +34,5 @@ docfname='mortchartdoc'
 indextempl=env.get_template(indexfname+'.jinja')
 doctempl=env.get_template(docfname+'.jinja')
 indextempl.stream(compyrseq=list(range(1952,2022,10)),countries=countries_sorted,causes=causes_sorted,ages=ages_sorted,causeclasses=combs['causeclasses']).dump(indexfname+'.html')
-doctempl.stream(compyrseq=list(range(1952,2022,10)),causes=causes_sorted,causeclasses=combs['causeclasses']).dump('../docs/'+docfname+'.md')
+doctempl.stream(compyrseq=list(range(1952,2022,10)),causes=causes_sorted,causeclasses=combs['causeclasses']).dump(docfname+'_norefhead.md')
 

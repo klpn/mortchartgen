@@ -1,11 +1,15 @@
+tex:
+	pandoc -o mortchartdoc.tex mortchartdoc_norefhead.md --template=PMMall.tex --latex-engine=lualatex --biblatex
+
 docsrc:
-	cat ../docs/mortchartdoc.md ../docs/refhead.md>mortchartdoc.md
+	cat mortchartdoc_norefhead.md refhead.md>mortchartdoc.md
 
-pdf:
-	cd ../docs; make pdf
+pdf: tex
+	lualatex mortchartdoc.tex
 
-pdfbib:
-	cd ../docs; make pdfbib
+pdfbib: pdf
+	biber mortchartdoc
+	lualatex mortchartdoc.tex
 
 indexgen:
 	./indexgen.py

@@ -14,6 +14,6 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 --- 
 
-The file docs/PMMall.tex is a modified version of pandoc's LaTeX
+The file mortchart-site/PMMall.tex is a modified version of pandoc's LaTeX
 template: if this file is redistributed, the notice docs/README.markdown
 should be included.

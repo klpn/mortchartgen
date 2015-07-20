@@ -2,10 +2,10 @@
 title: Huvudsida
 ---
 <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
-<script src="chartchoice.js?version=0.133"></script>
+<script src="chartchoice.js?version=0.134"></script>
 
 <p>Kombinera parametrar och välj sedan <em>Visa diagram</em>. För total dödlighet visas alltid dödstal. För specifika dödsorsaksgrupper finns möjlighet att välja att visa trender för dödstal eller andel av den totala dödligheten.</p>
-<p>I punktdiagrammen med kvinnors vs mäns utfall (vid val av <em>Årsjämförelse av befolkningar</em> för dödsorsaker som visas för både kvinnor och män) visas för läsbarhetens skull landskoder enligt ISO 3166-2. För muspekaren över en punkt för att visa fullständigt namn på aktuell befolkning tillsammans med utfallsmått.</p>
+<div id="scatterexplDiv" style="display:none;"><p>I punktdiagrammen med kvinnors vs mäns utfall (för dödsorsaker som visas för både kvinnor och män) visas för läsbarhetens skull landskoder enligt ISO 3166-2. För muspekaren över en punkt för att visa fullständigt namn på aktuell befolkning tillsammans med utfallsmått.</p></div>
 
 	<form name="chartParams">
 		Typ av översikt: <select id="charttypeSel">

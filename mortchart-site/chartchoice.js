@@ -70,9 +70,11 @@ $(document).ready(function(){
 		var compyr=$('#compyrSel').val();
 		if (charttype=='trend') {
 			var chartPath='charts/'+cause.name+pop.name+age.ptype+cause.sex+age.name+'.svg';
+			$('#scatterexplDiv').hide();
 		}
 		else {
 			var chartPath='charts/ctriesyr/'+cause.name+age.ptype+age.name+'comp'+compyr+'.svg';
+			$('#scatterexplDiv').show();
 		}
 		$('#chart').attr('data',chartPath);
 		$('#chartlink').attr('href',chartPath);

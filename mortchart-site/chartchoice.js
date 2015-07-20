@@ -74,7 +74,8 @@ $(document).ready(function(){
 		}
 		else {
 			var chartPath='charts/ctriesyr/'+cause.name+age.ptype+age.name+'comp'+compyr+'.svg';
-			$('#scatterexplDiv').show();
+			if(cause.sex=='0') $('#scatterexplDiv').show();
+			else $('#scatterexplDiv').hide();
 		}
 		$('#chart').attr('data',chartPath);
 		$('#chartlink').attr('href',chartPath);

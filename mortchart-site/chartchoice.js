@@ -75,9 +75,11 @@ $(document).ready(function(){
 			var chartPath='charts/ctriesyr/'+cause.name+age.ptype+age.name+'comp'+compyr+'.svg';
 		}
 		$('#chart').attr('data',chartPath);
+		$('#chartlink').attr('href',chartPath);
 	})
 	agesUpdate();
 	$('#charttypeSel').trigger('change');
 	$('#causeSel').trigger('change');
+	$('#showChart').trigger('click');
 	agesUpdate();
 })

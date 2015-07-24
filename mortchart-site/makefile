@@ -1,4 +1,4 @@
-tex:
+tex: indexgen
 	pandoc -o mortchartdoc.tex mortchartdoc_norefhead.md --template=PMMall.tex --latex-engine=lualatex --biblatex
 
 docsrc:

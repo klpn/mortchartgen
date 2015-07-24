@@ -345,6 +345,19 @@ causes:
     codedesc: "ICD-6/7: 200--203, 205; ICD-8: 200--203, 208, 209; ICD-9: 200--203; ICD-10: C81--C90, C96"
     note: "Inkluderar lymfom (Hodgkin och non-Hodgkin), myelom och andra typer av cancer i lymfatisk eller blodbildande vävnad utom leukemi."
     sex: 0
+  neurdeg:
+    alias: demens/neurodegenerativ sjukdom 
+    causeclass: 4
+    causeexpr:
+      07A: A0(67|7[28])
+      08A: A0(69|7[39])
+      09B: B2(10|2[1-3])
+      '10': F0|G[1-3] 
+      '101': '10(55|6[01])'
+    classtot: false 
+    codedesc: "ICD-6/7: 300--309, 341--352, 354--369, 380--384, 386, 388--390, 394--398; ICD-8: 290--299, 321--344, 346--358, 370--373, 376--380, 384--389; ICD-9: 290, 330--340; ICD-10: F00--F09, G10--G37 (för lista 101 F01--F99, G04--G98)"
+    note: "Inkluderar neurodegenerativa sjukdomar (alzheimers, parkinsons, multipel skelros m.m.), inklusive sådana som räknas till s.k.\ organiska störningar i kapitlet för psykiatriska diagnoser. Ökningar av andelen dödsfall bland äldre på senare år är till stor del relaterade till ökad benägenhet att rapportera demensrelaterade tillstånd snarare än t.ex.\ lunginflammation eller ateroskleros som underliggande dödsorsak (jämför med de uppskattningar av trender för demens från 1980-talet baserade på prevalens som finns tillgängliga via @ihmecodviz)."
+    sex: 0
   othath:
     alias: artärsjukdom utom IHD/slaganfall
     causeclass: 3

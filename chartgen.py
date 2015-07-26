@@ -32,7 +32,10 @@ def batchplot(ages=combs['ages'],causes=combs['causes'],
                 sexlist=[2,1]
             else:
                 sexlist=[causes[cause]['sex']]
-            causenom=numbdict(country,startyear,endyear,'nom',cause,sexlist)
+            if(cause=='all'): causenom=numbdict(country,startyear,endyear,'nom',cause,
+                    sexlist,countrydenom)
+            else: causenom=numbdict(country,startyear,endyear,'nom',cause,
+                    sexlist) 
             causedict={'rate':propdict('rate',False,causenom,countrydenom)}
             if(cause!='all'):
                 causedict['perc']=propdict('perc',False,causenom,countrydenom)
@@ -53,38 +56,39 @@ def batchplot(ages=combs['ages'],causes=combs['causes'],
         print(str(country) +': '+str(time.time() - start_time)+' sekunder')
 
 def numbdict(country,startyear,endyear,numbtype='denom',cause='all',
-        sexes=[2,1],countries=combs['countries']):
+        sexlist=[2,1],nomsrc='',countries=combs['countries']):
     if 'ctry_extrasql' in countries[country]:
         extrasql=countries[country]['ctry_extrasql']
     else:
         extrasql=''
     if numbtype=='nom':
-        numbdict={sex:build_query(sex,country,startyear,endyear,'mort',
-            extrasql,cause) for sex in sexes}
-        numbdict['cause']=cause
+        if nomsrc!='': numbdict={sex:nomsrc[sex]['perc'] for sex in sexlist}
+        else: numbdict={sex:build_query(sex,country,startyear,endyear,'mort',
+            extrasql,cause) for sex in sexlist}
     elif numbtype=='denom':
         numbdict={sex:{'rate':build_query(sex,country,startyear,endyear,'pop',
             extrasql),'perc':build_query(sex,country,startyear,endyear,'mort',extrasql)}
-            for sex in sexes}
+            for sex in sexlist}
     
+    numbdict['cause']=cause
     numbdict['startyear']=startyear
     numbdict['endyear']=endyear
     numbdict['country']=country
-    numbdict['sexes']=sexes
+    numbdict['sexlist']=sexlist
     return numbdict
 
 def propdict(ptype,from_csv=False,nomdict='',denomdict='',country='',
-        startyear='',endyear='',cause='',sexes='',countries=combs['countries']):
+        startyear='',endyear='',cause='',sexlist='',countries=combs['countries']):
     if(from_csv):
         propdict={sex:pd.read_csv('csv/'+cause+str(country)+ptype+
-            str(sex)+'.csv',index_col='Year') for sex in sexes}
+            str(sex)+'.csv',index_col='Year') for sex in sexlist}
     else:
-        sexes=nomdict['sexes']
+        sexlist=nomdict['sexlist']
         cause=nomdict['cause']
         country=nomdict['country']
         startyear=nomdict['startyear']
         endyear=nomdict['endyear']
-        propdict={sex:propframe(nomdict[sex],denomdict[sex][ptype]) for sex in sexes}
+        propdict={sex:propframe(nomdict[sex],denomdict[sex][ptype]) for sex in sexlist}
 
     propdict['type']=ptype
     propdict['cause']=cause

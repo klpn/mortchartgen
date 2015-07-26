@@ -97,8 +97,8 @@ def propplot(frames,plotsexes,age,ages=combs['ages'],causes=combs['causes'],
         countries=combs['countries'],sexes=combs['sexes'],types=combs['ptypes']):
     for sex in plotsexes:
         frames[sex][age].plot(label=sexes[sex]['alias'])
-        plt.plot(smoother(frames[sex],age)[:,0],smoother(frames[sex],age)[:,1]
-                ,label=sexes[sex]['alias']+' jämnad')    
+        plt.plot(smoother(frames[sex],age)[:,0],smoother(frames[sex],age)[:,1],
+                label=sexes[sex]['alias']+' jämnad')    
     icdlist=frames[random.randint(min(plotsexes),max(plotsexes))]['List']
     plt.xlabel('År')
     plt.legend(framealpha=0.5)

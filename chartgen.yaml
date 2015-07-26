@@ -358,6 +358,21 @@ causes:
     codedesc: "ICD-6/7: 300--309, 341--352, 354--369, 380--384, 386, 388--390, 394--398; ICD-8: 290--299, 321--344, 346--358, 370--373, 376--380, 384--389; ICD-9: 290, 330--340; ICD-10: F00--F09, G10--G37 (för lista 101 F01--F99, G04--G98)"
     note: "Inkluderar neurodegenerativa sjukdomar (alzheimers, parkinsons, multipel skleros m.m.), inklusive sådana som räknas till s.k.\ organiska störningar i kapitlet för psykiatriska diagnoser. Ökningar av andelen dödsfall bland äldre på senare år är till stor del relaterade till ökad benägenhet att rapportera demensrelaterade tillstånd snarare än t.ex.\ lunginflammation eller ateroskleros som underliggande dödsorsak (jämför med de uppskattningar av trender för demens från 1980-talet baserade på prevalens som finns tillgängliga via @ihmecodviz)."
     sex: 0
+  neurt:
+    alias: tumörer nervsystem 
+    causeclass: 2
+    causeexpr:
+      07A: '193'
+      08A: '19[12]|2(25|38)'
+      09B: 'B1(30|55)|192|237'
+      '10': C7[0-2]|D[34][23]
+      '101': '1042'
+    classtot: false
+    codedesc: "ICD-6/7: 193; ICD-8: 191--192, 225, 238; ICD-9: 191--192, 225, 237; ICD-10: C70--C72, D32--D33, D42--D43 (för lista 101 enbart C70--C72)"
+    note: "Inkluderar tumörer i hjärnan och andra delar av nervsystemet."
+    sex: 0
+    skipyrs:
+    - 1952           
   othath:
     alias: artärsjukdom utom IHD/slaganfall
     causeclass: 3

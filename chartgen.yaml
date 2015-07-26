@@ -677,6 +677,11 @@ countries:
     endyear: 2011
     iso3166: NZ
     startyear: 1950
+ptypes:
+  perc:
+    alias: Andel dödsfall 
+  rate:
+    alias: Dödstal 
 settings:
   conn_config:
     database: Morticd

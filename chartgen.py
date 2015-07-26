@@ -6,118 +6,117 @@ import matplotlib as mpl
 import yaml
 import time
 import os 
+import random 
 import statsmodels.api as sm
+mpl.rcParams['axes.formatter.use_locale']=True
+mpl.style.use('ggplot')
+f=open('chartgen.yaml')
+combs=yaml.safe_load(f)
+f.close()
 
-def batchplot():
-    mpl.rcParams['axes.formatter.use_locale']=True
-    mpl.style.use('ggplot')
-    f=open('chartgen.yaml')
-    combs=yaml.safe_load(f)
-    f.close()
+def batchplot(ages=combs['ages'],causes=combs['causes'],
+        countries=combs['countries'],sexes=combs['sexes'],
+        settings=combs['settings'],types=combs['ptypes']):
 
     os.makedirs('mortchart-site/charts',exist_ok=True)
+    if settings['savecsv']: os.makedirs('csv',exist_ok=True)
 
-    for country,countryval in combs['countries'].items():
+    for country in countries:
         start_time = time.time()
-        propiter(country,countryval,combs['causes'],combs['ages'],combs['sexes'],combs['settings']['savecsv'])
+
+        startyear=countries[country]['startyear']
+        endyear=countries[country]['endyear']
+        countrydenom=numbdict(country,startyear,endyear)
+        for cause in causes:
+            if(causes[cause]['sex']==0):
+                sexlist=[2,1]
+            else:
+                sexlist=[causes[cause]['sex']]
+            causenom=numbdict(country,startyear,endyear,'nom',cause,sexlist)
+            causedict={'rate':propdict('rate',False,causenom,countrydenom)}
+            if(cause!='all'):
+                causedict['perc']=propdict('perc',False,causenom,countrydenom)
+            if settings['savecsv']:
+                for ptype,val in causedict.items():
+                    for sex in sexlist: val[sex].to_csv('csv/'+cause+
+                            str(country)+ptype+str(sex)+'.csv') 
+
+            for age in ages:
+                ptype=ages[age]['ptype']
+                if ('skip' not in causes[cause] or age not in 
+                        causes[cause]['skip']) and (cause!='all' or ptype=='rate'):
+                    propplot(causedict[ptype],sexlist,age)
+                    plt.savefig('mortchart-site/charts/'+cause+str(country)+
+                            ptype+str(causes[cause]['sex'])+age+'.svg')
+                    plt.close()
+        
         print(str(country) +': '+str(time.time() - start_time)+' sekunder')
 
-def propplot(country,countryval,cause,causeval,age,ageval,icdlist):
-    ptype=ageval['ptype']
-    ptypealias={'rate':'Dödstal','perc':'Andel dödsfall'}
+def numbdict(country,startyear,endyear,numbtype='denom',cause='all',
+        sexes=[2,1],countries=combs['countries']):
+    if 'ctry_extrasql' in countries[country]:
+        extrasql=countries[country]['ctry_extrasql']
+    else:
+        extrasql=''
+    if numbtype=='nom':
+        numbdict={sex:build_query(sex,country,startyear,endyear,'mort',
+            extrasql,cause) for sex in sexes}
+        numbdict['cause']=cause
+    elif numbtype=='denom':
+        numbdict={sex:{'rate':build_query(sex,country,startyear,endyear,'pop',
+            extrasql),'perc':build_query(sex,country,startyear,endyear,'mort',extrasql)}
+            for sex in sexes}
+    
+    numbdict['startyear']=startyear
+    numbdict['endyear']=endyear
+    numbdict['country']=country
+    numbdict['sexes']=sexes
+    return numbdict
+
+def propdict(ptype,from_csv=False,nomdict='',denomdict='',country='',
+        startyear='',endyear='',cause='',sexes='',countries=combs['countries']):
+    if(from_csv):
+        propdict={sex:pd.read_csv('csv/'+cause+str(country)+ptype+
+            str(sex)+'.csv',index_col='Year') for sex in sexes}
+    else:
+        sexes=nomdict['sexes']
+        cause=nomdict['cause']
+        country=nomdict['country']
+        startyear=nomdict['startyear']
+        endyear=nomdict['endyear']
+        propdict={sex:propframe(nomdict[sex],denomdict[sex][ptype]) for sex in sexes}
+
+    propdict['type']=ptype
+    propdict['cause']=cause
+    propdict['startyear']=startyear
+    propdict['endyear']=endyear
+    propdict['country']=country
+    return propdict
+
+def propplot(frames,plotsexes,age,ages=combs['ages'],causes=combs['causes'],
+        countries=combs['countries'],sexes=combs['sexes'],types=combs['ptypes']):
+    for sex in plotsexes:
+        frames[sex][age].plot(label=sexes[sex]['alias'])
+        plt.plot(smoother(frames[sex],age)[:,0],smoother(frames[sex],age)[:,1]
+                ,label=sexes[sex]['alias']+' jämnad')    
+    icdlist=frames[random.randint(min(plotsexes),max(plotsexes))]['List']
+    plt.xlabel('År')
     plt.legend(framealpha=0.5)
     plt.ylim(ymin=0)
-    plt.title(ptypealias[ptype]+' '+causeval['alias']+' '+countryval['alias']+' '+str(countryval['startyear'])+'\u2013'+str(countryval['endyear']),y=1.02)
-    plt.xlabel('År')
+    plt.title(types[frames['type']]['alias']+' '+causes[frames['cause']]['alias']
+            +' '+countries[frames['country']]['alias']+' '+str(frames['startyear'])
+            +'\u2013'+str(frames['endyear']),y=1.02)
     plt.ticklabel_format(scilimits=(-4,0),axis='y')
-
-    if 'note' in ageval:
-        agenote=' ('+ageval['note']+')'
+    if 'note' in ages[age]:
+        agenote=' ('+ages[age]['note']+')'
     else:
         agenote=''
 
-    plt.ylabel(ptypealias[ptype]+' '+ageval['alias']+agenote)
-
+    plt.ylabel(types[frames['type']]['alias']+' '+ages[age]['alias']+agenote)
     for index,value in icdlist.iteritems(): 
-        if index==countryval['startyear'] or (index-1 in icdlist and value != icdlist.loc[index-1]):
+        if (index==frames['startyear'] or (index-1 in icdlist and 
+            value != icdlist.loc[index-1])) and pd.notnull(value) :
             plt.text(index,0,value,rotation=90,va='bottom',ha='center',color='red')
-
-    plt.savefig('mortchart-site/charts/'+cause+str(country)+ptype+str(causeval['sex'])+age+'.svg')
-    plt.close()
-
-def propiter(country,countryval,causes,ages,sexes,save_csv=True):
-    startyear=countryval['startyear']
-    endyear=countryval['endyear']
-    femalias=sexes[2]['alias']
-    malealias=sexes[1]['alias']
-
-    if 'ctry_extrasql' in countryval:
-        ctry_extrasql=countryval['ctry_extrasql']
-    else:
-        ctry_extrasql=''
-
-    countrypop_fem=build_query(2,country,startyear,endyear,'pop',ctry_extrasql)
-    countrypop_male=build_query(1,country,startyear,endyear,'pop',ctry_extrasql)
-    countrydall_fem=build_query(2,country,startyear,endyear,'mort',ctry_extrasql,'all')
-    countrydall_male=build_query(1,country,startyear,endyear,'mort',ctry_extrasql,'all')
-
-    for cause,causeval in causes.items():
-        if causeval['sex']>0:
-            causenom=build_query(causeval['sex'],country,startyear,endyear,'mort',ctry_extrasql,cause)
-            if causeval['sex']==2:
-                causerate=propframe(causenom,countrypop_fem)
-                causeperc=propframe(causenom,countrydall_fem)
-            elif causeval['sex']==1:
-                causerate=propframe(causenom,countrypop_male)
-                causeperc=propframe(causenom,countrydall_male)
-            for age,ageval in ages.items():
-                if 'skip' not in causeval or age not in causeval['skip']:
-                    if ageval['ptype']=='rate': plotframe=causerate
-                    elif ageval['ptype']=='perc': plotframe=causeperc
-                    
-                    plotframe[age].plot(label=sexes[causeval['sex']]['alias'])
-                    plt.plot(smoother(plotframe,age)[:,0],smoother(plotframe,age)[:,1],label=sexes[causeval['sex']]['alias']+' jämnad')
-                    propplot(country,countryval,cause,causeval,age,ageval,countrydall_fem['List'])
-
-        elif causeval['sex']==0:
-            if cause=='all':
-                causenom_fem=countrydall_fem
-                causenom_male=countrydall_male
-            else:
-                causenom_fem=build_query(2,country,startyear,endyear,'mort',ctry_extrasql,cause)
-                causenom_male=build_query(1,country,startyear,endyear,'mort',ctry_extrasql,cause)
-                causeperc_fem=propframe(causenom_fem,countrydall_fem)
-                causeperc_male=propframe(causenom_male,countrydall_male)
-            causerate_fem=propframe(causenom_fem,countrypop_fem)
-            causerate_male=propframe(causenom_male,countrypop_male)
-            for age,ageval in ages.items():
-                if 'skip' not in causeval or age not in causeval['skip']:
-                    if (ageval['ptype']=='rate') or (cause!='all'):
-                        if ageval['ptype']=='rate':
-                            plotframe_fem=causerate_fem
-                            plotframe_male=causerate_male
-                        elif ageval['ptype']=='perc':
-                            plotframe_fem=causeperc_fem
-                            plotframe_male=causeperc_male
-                        
-                        plotframe_fem[age].plot(label=femalias) 
-                        plt.plot(smoother(plotframe_fem,age)[:,0],smoother(plotframe_fem,age)[:,1],label=femalias+' jämnad')
-                        plotframe_male[age].plot(label=malealias)    
-                        plt.plot(smoother(plotframe_male,age)[:,0],smoother(plotframe_male,age)[:,1],label=malealias+' jämnad')
-                        propplot(country,countryval,cause,causeval,age,ageval,countrydall_fem['List'])
-
-        if save_csv:
-            os.makedirs('csv',exist_ok=True)
-            if causeval['sex']==0:
-                causerate_male.to_csv('csv/'+cause+str(country)+'rate1.csv')
-                causerate_fem.to_csv('csv/'+cause+str(country)+'rate2.csv')
-                if cause!='all':
-                    causeperc_male.to_csv('csv/'+cause+str(country)+'perc1.csv')
-                    causeperc_fem.to_csv('csv/'+cause+str(country)+'perc2.csv')
-
-            elif causeval['sex']>0:
-                causerate.to_csv('csv/'+cause+str(country)+'rate'+str(causeval['sex'])+'.csv')
-                causeperc.to_csv('csv/'+cause+str(country)+'perc'+str(causeval['sex'])+'.csv')
 
 def smoother(frame,col):
     return sm.nonparametric.lowess(frame[col],frame.index,frac=0.4)
@@ -133,25 +132,44 @@ def propframe(popnom,popdenom):
     prop['Pop1518mean']=prop.loc[:,'Pop15':'Pop18'].mean(1)
     prop['Pop1920mean']=prop.loc[:,'Pop19':'Pop20'].mean(1)
     prop['Pop2122mean']=prop.loc[:,'Pop21':'Pop22'].mean(1)
+    prop['List']=popnom['List']
 
     return prop
 
 def build_query(sex,country,startyear,endyear,qtype,ctry_extrasql='',cause='all'):
-    f=open('chartgen.yaml')
-    combs=yaml.safe_load(f)
-    f.close()
     conn_config = combs['settings']['conn_config'] 
     causeexpr = combs['causes'][cause]['causeexpr'] 
     conn = mysql.connector.connect(**conn_config)
     cur=conn.cursor()
     if qtype=='mort':
-        sqlqkeys={'sex':sex,'country':country,'startyear':startyear,'endyear':endyear,'ca07a':causeexpr['07A'],'ca08a':causeexpr['08A'],'ca09b':causeexpr['09B'],'ca101':causeexpr['101'],'ca10':causeexpr['10']}
-        selstat='Year,List,Sum(Deaths1) AS Pop1, Sum(Deaths2) AS Pop2, Sum(Deaths3) AS Pop3, Sum(Deaths4) AS Pop4, Sum(Deaths5) AS Pop5, Sum(Deaths6) AS Pop6, Sum(Deaths7) AS Pop7, Sum(Deaths8) AS Pop8, Sum(Deaths9) AS Pop9, Sum(Deaths10) AS Pop10, Sum(Deaths11) AS Pop11, Sum(Deaths12) AS Pop12, Sum(Deaths13) AS Pop13, Sum(Deaths14) AS Pop14, Sum(Deaths15) AS Pop15, Sum(Deaths16) AS Pop16, Sum(Deaths17) AS Pop17, Sum(Deaths18) AS Pop18, Sum(Deaths19) AS Pop19, Sum(Deaths20) AS Pop20, Sum(Deaths21) AS Pop21, Sum(Deaths22) AS Pop22, Sum(Deaths23) AS Pop23, Sum(Deaths24) AS Pop24, Sum(Deaths25) AS Pop25, Sum(Deaths26) AS Pop26'
-        sqlq='select '+selstat+' from Deaths where (case when List=\'07A\' then Cause REGEXP %(ca07a)s  when List=\'08A\' then Cause REGEXP %(ca08a)s when List REGEXP \'09(B|N)\' then Cause REGEXP %(ca09b)s when List=\'101\' then Cause REGEXP %(ca101)s when List REGEXP \'10(M|[3-4])\' then Cause REGEXP %(ca10)s end) and Sex=%(sex)s and (Country=%(country)s '+ctry_extrasql+') and Year>=%(startyear)s and Year<=%(endyear)s group by Year,List order by Year'
+        sqlqkeys={'sex':sex,'country':country,'startyear':startyear,
+                'endyear':endyear,'ca07a':causeexpr['07A'],'ca08a':causeexpr['08A'],
+                'ca09b':causeexpr['09B'],'ca101':causeexpr['101'],'ca10':causeexpr['10']}
+        selstat=('Year,List,Sum(Deaths1) AS Pop1, Sum(Deaths2) AS Pop2,' 
+        'Sum(Deaths3) AS Pop3, Sum(Deaths4) AS Pop4, Sum(Deaths5) AS Pop5, Sum(Deaths6) ' 
+        'AS Pop6, Sum(Deaths7) AS Pop7, Sum(Deaths8) AS Pop8, Sum(Deaths9) AS Pop9,' 
+        'Sum(Deaths10) AS Pop10, Sum(Deaths11) AS Pop11, Sum(Deaths12) AS Pop12,' 
+        'Sum(Deaths13) AS Pop13, Sum(Deaths14) AS Pop14, Sum(Deaths15) AS Pop15,' 
+        'Sum(Deaths16) AS Pop16, Sum(Deaths17) AS Pop17, Sum(Deaths18) AS Pop18,' 
+        'Sum(Deaths19) AS Pop19, Sum(Deaths20) AS Pop20, Sum(Deaths21) AS Pop21,' 
+        'Sum(Deaths22) AS Pop22, Sum(Deaths23) AS Pop23, Sum(Deaths24) AS Pop24,' 
+        'Sum(Deaths25) AS Pop25, Sum(Deaths26) AS Pop26')
+        sqlq=('select '+selstat+' from Deaths where (case ' 
+        'when List=\'07A\' then Cause REGEXP %(ca07a)s '  
+        'when List=\'08A\' then Cause REGEXP %(ca08a)s '
+        'when List REGEXP \'09(B|N)\' then Cause REGEXP %(ca09b)s ' 
+        'when List=\'101\' then Cause REGEXP %(ca101)s ' 
+        'when List REGEXP \'10(M|[3-4])\' then Cause REGEXP %(ca10)s end)' 
+        'and Sex=%(sex)s and (Country=%(country)s '+ctry_extrasql+')' 
+        'and Year>=%(startyear)s and Year<=%(endyear)s group by Year,List order by Year')
     elif qtype=='pop':
         sqlqkeys={'sex':sex,'country':country,'startyear':startyear,'endyear':endyear}
-        selstat='Pop1, Pop2, Pop3, Pop4, Pop5, Pop6, Pop7, Pop8, Pop9, Pop10, Pop11, Pop12, Pop13, Pop14, Pop15, Pop16, Pop17, Pop18, Pop19, Pop20, Pop21, Pop22, Pop23, Pop24, Pop25, Pop26, Year'
-        sqlq='select '+selstat+' from Pop where Sex=%(sex)s and (Country=%(country)s '+ctry_extrasql+') and Year>=%(startyear)s and Year<=%(endyear)s order by Year'
+        selstat=('Pop1, Pop2, Pop3, Pop4, Pop5, Pop6, Pop7, Pop8, Pop9, Pop10,' 
+        'Pop11, Pop12, Pop13, Pop14, Pop15, Pop16, Pop17, Pop18, Pop19, Pop20,' 
+        'Pop21, Pop22, Pop23, Pop24, Pop25, Pop26, Year')
+        sqlq=('select '+selstat+' from Pop where Sex=%(sex)s and' 
+        '(Country=%(country)s '+ctry_extrasql+') and Year>=%(startyear)s ' 
+        'and Year<=%(endyear)s order by Year')
     else:
         print('Okänd frågetyp!')
 

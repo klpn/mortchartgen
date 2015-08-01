@@ -4,12 +4,12 @@ library(yaml)
 library(XML)
 library(gridSVG)
 library(rjson)
+conf<-yaml.load_file('chartgen.yaml')
 
 sexratio.trends.plot<-function(country,cause,sex1,sex2,startyear,endyear,startage,endage,type,ageformat)
 {
-	conf<-yaml.load_file('chartgen.yaml')
-	sex1alias<-conf[['sexes']][[sex1]][['alias']]
-	sex2alias<-conf[['sexes']][[sex2]][['alias']]
+	sex1alias<-conf[['sexes']][[sprintf('%d',sex1)]][['alias']]
+	sex2alias<-conf[['sexes']][[sprintf('%d',sex2)]][['alias']]
 	sex1<-agetrends.plot(country,cause,sex1,startyear,endyear,startage,endage,type,ageformat)
 	sex2<-agetrends.plot(country,cause,sex2,startyear,endyear,startage,endage,type,ageformat)
 	title<-gsub(sex1alias,sprintf('%s/%s',sex1alias,sex2alias),sex1$labels$title)
@@ -22,12 +22,11 @@ sexratio.trends.plot<-function(country,cause,sex1,sex2,startyear,endyear,startag
 
 agetrends.plot<-function(country,cause,sex,startyear,endyear,startage,endage,type,ageformat)
 {
-	conf<-yaml.load_file('chartgen.yaml')
 	csvname<-sprintf('csv/%s%d%s%d.csv',cause,country,type,sex)
 	df<-read.csv(csvname,header=TRUE)
 	caalias<-conf[['causes']][[cause]][['alias']]
 	ctryalias<-conf[['countries']][[sprintf('%d',country)]][['alias']]
-	sexalias<-conf[['sexes']][[sex]][['alias']]
+	sexalias<-conf[['sexes']][[sprintf('%d',sex)]][['alias']]
 	age<-c(seq(5,95,by=5),85)
 	agealias<-sprintf('%d\u2013%s',age,c(seq(9,94,by=5),'w','w'))
 	ageorig<-sprintf('Pop%s',c(seq(7,25),'2325sum'))
@@ -61,7 +60,6 @@ agetrends.plot<-function(country,cause,sex,startyear,endyear,startage,endage,typ
 
 ctriesyr.batchplot<-function(compyrseq=seq(1952,2012,by=10))
 {
-	conf<-yaml.load_file('chartgen.yaml')
 	causenames<-names(conf[['causes']])
 	agenames<-names(conf[['ages']])
 	svgdir<-'mortchart-site/charts/ctriesyr'
@@ -154,7 +152,6 @@ svgscript<-function(graphdata)
 
 ctriesyr.plot<-function(cause,compyear,ageorig,type)
 {
-	conf<-yaml.load_file('chartgen.yaml')
 	ctrynames<-names(conf[['countries']])
 	sex<-as.numeric(conf[['causes']][[cause]][['sex']])
 	caalias<-conf[['causes']][[cause]][['alias']]

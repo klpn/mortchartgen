@@ -11,12 +11,12 @@ import statsmodels.api as sm
 mpl.rcParams['axes.formatter.use_locale']=True
 mpl.style.use('ggplot')
 f=open('chartgen.yaml')
-combs=yaml.safe_load(f)
+conf=yaml.safe_load(f)
 f.close()
 
-def batchplot(ages=combs['ages'],causes=combs['causes'],
-        countries=combs['countries'],sexes=combs['sexes'],
-        settings=combs['settings'],types=combs['ptypes']):
+def batchplot(ages=conf['ages'],causes=combs['causes'],
+        countries=conf['countries'],sexes=combs['sexes'],
+        settings=conf['settings'],types=combs['ptypes']):
 
     os.makedirs('mortchart-site/charts',exist_ok=True)
     if settings['savecsv']: os.makedirs('csv',exist_ok=True)
@@ -56,7 +56,7 @@ def batchplot(ages=combs['ages'],causes=combs['causes'],
         print(str(country) +': '+str(time.time() - start_time)+' sekunder')
 
 def numbdict(country,startyear,endyear,numbtype='denom',cause='all',
-        sexlist=[2,1],nomsrc='',countries=combs['countries']):
+        sexlist=[2,1],nomsrc='',countries=conf['countries']):
     if 'ctry_extrasql' in countries[country]:
         extrasql=countries[country]['ctry_extrasql']
     else:
@@ -78,7 +78,7 @@ def numbdict(country,startyear,endyear,numbtype='denom',cause='all',
     return numbdict
 
 def propdict(ptype,from_csv=False,nomdict='',denomdict='',country='',
-        startyear='',endyear='',cause='',sexlist='',countries=combs['countries']):
+        startyear='',endyear='',cause='',sexlist='',countries=conf['countries']):
     if(from_csv):
         propdict={sex:pd.read_csv('csv/'+cause+str(country)+ptype+
             str(sex)+'.csv',index_col='Year') for sex in sexlist}
@@ -97,8 +97,8 @@ def propdict(ptype,from_csv=False,nomdict='',denomdict='',country='',
     propdict['country']=country
     return propdict
 
-def propplot(frames,plotsexes,age,ages=combs['ages'],causes=combs['causes'],
-        countries=combs['countries'],sexes=combs['sexes'],types=combs['ptypes']):
+def propplot(frames,plotsexes,age,ages=conf['ages'],causes=combs['causes'],
+        countries=conf['countries'],sexes=combs['sexes'],types=combs['ptypes']):
     for sex in plotsexes:
         frames[sex][age].plot(label=sexes[sex]['alias'])
         plt.plot(smoother(frames[sex],age)[:,0],smoother(frames[sex],age)[:,1],
@@ -141,8 +141,8 @@ def propframe(popnom,popdenom):
     return prop
 
 def build_query(sex,country,startyear,endyear,qtype,ctry_extrasql='',cause='all'):
-    conn_config = combs['settings']['conn_config'] 
-    causeexpr = combs['causes'][cause]['causeexpr'] 
+    conn_config = conf['settings']['conn_config'] 
+    causeexpr = conf['causes'][cause]['causeexpr'] 
     conn = mysql.connector.connect(**conn_config)
     cur=conn.cursor()
     if qtype=='mort':

@@ -5,20 +5,20 @@ import sys
 from jinja2 import Environment, FileSystemLoader
 
 f=open('../chartgen.yaml')
-combs=yaml.safe_load(f)
+conf=yaml.safe_load(f)
 f.close()
 
-for key in combs['countries'].keys():
-    combs['countries'][key]['name']=key
-countries_sorted=sorted(combs['countries'].values(),key=lambda k: (k['countryclass'], k['alias']))
+for key in conf['countries'].keys():
+    conf['countries'][key]['name']=key
+countries_sorted=sorted(conf['countries'].values(),key=lambda k: (k['countryclass'], k['alias']))
 
-for key in combs['causes'].keys():
-    combs['causes'][key]['name']=key
-causes_sorted=sorted(combs['causes'].values(),key=lambda k: k['alias'])
+for key in conf['causes'].keys():
+    conf['causes'][key]['name']=key
+causes_sorted=sorted(conf['causes'].values(),key=lambda k: k['alias'])
 
-for key in combs['ages'].keys():
-    combs['ages'][key]['name']=key
-ages_sorted=sorted(combs['ages'].values(),key=lambda k: (k['ptype'], k['agegroups']))
+for key in conf['ages'].keys():
+    conf['ages'][key]['name']=key
+ages_sorted=sorted(conf['ages'].values(),key=lambda k: (k['ptype'], k['agegroups']))
 
 for i in causes_sorted:
     alias=i['alias']
@@ -33,6 +33,6 @@ docfname='mortchartdoc'
 
 indextempl=env.get_template(indexfname+'.jinja')
 doctempl=env.get_template(docfname+'.jinja')
-indextempl.stream(compyrseq=list(range(1952,2022,10)),countries=countries_sorted,causes=causes_sorted,ages=ages_sorted,causeclasses=combs['causeclasses']).dump(indexfname+'.html')
-doctempl.stream(compyrseq=list(range(1952,2022,10)),causes=causes_sorted,causeclasses=combs['causeclasses']).dump(docfname+'_norefhead.md')
+indextempl.stream(compyrseq=list(range(1952,2022,10)),countries=countries_sorted,causes=causes_sorted,ages=ages_sorted,causeclasses=conf['causeclasses']).dump(indexfname+'.html')
+doctempl.stream(compyrseq=list(range(1952,2022,10)),causes=causes_sorted,causeclasses=conf['causeclasses']).dump(docfname+'_norefhead.md')
 

@@ -14,9 +14,9 @@ f=open('chartgen.yaml')
 conf=yaml.safe_load(f)
 f.close()
 
-def batchplot(ages=conf['ages'],causes=combs['causes'],
-        countries=conf['countries'],sexes=combs['sexes'],
-        settings=conf['settings'],types=combs['ptypes']):
+def batchplot(ages=conf['ages'],causes=conf['causes'],
+        countries=conf['countries'],sexes=conf['sexes'],
+        settings=conf['settings'],types=conf['ptypes']):
 
     os.makedirs('mortchart-site/charts',exist_ok=True)
     if settings['savecsv']: os.makedirs('csv',exist_ok=True)
@@ -97,8 +97,8 @@ def propdict(ptype,from_csv=False,nomdict='',denomdict='',country='',
     propdict['country']=country
     return propdict
 
-def propplot(frames,plotsexes,age,ages=conf['ages'],causes=combs['causes'],
-        countries=conf['countries'],sexes=combs['sexes'],types=combs['ptypes']):
+def propplot(frames,plotsexes,age,ages=conf['ages'],causes=conf['causes'],
+        countries=conf['countries'],sexes=conf['sexes'],types=conf['ptypes']):
     for sex in plotsexes:
         frames[sex][age].plot(label=sexes[sex]['alias'])
         plt.plot(smoother(frames[sex],age)[:,0],smoother(frames[sex],age)[:,1],

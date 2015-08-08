@@ -4,88 +4,114 @@ library(yaml)
 library(XML)
 library(gridSVG)
 library(rjson)
-conf<-yaml.load_file('chartgen.yaml')
+conf <- yaml.load_file('chartgen.yaml')
+infs <- '\u221e'
+agralias <- 'Åldersgrupp'
+percalias <- '%'
 
-sexratio.trends.plot<-function(country,cause,sex1,sex2,startyear,endyear,startage,endage,type,ageformat)
+comma.lab <- function(x){format(x, decimal.mark = ',')}
+
+sexratio.trends.plot <- function(country, cause, sex1, sex2, startyear, endyear, startage, 
+			       endage, type, ageformat)
 {
-	sex1alias<-conf[['sexes']][[sprintf('%d',sex1)]][['alias']]
-	sex2alias<-conf[['sexes']][[sprintf('%d',sex2)]][['alias']]
-	sex1<-agetrends.plot(country,cause,sex1,startyear,endyear,startage,endage,type,ageformat)
-	sex2<-agetrends.plot(country,cause,sex2,startyear,endyear,startage,endage,type,ageformat)
-	title<-gsub(sex1alias,sprintf('%s/%s',sex1alias,sex2alias),sex1$labels$title)
-	df<-sex1$data
-	df$ratio<-sex1$data$mort/sex2$data$mort
-	df.plot<-ggplot(data=df,aes(x=Year,y=ratio,group=agealias,colour=agealias))+xlab('År')+ylab('Kvot')+ggtitle(title)+geom_point()+geom_smooth()+scale_colour_discrete(name='Åldersgrupp')+theme(axis.text.x=element_text(angle=45))
+	sex1alias <- conf[['sexes']][[sprintf('%d', sex1)]][['alias']]
+	sex2alias <- conf[['sexes']][[sprintf('%d', sex2)]][['alias']]
+	sex1 <- agetrends.plot(country, cause, sex1, startyear, endyear, 
+			       startage, endage, type, ageformat)
+	sex2 <- agetrends.plot(country, cause, sex2, startyear, endyear, 
+			       startage, endage, type, ageformat)
+	title <- gsub(sex1alias, sprintf('%s/%s', sex1alias, sex2alias), sex1$labels$title)
+	df <- sex1$data
+	df$ratio <- sex1$data$mort/sex2$data$mort
+	df.plot <- ggplot(data = df, aes(x = Year, y = ratio, group = agealias, 
+					 colour = agealias)) + 
+		xlab('År') + ylab('Kvot') + 
+		ggtitle(title) + geom_point() + geom_smooth() + 
+		scale_colour_discrete(name = agralias) + 
+		theme(axis.text.x = element_text(angle = 45))
 	return(df.plot)
 }
 
 
-agetrends.plot<-function(country,cause,sex,startyear,endyear,startage,endage,type,ageformat)
+agetrends.plot <- function(country, cause, sex, startyear, endyear, 
+			   startage, endage, type, ageformat)
 {
-	csvname<-sprintf('csv/%s%d%s%d.csv',cause,country,type,sex)
-	df<-read.csv(csvname,header=TRUE)
-	caalias<-conf[['causes']][[cause]][['alias']]
-	ctryalias<-conf[['countries']][[sprintf('%d',country)]][['alias']]
-	sexalias<-conf[['sexes']][[sprintf('%d',sex)]][['alias']]
-	age<-c(seq(5,95,by=5),85)
-	agealias<-sprintf('%d\u2013%s',age,c(seq(9,94,by=5),'w','w'))
-	ageorig<-sprintf('Pop%s',c(seq(7,25),'2325sum'))
-	ages<-data.frame(age,agealias,ageorig)
+	csvname <- sprintf('csv/%s%d%s%d.csv', cause, country, type, sex)
+	df <- read.csv(csvname, header = TRUE)
+	caalias <- conf[['causes']][[cause]][['alias']]
+	ctryalias <- conf[['countries']][[sprintf('%d', country)]][['alias']]
+	sexalias <- conf[['sexes']][[sprintf('%d', sex)]][['alias']]
+	age <- c(seq(5, 95, by = 5), 85)
+	agealias <- sprintf('%d\u2013%s', age, c(seq(9, 94, by = 5), infs, infs))
+	ageorig <- sprintf('Pop%s', c(seq(7, 25), '2325sum'))
+	ages <- data.frame(age, agealias, ageorig)
 
-	if(type=='rate')
+	if(type == 'rate')
 	{
-	       	typealias<-'Dödstal'
-		yl<-'log(dödstal)'
-		yfunc<-quote(log(mort))
+	       	typealias <- 'Dödstal'
+		yl <- 'log(dödstal)'
+		yfunc <- quote(log(mort))
 	}
-	if(type=='perc')
+	if(type == 'perc')
 	{       
-		typealias<-'Andel dödsfall'
-	       	yl<-'%'
-		yfunc<-quote(100*mort)
+		typealias <- 'Andel dödsfall'
+	       	yl <- percalias 
+		yfunc <- quote(100*mort)
 	}
-	title<-sprintf('%s %s %s %s',typealias,caalias,sexalias,ctryalias)
+	title <- sprintf('%s %s %s %s', typealias, caalias, sexalias, ctryalias)
 
 
-	if(ageformat==0) df.long<-gather(df,ageorig,mort,Pop7:Pop25)
-	else if(ageformat==1) df.long<-gather(subset(df,select=c(Year,Pop7:Pop22,Pop2325sum)),ageorig,mort,Pop7:Pop2325sum)
-	df.long<-merge(df.long,ages,'ageorig')
-	df.long.sub<-subset(df.long,Year>=startyear & Year<=endyear & age %in% seq(startage,endage,by=5))
-	env<-environment()
+	if(ageformat == 0) df.long <- gather(df, ageorig, mort, Pop7:Pop25)
+	else if(ageformat == 1) df.long <- gather(subset(df, 
+			select = c(Year, Pop7:Pop22, Pop2325sum)), 
+			ageorig, mort, Pop7:Pop2325sum)
+	df.long <- merge(df.long, ages, 'ageorig')
+	df.long.sub <- subset(df.long, Year >= startyear & Year <= endyear & 
+			      age %in% seq(startage, endage, by = 5))
+	env <- environment()
 
-	df.plot<-ggplot(data=df.long.sub,aes(x=Year,y=eval(yfunc),group=agealias,colour=agealias),environment=env)+xlab('År')+ylab(yl)+ggtitle(title)+geom_point()+geom_smooth()+scale_colour_discrete(name='Åldersgrupp')+theme(axis.text.x=element_text(angle=45))
+	df.plot <- ggplot(data = df.long.sub, aes(x = Year, y = eval(yfunc), 
+	           group = agealias, colour = agealias), environment = env) + 
+		xlab('År') + ylab(yl) + 
+		ggtitle(title) + 
+		geom_point() + geom_smooth() + 
+		scale_colour_discrete(name = 'Åldersgrupp') + 
+		theme(axis.text.x = element_text(angle = 45))
 
 	return(df.plot)
 }
 
-ctriesyr.batchplot<-function(compyrseq=seq(1952,2012,by=10))
+ctriesyr.batchplot <- function(compyrseq = seq(1952, 2012, by = 10))
 {
-	causenames<-names(conf[['causes']])
-	agenames<-names(conf[['ages']])
-	svgdir<-'mortchart-site/charts/ctriesyr'
-	xmlprefix<-'<?xml version="1.0" encoding="UTF-8"?>\n'
-	dir.create(svgdir,showWarnings=FALSE)
+	causenames <- names(conf[['causes']])
+	agenames <- names(conf[['ages']])
+	svgdir <- 'mortchart-site/charts/ctriesyr'
+	xmlprefix <- '<?xml version = "1.0" encoding = "UTF-8"?>\n'
+	dir.create(svgdir, showWarnings = FALSE)
 	
 	for(year in compyrseq)
 	{
 		for(cause in causenames)
 		{
-			causeconf<-conf[['causes']][[cause]]
+			causeconf <- conf[['causes']][[cause]]
 			if(!(year %in% causeconf[['skipyrs']])){
 			for(age in agenames)
 			{
 				
 				if(!(age %in% causeconf[['skip']]))
 				   {
-					   type<-conf[['ages']][[age]][['ptype']]
-					   if(!(cause=='all' & type=='perc')){
-					   svgpath<-sprintf('%s/%s%s%scomp%d.svg',svgdir,cause,type,age,year)
-					   curgrid<-ctriesyr.plot(cause,year,age,type)
+					   type <- conf[['ages']][[age]][['ptype']]
+					   if(!(cause == 'all' & type == 'perc')){
+					   svgpath <- sprintf('%s/%s%s%scomp%d.svg', 
+							      svgdir, cause, type, age, year)
+					   curgrid <- ctriesyr.plot(cause, year, age, type)
 					   print(curgrid)
-					   if(causeconf[['sex']]==0)
+					   if(causeconf[['sex']] == 0)
 					   {
-					   curgrid.svg<-grid.export(addClasses=TRUE)
-					   cat(xmlprefix,gsub('</svg>$','',saveXML(curgrid.svg$svg)),svgscript(curgrid$data),file=svgpath)
+					   curgrid.svg <- grid.export(addClasses = TRUE)
+					   cat(xmlprefix, gsub('</svg>$', '', 
+							       saveXML(curgrid.svg$svg)), 
+					       svgscript(curgrid$data), file = svgpath)
 					   }
 					   else grid.export(svgpath)
 					   dev.off()
@@ -98,111 +124,176 @@ ctriesyr.batchplot<-function(compyrseq=seq(1952,2012,by=10))
 
 }
 
-svgscript<-function(graphdata)
+svgscript <- function(graphdata)
 {
-	notice<-'<!-- Adapted from http://timelyportfolio.github.io/gridSVG_intro/ -->'
-	d3.script<-'<script xlink:href="http://d3js.org/d3.v3.js"></script>'
-	jsonarr<-rjson::toJSON(apply(graphdata,MARGIN=1,FUN=function(x)return(list(x))))
-	dataarr.script<-sprintf('var dataarr=%s;',jsonarr)
-	datamap.script<-'var dataToBind = d3.entries(dataarr.map(function(d,i) {return d[0]}));'
-	databind.script<-'var scatterPoints = d3.select(".points").selectAll("use");\nscatterPoints.data(dataToBind);'
-	tool.script<-'scatterPoints  
-    .on("mouseover", function(d) {      
+	notice <- '<!-- Adapted from http://timelyportfolio.github.io/gridSVG_intro/ -->'
+	d3.script <- '<script xlink:href = "http://d3js.org/d3.v3.js"></script>'
+	jsonarr <- rjson::toJSON(apply(graphdata, MARGIN = 1, FUN = function(x)return(list(x))))
+	dataarr.script <- sprintf('var dataarr = %s;', jsonarr)
+	datamap.script <- 'var dataToBind  =  d3.entries(dataarr.map(function(d, i) {return d[0]}));'
+	databind.script <- 'var scatterPoints  =  d3.select(".points").selectAll("use");\nscatterPoints.data(dataToBind);'
+	tool.script <- 'scatterPoints  
+    .on("mouseover",  function(d) {      
       //Create the tooltip label
-      var tooltip = d3.select(this.parentNode).append("g");
+      var tooltip  =  d3.select(this.parentNode).append("g");
       tooltip
-        .attr("id","tooltip")
+        .attr("id", "tooltip")
        tooltip.append("text")
-        .attr("transform","scale(1,-1)")
-        .attr("x",100)
-        .attr("y",-590)
-        .attr("text-anchor","start")
-        .attr("stroke","gray")
-        .attr("fill","gray")      
-        .attr("fill-opacity",1)
-        .attr("opacity",1)
-        .text(d.value.countryalias + ":");       
+        .attr("transform", "scale(1, -1)")
+        .attr("x", 100)
+        .attr("y", -590)
+        .attr("text-anchor", "start")
+        .attr("stroke", "gray")
+        .attr("fill", "gray")      
+        .attr("fill-opacity", 1)
+        .attr("opacity", 1)
+        .text(d.value.countryalias  +  ":");       
       tooltip.append("text")
-        .attr("transform","scale(1,-1)")
-        .attr("x",100)
-        .attr("y",-570)
-        .attr("text-anchor","start")
-        .attr("stroke","gray")
-        .attr("fill","gray")
-        .attr("fill-opacity",1)
-        .attr("opacity",1)
-        .text("kv: " + d.value.femmort.replace(".",","));
+        .attr("transform", "scale(1, -1)")
+        .attr("x", 100)
+        .attr("y", -570)
+        .attr("text-anchor", "start")
+        .attr("stroke", "gray")
+        .attr("fill", "gray")
+        .attr("fill-opacity", 1)
+        .attr("opacity", 1)
+        .text("kv: "  +  d.value.femmort.replace(".", ","));
       tooltip.append("text")
-        .attr("transform","scale(1,-1)")
-        .attr("x",100)
-        .attr("y",-550)
-        .attr("text-anchor","start")
-        .attr("stroke","gray")
-        .attr("fill","gray")      
-        .attr("fill-opacity",1)
-        .attr("opacity",1)
-        .text("m: " + d.value.malemort.replace(".",","));
+        .attr("transform", "scale(1, -1)")
+        .attr("x", 100)
+        .attr("y", -550)
+        .attr("text-anchor", "start")
+        .attr("stroke", "gray")
+        .attr("fill", "gray")      
+        .attr("fill-opacity", 1)
+        .attr("opacity", 1)
+        .text("m: "  +  d.value.malemort.replace(".", ","));
     })              
-    .on("mouseout", function(d) {       
+    .on("mouseout",  function(d) {       
         d3.select("#tooltip").remove();  
     });'
-   return(sprintf('%s\n%s\n<script>\n%s\n%s\n%s\n%s\n</script>\n</svg>',notice,d3.script,dataarr.script,datamap.script,databind.script,tool.script))
+   return(sprintf('%s\n%s\n<script>\n%s\n%s\n%s\n%s\n</script>\n</svg>', notice, 
+		  d3.script, dataarr.script, datamap.script, databind.script, tool.script))
 
 }
 
-ctriesyr.plot<-function(cause,compyear,ageorig,type)
+ctriesyr.plot <- function(cause, compyear, ageorig, type)
 {
-	ctrynames<-names(conf[['countries']])
-	sex<-as.numeric(conf[['causes']][[cause]][['sex']])
-	caalias<-conf[['causes']][[cause]][['alias']]
-	agealias<-conf[['ages']][[ageorig]][['alias']]
-	if('note' %in% names(conf[['ages']][[ageorig]])) agealias<-sprintf('%s (%s)',agealias,conf[['ages']][[ageorig]][['note']])
+	ctrynames <- names(conf[['countries']])
+	sex <- as.numeric(conf[['causes']][[cause]][['sex']])
+	caalias <- conf[['causes']][[cause]][['alias']]
+	agealias <- conf[['ages']][[ageorig]][['alias']]
+	if('note' %in% names(conf[['ages']][[ageorig]])) 
+		agealias <- sprintf('%s (%s)', agealias, conf[['ages']][[ageorig]][['note']])
 
-	if(type=='rate') typealias<-'Dödstal'
-	else if(type=='perc') typealias<-'Andel dödsfall'
-	if(sex==1) sexalias<-'män'
-	else if(sex==2) sexalias<-'kvinnor'
+	typealias <- conf[['ptypes']][[type]][['alias']]
+	sexalias <- conf[['sexes']][[sex]][['alias']]
 	
-	df<-data.frame()
+	df <- data.frame()
 	for(country in ctrynames)
 	{
-		if(sex==0)
+		if(sex == 0)
 		{
-			csvname.country.male<-sprintf('csv/%s%s%s1.csv',cause,country,type)
-			csvname.country.fem<-sprintf('csv/%s%s%s2.csv',cause,country,type)
-			df.country.male<-read.csv(csvname.country.male,header=TRUE)
-			df.country.fem<-read.csv(csvname.country.fem,header=TRUE)
-			df.country<-data.frame(Year=df.country.male$Year)
-			df.country['malemort']<-df.country.male[ageorig]
-			df.country['femmort']<-df.country.fem[ageorig]
+			csvname.country.male <- sprintf('csv/%s%s%s1.csv', cause, country, type)
+			csvname.country.fem <- sprintf('csv/%s%s%s2.csv', cause, country, type)
+			df.country.male <- read.csv(csvname.country.male, header = TRUE)
+			df.country.fem <- read.csv(csvname.country.fem, header = TRUE)
+			df.country <- data.frame(Year = df.country.male$Year)
+			df.country['malemort'] <- df.country.male[ageorig]
+			df.country['femmort'] <- df.country.fem[ageorig]
 		}
 		else
 		{
-			csvname.country<-sprintf('csv/%s%s%s%d.csv',cause,country,type,sex)
-			df.country.0<-read.csv(csvname.country,header=TRUE)
-			df.country<-data.frame(Year=df.country.0$Year)
-			df.country['mort']<-df.country.0[ageorig]
+			csvname.country <- sprintf('csv/%s%s%s%d.csv', cause, country, type, sex)
+			df.country.0 <- read.csv(csvname.country, header = TRUE)
+			df.country <- data.frame(Year = df.country.0$Year)
+			df.country['mort'] <- df.country.0[ageorig]
 		}
-		df.country$country<-country
-		df.country$countryalias<-conf[['countries']][[country]][['alias']]
-		df.country$countryiso<-conf[['countries']][[country]][['iso3166']]
-		df<-rbind(df,df.country)
+		df.country$country <- country
+		df.country$countryalias <- conf[['countries']][[country]][['alias']]
+		df.country$countryiso <- conf[['countries']][[country]][['iso3166']]
+		df <- rbind(df, df.country)
 	}
-	df.sub<-subset(df,Year==compyear)
-	rownames(df.sub)<-NULL
-	comma.lab<-function(x){format(x,decimal.mark=',')}
+	df.sub <- subset(df, Year == compyear)
+	rownames(df.sub) <- NULL
 
-	if(sex==0)
+	if(sex == 0)
 	{
-		title<-sprintf('%s %s\n%s %d',typealias,caalias,agealias,compyear)
-		df.plot<-ggplot(data=df.sub,aes(x=femmort,y=malemort))+xlab(sprintf('%s kvinnor',typealias))+ylab(sprintf('%s män',typealias))+scale_x_continuous(label=comma.lab)+scale_y_continuous(label=comma.lab)+ggtitle(title)+geom_text(aes(label=countryiso),size=3.5,alpha=1/2)+geom_point(alpha=1/8,size=4)
+		title <- sprintf('%s %s\n%s %d', typealias, caalias, agealias, compyear)
+		df.plot <- ggplot(data = df.sub, aes(x = femmort, y = malemort)) + 
+			xlab(sprintf('%s kvinnor', typealias)) + 
+			ylab(sprintf('%s män', typealias)) + 
+				scale_x_continuous(label = comma.lab) + 
+			scale_y_continuous(label = comma.lab) + 
+			ggtitle(title) + 
+			geom_text(aes(label = countryiso), size = 3.5, alpha = 1/2) + 
+			geom_point(alpha = 1/8, size = 4)
 	}
 	else
 	{
-		title<-sprintf('%s %s\n%s %s %d',typealias,caalias,sexalias,agealias,compyear)
-		df.plot<-ggplot(data=df.sub,aes(x=countryalias,y=mort))+xlab('Befolkning')+ylab(typealias)+scale_y_continuous(label=comma.lab)+ggtitle(title)+geom_bar(stat='identity')+theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
+		title <- sprintf('%s %s\n%s %s %d', typealias, caalias, sexalias, 
+				 agealias, compyear)
+		df.plot <- ggplot(data = df.sub, aes(x = countryalias, y = mort)) + 
+			xlab('Befolkning') + 
+			ylab(typealias) + 
+			scale_y_continuous(label = comma.lab) + 
+			ggtitle(title) + 
+			geom_bar(stat = 'identity') + 
+			theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
 	}
 	
 	return(df.plot)
 	
+}
+
+causedist.plot <- function(country, sex, year, startage, endage, ageformat, 
+			   causelist = conf[['causedist']])
+{
+	df <- data.frame()
+	ctryalias <- conf[['countries']][[sprintf('%d', country)]][['alias']]
+	sexalias <- conf[['sexes']][[sprintf('%d', sex)]][['alias']]
+	casexlist <- Filter(function(x) conf[['causes']][[x]][['sex']] == 0 ||
+			 conf[['causes']][[x]][['sex']] == sex, causelist) 
+	for(cause in casexlist)
+	{
+		catrend <- agetrends.plot(country, cause, sex, year, year, 
+					  startage, endage, 'perc', ageformat)
+		df.catrend <- catrend$data
+		df.catrend$cause <- cause
+		df.catrend$caalias <- conf[['causes']][[cause]][['alias']]
+		df <- rbind(df, df.catrend)
+	}
+	
+	for(cause in casexlist)
+	{
+		causeconf = conf[['causes']][[cause]]
+		if(causeconf[['classtot']])
+		{
+			for(subcause in casexlist)
+			{
+				subconf = conf[['causes']][[subcause]]
+				if(!subconf[['classtot']] && 
+				   subconf[['causeclass']] == causeconf[['causeclass']])
+				{
+					df$mort[df$cause == cause] <- 
+						df$mort[df$cause == cause] - df$mort[df$cause == subcause]
+					df$caalias[df$cause == cause] <- 
+						sprintf('%s övrigt', causeconf[['alias']])
+				}
+			}
+		}
+
+	}
+	
+	title <- sprintf('Fördelning dödsorsaker %s %s %d', sexalias, ctryalias, year)
+	df.plot <- ggplot(data = df, aes(x = agealias, y = 100*mort, 
+					 fill = caalias, group = caalias)) + 
+		geom_area(alpha = 0.7, colour = 'black') + 
+		xlab(agralias) + 
+		ylab(percalias) + 
+		scale_fill_hue(name = 'Orsak') + 
+		scale_y_continuous(label = comma.lab) + 
+		ggtitle(title) + 
+		theme(axis.text.x = element_text(angle = 45))
+	return(df.plot)
 }

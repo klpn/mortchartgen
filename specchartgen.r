@@ -46,13 +46,13 @@ agetrends.plot <- function(country, cause, sex, startyear, endyear,
 	ageorig <- sprintf('Pop%s', c(seq(7, 25), '2325sum'))
 	ages <- data.frame(age, agealias, ageorig)
 
-	if(type == 'rate')
+	if (type == 'rate')
 	{
 	       	typealias <- 'Dödstal'
 		yl <- 'log(dödstal)'
 		yfunc <- quote(log(mort))
 	}
-	if(type == 'perc')
+	if (type == 'perc')
 	{       
 		typealias <- 'Andel dödsfall'
 	       	yl <- percalias 
@@ -61,8 +61,8 @@ agetrends.plot <- function(country, cause, sex, startyear, endyear,
 	title <- sprintf('%s %s %s %s', typealias, caalias, sexalias, ctryalias)
 
 
-	if(ageformat == 0) df.long <- gather(df, ageorig, mort, Pop7:Pop25)
-	else if(ageformat == 1) df.long <- gather(subset(df, 
+	if (ageformat == 0) df.long <- gather(df, ageorig, mort, Pop7:Pop25)
+	else if (ageformat == 1) df.long <- gather(subset(df, 
 			select = c(Year, Pop7:Pop22, Pop2325sum)), 
 			ageorig, mort, Pop7:Pop2325sum)
 	df.long <- merge(df.long, ages, 'ageorig')
@@ -89,24 +89,24 @@ ctriesyr.batchplot <- function(compyrseq = seq(1952, 2012, by = 10))
 	xmlprefix <- '<?xml version = "1.0" encoding = "UTF-8"?>\n'
 	dir.create(svgdir, showWarnings = FALSE)
 	
-	for(year in compyrseq)
+	for (year in compyrseq)
 	{
-		for(cause in causenames)
+		for (cause in causenames)
 		{
 			causeconf <- conf[['causes']][[cause]]
-			if(!(year %in% causeconf[['skipyrs']])){
-			for(age in agenames)
+			if (!(year %in% causeconf[['skipyrs']])){
+			for (age in agenames)
 			{
 				
-				if(!(age %in% causeconf[['skip']]))
+				if (!(age %in% causeconf[['skip']]))
 				   {
 					   type <- conf[['ages']][[age]][['ptype']]
-					   if(!(cause == 'all' & type == 'perc')){
+					   if (!(cause == 'all' & type == 'perc')){
 					   svgpath <- sprintf('%s/%s%s%scomp%d.svg', 
 							      svgdir, cause, type, age, year)
 					   curgrid <- ctriesyr.plot(cause, year, age, type)
 					   print(curgrid)
-					   if(causeconf[['sex']] == 0)
+					   if (causeconf[['sex']] == 0)
 					   {
 					   curgrid.svg <- grid.export(addClasses = TRUE)
 					   cat(xmlprefix, gsub('</svg>$', '', 
@@ -183,16 +183,16 @@ ctriesyr.plot <- function(cause, compyear, ageorig, type)
 	sex <- as.numeric(conf[['causes']][[cause]][['sex']])
 	caalias <- conf[['causes']][[cause]][['alias']]
 	agealias <- conf[['ages']][[ageorig]][['alias']]
-	if('note' %in% names(conf[['ages']][[ageorig]])) 
+	if ('note' %in% names(conf[['ages']][[ageorig]])) 
 		agealias <- sprintf('%s (%s)', agealias, conf[['ages']][[ageorig]][['note']])
 
 	typealias <- conf[['ptypes']][[type]][['alias']]
 	sexalias <- conf[['sexes']][[sex]][['alias']]
 	
 	df <- data.frame()
-	for(country in ctrynames)
+	for (country in ctrynames)
 	{
-		if(sex == 0)
+		if (sex == 0)
 		{
 			csvname.country.male <- sprintf('csv/%s%s%s1.csv', cause, country, type)
 			csvname.country.fem <- sprintf('csv/%s%s%s2.csv', cause, country, type)
@@ -217,7 +217,7 @@ ctriesyr.plot <- function(cause, compyear, ageorig, type)
 	df.sub <- subset(df, Year == compyear)
 	rownames(df.sub) <- NULL
 
-	if(sex == 0)
+	if (sex == 0)
 	{
 		title <- sprintf('%s %s\n%s %d', typealias, caalias, agealias, compyear)
 		df.plot <- ggplot(data = df.sub, aes(x = femmort, y = malemort)) + 
@@ -254,7 +254,7 @@ causedist.plot <- function(country, sex, year, startage, endage, ageformat,
 	sexalias <- conf[['sexes']][[sprintf('%d', sex)]][['alias']]
 	casexlist <- Filter(function(x) conf[['causes']][[x]][['sex']] == 0 ||
 			 conf[['causes']][[x]][['sex']] == sex, causelist) 
-	for(cause in casexlist)
+	for (cause in casexlist)
 	{
 		catrend <- agetrends.plot(country, cause, sex, year, year, 
 					  startage, endage, 'perc', ageformat)
@@ -264,19 +264,20 @@ causedist.plot <- function(country, sex, year, startage, endage, ageformat,
 		df <- rbind(df, df.catrend)
 	}
 	
-	for(cause in casexlist)
+	for (cause in casexlist)
 	{
 		causeconf = conf[['causes']][[cause]]
-		if(causeconf[['classtot']])
+		if (causeconf[['classtot']])
 		{
-			for(subcause in casexlist)
+			for (subcause in casexlist)
 			{
 				subconf = conf[['causes']][[subcause]]
-				if(!subconf[['classtot']] && 
+				if (!subconf[['classtot']] && 
 				   subconf[['causeclass']] == causeconf[['causeclass']])
 				{
 					df$mort[df$cause == cause] <- 
-						df$mort[df$cause == cause] - df$mort[df$cause == subcause]
+						df$mort[df$cause == cause] - 
+							df$mort[df$cause == subcause]
 					df$caalias[df$cause == cause] <- 
 						sprintf('%s övrigt', causeconf[['alias']])
 				}

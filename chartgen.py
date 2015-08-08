@@ -42,7 +42,7 @@ def batchplot(ages = conf['ages'], causes = conf['causes'],
             if (cause != 'all'):
                 causedict['perc'] = propdict('perc', False, causenom, countrydenom)
             if settings['savecsv']:
-                for ptype,val in causedict.items():
+                for ptype, val in causedict.items():
                     for sex in sexlist: val[sex].to_csv('csv/' + cause + 
                             str(country) + ptype + str(sex) + '.csv') 
 
@@ -57,7 +57,7 @@ def batchplot(ages = conf['ages'], causes = conf['causes'],
         
         print(str(country)  + ': ' + str(time.time() - start_time) + ' sekunder')
 
-def numbdict(country,startyear,endyear,numbtype = 'denom',cause = 'all',
+def numbdict(country, startyear, endyear, numbtype = 'denom', cause = 'all', 
         sexlist = [2, 1], nomsrc = '', countries = conf['countries']):
     if 'ctry_extrasql' in countries[country]:
         extrasql = countries[country]['ctry_extrasql']

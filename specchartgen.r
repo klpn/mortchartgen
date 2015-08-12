@@ -34,7 +34,7 @@ sexratio.trends.plot <- function(country, cause, sex1, sex2, startyear, endyear,
 
 
 agetrends.plot <- function(country, cause, sex, startyear, endyear, 
-			   startage, endage, type, ageformat)
+			   startage, endage, type, ageformat, apctype = 'pa')
 {
 	csvname <- sprintf('csv/%s%d%s%d.csv', cause, country, type, sex)
 	df <- read.csv(csvname, header = TRUE)
@@ -52,7 +52,7 @@ agetrends.plot <- function(country, cause, sex, startyear, endyear,
 		yl <- 'log(dödstal)'
 		yfunc <- quote(log(mort))
 	}
-	if (type == 'perc')
+	else if (type == 'perc')
 	{       
 		typealias <- 'Andel dödsfall'
 	       	yl <- percalias 
@@ -61,22 +61,74 @@ agetrends.plot <- function(country, cause, sex, startyear, endyear,
 	title <- sprintf('%s %s %s %s', typealias, caalias, sexalias, ctryalias)
 
 
-	if (ageformat == 0) df.long <- gather(df, ageorig, mort, Pop7:Pop25)
-	else if (ageformat == 1) df.long <- gather(subset(df, 
+	if (ageformat == 0) 
+		df.long <- gather(df, ageorig, mort, Pop7:Pop25)
+	else if (ageformat == 1) 
+		df.long <- gather(subset(df, 
 			select = c(Year, Pop7:Pop22, Pop2325sum)), 
 			ageorig, mort, Pop7:Pop2325sum)
 	df.long <- merge(df.long, ages, 'ageorig')
 	df.long.sub <- subset(df.long, Year >= startyear & Year <= endyear & 
 			      age %in% seq(startage, endage, by = 5))
+	df.long.sub$cohort <- df.long.sub$Year - df.long.sub$age
+	yrlab <- 'År'
+	cohlab <- 'Kohort'
+	yrq <- quote(Year)
+	cq <- quote(cohort)
+	agrq <- quote(agealias)
+	agrscale <- quote(scale_colour_discrete(name = agralias))
+	yrscale <- quote(scale_colour_gradient(name = yrlab))
+	cohscale <- quote(scale_colour_gradient(name = cohlab))
+	
+	if (apctype == 'pa')
+	{
+		xfunc <- yrq 
+		xl <- yrlab
+	       	grouper <- agrq
+		scalefunc <- agrscale 
+		plotsmooth <- TRUE
+	        plotfunc <- quote(geom_point())
+	}
+	else if (apctype == 'ca')
+	{
+		xfunc <- cq 
+		xl <- cohlab
+	       	grouper <- agrq 
+		scalefunc <- agrscale 
+		plotsmooth <- TRUE
+	        plotfunc <- quote(geom_point())	
+	}
+	else if (apctype == 'ap')
+	{
+		xfunc <- agrq 
+		xl <- agralias 
+	       	grouper <- yrq 
+		scalefunc <- yrscale 
+		plotsmooth <- FALSE
+	        plotfunc <- quote(geom_line())	
+	}
+	else if (apctype == 'ac')
+	{
+		xfunc <- agrq 
+		xl <- agralias
+	       	grouper <- cq 
+		scalefunc <- cohscale 
+		plotsmooth <- FALSE
+	        plotfunc <- quote(geom_line())	
+	}
+
 	env <- environment()
 
-	df.plot <- ggplot(data = df.long.sub, aes(x = Year, y = eval(yfunc), 
-	           group = agealias, colour = agealias), environment = env) + 
-		xlab('År') + ylab(yl) + 
+	df.plot <- ggplot(data = df.long.sub, aes(x = eval(xfunc), y = eval(yfunc), 
+	           group = eval(grouper), colour = eval(grouper)), environment = env) + 
+		xlab(xl) + ylab(yl) +  
 		ggtitle(title) + 
-		geom_point() + geom_smooth() + 
-		scale_colour_discrete(name = 'Åldersgrupp') + 
+		eval(plotfunc) + 
+		eval(scalefunc) + 
 		theme(axis.text.x = element_text(angle = 45))
+
+	if (plotsmooth)
+		df.plot <- df.plot + geom_smooth()
 
 	return(df.plot)
 }

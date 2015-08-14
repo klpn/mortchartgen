@@ -27,7 +27,8 @@ sexratio.trends.plot <- function(country, cause, sex1, sex2, startyear, endyear,
 					 colour = agealias)) + 
 		xlab('År') + ylab('Kvot') + 
 		ggtitle(title) + geom_point() + geom_smooth() + 
-		scale_colour_discrete(name = agralias) + 
+		scale_colour_discrete(name = agralias) +
+		scale_y_continuous(label = comma.lab) +	
 		theme(axis.text.x = element_text(angle = 45))
 	return(df.plot)
 }
@@ -41,9 +42,32 @@ agetrends.plot <- function(country, cause, sex, startyear, endyear,
 	caalias <- conf[['causes']][[cause]][['alias']]
 	ctryalias <- conf[['countries']][[sprintf('%d', country)]][['alias']]
 	sexalias <- conf[['sexes']][[sprintf('%d', sex)]][['alias']]
-	age <- c(seq(5, 95, by = 5), 85)
-	agealias <- sprintf('%d\u2013%s', age, c(seq(9, 94, by = 5), infs, infs))
-	ageorig <- sprintf('Pop%s', c(seq(7, 25), '2325sum'))
+	if (ageformat == 0)
+	{
+		oneseq <- seq(0, 4)
+		fiveseqs <- seq(5, 95, by = 5)
+		fiveseqe <- seq(9, 94, by = 5)
+		age <- c(oneseq, fiveseqs)
+		agealias <- c(oneseq, sprintf('%d\u2013%s', fiveseqs, c(fiveseqe, infs)))
+		ageorig <- sprintf('Pop%s', seq(2, 25))
+	}
+	else if (ageformat == 1) 
+	{
+		oneseq <- seq(0, 4)
+		fiveseqs <- seq(5, 85, by = 5)
+		fiveseqe <- seq(9, 84, by = 5)
+		age <- c(oneseq, fiveseq)
+		agealias <- c(oneseq, sprintf('%d\u2013%s', fiveseqs, c(fiveseqe, infs)))
+		ageorig <- sprintf('Pop%s', c(seq(2, 22), '2325sum'))
+	}
+	else if (ageformat == 2)
+	{	
+		fiveseqs <- seq(5, 85, by = 5)
+		fiveseqe <- seq(9, 84, by = 5)
+		age <- c(0, 1, fiveseqs)
+		agealias <- c(0, sprintf('%d\u2013%s', c(1, fiveseqs), c(4, fiveseqe, infs)))
+		ageorig <- sprintf('Pop%s', c(2, '36sum', seq(7, 22), '2325sum'))
+	}
 	ages <- data.frame(age, agealias, ageorig)
 
 	if (type == 'rate')
@@ -62,23 +86,31 @@ agetrends.plot <- function(country, cause, sex, startyear, endyear,
 
 
 	if (ageformat == 0) 
-		df.long <- gather(df, ageorig, mort, Pop7:Pop25)
+		df.long <- gather(df, ageorig, mort, Pop2:Pop25)
 	else if (ageformat == 1) 
 		df.long <- gather(subset(df, 
-			select = c(Year, Pop7:Pop22, Pop2325sum)), 
-			ageorig, mort, Pop7:Pop2325sum)
+			select = c(Year, Pop2:Pop22, Pop2325sum)), 
+			ageorig, mort, Pop2:Pop2325sum)
+	else if (ageformat == 2) 
+		df.long <- gather(subset(df, 
+			select = c(Year, Pop2, Pop36sum, Pop7:Pop22, Pop2325sum)), 
+			ageorig, mort, Pop2:Pop2325sum)
 	df.long <- merge(df.long, ages, 'ageorig')
 	df.long.sub <- subset(df.long, Year >= startyear & Year <= endyear & 
-			      age %in% seq(startage, endage, by = 5))
+			      age >= startage & age <= endage)
+	df.long.sub$agealias <- factor(df.long.sub$agealias, 
+				       levels = unique(df.long.sub$agealias[order(df.long.sub$age)]))
 	df.long.sub$cohort <- df.long.sub$Year - df.long.sub$age
 	yrlab <- 'År'
 	cohlab <- 'Kohort'
 	yrq <- quote(Year)
 	cq <- quote(cohort)
 	agrq <- quote(agealias)
+	agq <- quote(age)
 	agrscale <- quote(scale_colour_discrete(name = agralias))
 	yrscale <- quote(scale_colour_gradient(name = yrlab))
 	cohscale <- quote(scale_colour_gradient(name = cohlab))
+	ycont <- quote(scale_y_continuous(label = comma.lab))
 	
 	if (apctype == 'pa')
 	{
@@ -88,6 +120,7 @@ agetrends.plot <- function(country, cause, sex, startyear, endyear,
 		scalefunc <- agrscale 
 		plotsmooth <- TRUE
 	        plotfunc <- quote(geom_point())
+		yscfunc <- ycont
 	}
 	else if (apctype == 'ca')
 	{
@@ -97,6 +130,7 @@ agetrends.plot <- function(country, cause, sex, startyear, endyear,
 		scalefunc <- agrscale 
 		plotsmooth <- TRUE
 	        plotfunc <- quote(geom_point())	
+		yscfunc <- ycont
 	}
 	else if (apctype == 'ap')
 	{
@@ -106,6 +140,7 @@ agetrends.plot <- function(country, cause, sex, startyear, endyear,
 		scalefunc <- yrscale 
 		plotsmooth <- FALSE
 	        plotfunc <- quote(geom_line())	
+		yscfunc <- ycont
 	}
 	else if (apctype == 'ac')
 	{
@@ -115,14 +150,17 @@ agetrends.plot <- function(country, cause, sex, startyear, endyear,
 		scalefunc <- cohscale 
 		plotsmooth <- FALSE
 	        plotfunc <- quote(geom_line())	
+		yscfunc <- ycont
 	}
 
 	env <- environment()
 
 	df.plot <- ggplot(data = df.long.sub, aes(x = eval(xfunc), y = eval(yfunc), 
-	           group = eval(grouper), colour = eval(grouper)), environment = env) + 
+	           group = eval(grouper), colour = eval(grouper)), 
+			  environment = env) + 
 		xlab(xl) + ylab(yl) +  
 		ggtitle(title) + 
+		eval(yscfunc) + 
 		eval(plotfunc) + 
 		eval(scalefunc) + 
 		theme(axis.text.x = element_text(angle = 45))
@@ -239,7 +277,7 @@ ctriesyr.plot <- function(cause, compyear, ageorig, type)
 		agealias <- sprintf('%s (%s)', agealias, conf[['ages']][[ageorig]][['note']])
 
 	typealias <- conf[['ptypes']][[type]][['alias']]
-	sexalias <- conf[['sexes']][[sex]][['alias']]
+	sexalias <- conf[['sexes']][[sprintf('%d', sex)]][['alias']]
 	
 	df <- data.frame()
 	for (country in ctrynames)
@@ -347,6 +385,9 @@ causedist.plot <- function(country, sex, year, startage, endage, ageformat,
 		scale_fill_hue(name = 'Orsak') + 
 		scale_y_continuous(label = comma.lab) + 
 		ggtitle(title) + 
-		theme(axis.text.x = element_text(angle = 45))
+		theme(axis.text.x = element_text(angle = 45), 
+		      legend.position = 'bottom') +
+                guides(fill = guide_legend(nrow = 3, byrow = TRUE))
+
 	return(df.plot)
 }

@@ -141,10 +141,6 @@ def propframe(popnom, popdenom):
             frame['Pop' + start + end + 'sum'] = \
                     frame.loc[:, 'Pop' + start: 'Pop' + end].sum(1)
 
-#    popnom['Pop222sum'] = popnom.loc[:,'Pop2':'Pop22'].sum(1)
-#    popdenom['Pop222sum'] = popdenom.loc[:,'Pop2':'Pop22'].sum(1)
-#    popnom['Pop2325sum'] = popnom.loc[:,'Pop23':'Pop25'].sum(1)
-#    popdenom['Pop2325sum'] = popdenom.loc[:,'Pop23':'Pop25'].sum(1)
     prop = popnom.loc[:,'Pop1':'Pop2325sum']/popdenom.loc[:,'Pop1':'Pop2325sum']
     prop['Pop38mean'] = prop.loc[:,'Pop3':'Pop8'].mean(1)
     prop['Pop914mean'] = prop.loc[:,'Pop9':'Pop14'].mean(1)

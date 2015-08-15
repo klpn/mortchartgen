@@ -33,6 +33,7 @@ def paramsplot(country, cause, sex, startyear, endyear, startage, endage,
     k = partest.rx2('coefficients')[1]
     rsq = partest_sum.rx2('r.squared')[0]
     pardata = pandas2ri.ri2py(partest.rx2('model'))
+    plt.close()
     fig = plt.figure()
     ax = fig.add_subplot(111)
     ax.scatter(pardata['alpha'], pardata['log_r0'])

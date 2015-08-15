@@ -47,5 +47,5 @@ def paramsplot(country, cause, sex, startyear, endyear, startage, endage,
     ax.text(0.5, 0.84, rsqstring, transform=ax.transAxes, fontdict = font)
 
 def coeff_form(coeff):
-    return str(round(coeff, 3)).replace('.', ',')
+    return str(round(coeff, 3)).replace('.', '{,}')
 

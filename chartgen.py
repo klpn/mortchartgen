@@ -42,6 +42,12 @@ def batchplot(ages = conf['ages'], causes = conf['causes'],
             else: 
                 causenom = numbdict(country, startyear, endyear, 'nom', cause, 
                     sexlist) 
+            
+            if settings['savecsv']:
+                for sex in sexlist:
+                    causenom[sex].to_csv('csv/' + cause + str(country) + 'no' + 
+                        str(sex) + '.csv')
+                
             causedict = {'rate': propdict('rate', False, causenom, countrydenom)}
             if (cause != 'all'):
                 causedict['perc'] = propdict('perc', False, causenom, countrydenom)

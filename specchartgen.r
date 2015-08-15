@@ -1,5 +1,6 @@
 library(ggplot2)
 library(tidyr)
+library(plyr)
 library(yaml)
 library(XML)
 library(gridSVG)
@@ -391,3 +392,40 @@ causedist.plot <- function(country, sex, year, startage, endage, ageformat,
 
 	return(df.plot)
 }
+
+lgomp.test <- function(country, cause, sex, startyear, endyear, 
+			   startage, endage, ageformat, type = 'rate')
+{
+	col.gomp <- function(x)
+	{
+		lm(log(df.catrend.wide.yrs[[x]]) ~ df.catrend.wide$age, 
+		   weights = sqrt(dno.wide[yrseq][[x]]))$coefficients
+	}
+	
+	catrend <- agetrends.plot(country, cause, sex, startyear, endyear, 
+			   startage, endage, type, ageformat)
+	
+	yrseq <- sprintf('%d', seq(startyear, endyear))
+	
+	dno <- read.csv(sprintf('csv/%s%dno%d.csv', cause, country, sex))
+	dno$Pop36sum <- rowSums(dno[sprintf('Pop%d', seq(3, 6))])
+	dno$Pop2325sum <- rowSums(dno[sprintf('Pop%d', seq(23, 25))])
+	popcols <- sprintf('Pop%s', c(seq(2, 25), '2325sum', '36sum'))
+	dno.long <- gather(dno[c('Year', popcols)], ageorig, no, Pop2:Pop36sum)
+	dno.merge <- merge(dno.long, catrend$data, c('Year', 'ageorig'))
+	dno.wide <- spread(dno.merge[c('Year', 'no', 'age')], Year, no)
+	
+	df.catrend <- catrend$data[c('Year', 'mort', 'age')]
+	df.catrend.wide <- spread(df.catrend, Year, mort)
+	df.catrend.wide.yrs <- df.catrend.wide[yrseq]
+
+	list.gomp <- sapply(colnames(df.catrend.wide.yrs), col.gomp, simplify = FALSE)
+	df.gomp <- ldply(list.gomp)
+	colnames(df.gomp) <- c('Year', 'log_r0', 'alpha')
+	rownames(df.gomp) <- df.gomp$Year
+	long.gomp <- lm(log_r0 ~ alpha, data = df.gomp)
+
+
+	return(long.gomp)
+}
+

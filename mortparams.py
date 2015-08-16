@@ -16,7 +16,8 @@ conf = yaml.safe_load(f)
 f.close()
 
 def paramsplot(country, cause, sex, startyear, endyear, startage, endage,
-        ageformat, ptype = 'rate', causes = conf['causes'], countries = conf['countries'], 
+        ageformat, ptype = 'rate', linear = 'FALSE',
+        causes = conf['causes'], countries = conf['countries'], 
         sexes = conf['sexes'], types = conf['ptypes']):
     font = {'size': 14}
     caalias = conf['causes'][cause]['alias']
@@ -24,15 +25,18 @@ def paramsplot(country, cause, sex, startyear, endyear, startage, endage,
     ctryalias = conf['countries'][country]['alias']
     log_r0lab = r'\mathrm{log}(r_0)'
     base = importr('base')
+    stats = importr('stats')
     ro.r('source("specchartgen.r")')
     partest = ro.r('lgomp.test({country}, "{cause}", {sex}, {startyear}, \
-            {endyear}, {startage}, {endage}, {ageformat}, "{ptype}")'
-            .format(**locals()))
-    partest_sum = base.summary(partest)
-    b = partest.rx2('coefficients')[0]
-    k = partest.rx2('coefficients')[1]
+            {endyear}, {startage}, {endage}, {ageformat}, type="{ptype}", \
+            linear={linear})'.format(**locals()))
+    partest_sum = base.summary(partest[0])
+    coef_vec = stats.coef(partest[0])
+    b = coef_vec[0]
+    k = coef_vec[1]
     rsq = partest_sum.rx2('r.squared')[0]
-    pardata = pandas2ri.ri2py(partest.rx2('model'))
+    model = partest[0].rx2('model')
+    pardata = pandas2ri.ri2py(model)
     plt.close()
     fig = plt.figure()
     ax = fig.add_subplot(111)

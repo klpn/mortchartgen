@@ -5,6 +5,7 @@ library(yaml)
 library(XML)
 library(gridSVG)
 library(rjson)
+library(minpack.lm)
 conf <- yaml.load_file('chartgen.yaml')
 infs <- '\u221e'
 agralias <- 'Åldersgrupp'
@@ -393,13 +394,23 @@ causedist.plot <- function(country, sex, year, startage, endage, ageformat,
 	return(df.plot)
 }
 
-lgomp.test <- function(country, cause, sex, startyear, endyear, 
-			   startage, endage, ageformat, type = 'rate')
+lgomp.test <- function(country, cause, sex, startyear, endyear, startage,  
+			   endage, ageformat, type = 'rate', linear = FALSE)
 {
 	col.gomp <- function(x)
 	{
-		lm(log(df.catrend.wide.yrs[[x]]) ~ df.catrend.wide$age, 
-		   weights = sqrt(dno.wide[yrseq][[x]]))$coefficients
+		coef(lm(log(df.catrend.wide.yrs[[x]]) ~ df.catrend.wide$age, 
+		   weights = sqrt(dno.wide[yrseq][[x]])))
+	}
+	col.gomp.nlslm <- function(x)
+	{
+		yr = df.catrend.wide.yrs[[x]]
+		age = df.catrend.wide[['age']]
+		wgths = sqrt(dno.wide[yrseq][[x]])
+		coef(nlsLM(yr ~ r0 * exp(alpha * age),
+		   start = c(alpha = 0.14, r0 = exp(-18)), 
+		   control = nls.lm.control(maxiter = 100), 
+		   weights = wgths))
 	}
 	
 	catrend <- agetrends.plot(country, cause, sex, startyear, endyear, 
@@ -419,13 +430,22 @@ lgomp.test <- function(country, cause, sex, startyear, endyear,
 	df.catrend.wide <- spread(df.catrend, Year, mort)
 	df.catrend.wide.yrs <- df.catrend.wide[yrseq]
 
-	list.gomp <- sapply(colnames(df.catrend.wide.yrs), col.gomp, simplify = FALSE)
+	if (linear)
+		list.gomp <- sapply(colnames(df.catrend.wide.yrs), 
+				    col.gomp, simplify = FALSE)
+	else
+		list.gomp <- sapply(colnames(df.catrend.wide.yrs), 
+				    col.gomp.nlslm, simplify = FALSE)
 	df.gomp <- ldply(list.gomp)
-	colnames(df.gomp) <- c('Year', 'log_r0', 'alpha')
+	if (linear)
+		colnames(df.gomp) <- c('Year', 'log_r0', 'alpha')
 	rownames(df.gomp) <- df.gomp$Year
+	if (!linear)
+		df.gomp$log_r0 <- log(df.gomp$r0)
+
 	long.gomp <- lm(log_r0 ~ alpha, data = df.gomp)
 
 
-	return(long.gomp)
+	return(list(fit = long.gomp, mort = df.catrend.wide, no = dno.wide))
 }
 

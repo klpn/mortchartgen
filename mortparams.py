@@ -16,9 +16,16 @@ conf = yaml.safe_load(f)
 f.close()
 
 def paramsplot(country, cause, sex, startyear, endyear, startage, endage,
-        ageformat, ptype = 'rate', linear = 'FALSE',
+        ageformat, ptype = 'rate', linear = 'FALSE', pc = 'p',
         causes = conf['causes'], countries = conf['countries'], 
         sexes = conf['sexes'], types = conf['ptypes']):
+    
+    if (pc == 'p'):
+        yrstring = str(startyear) + '\u2013' + str(endyear)
+    elif (pc == 'c'):
+        yrstring = 'kohort ' + str(startyear - endage + 5) + '\u2013' +\
+                str(endyear - startage - 5)
+    
     font = {'size': 14}
     caalias = conf['causes'][cause]['alias']
     sexalias = conf['sexes'][sex]['alias']
@@ -29,7 +36,7 @@ def paramsplot(country, cause, sex, startyear, endyear, startage, endage,
     ro.r('source("specchartgen.r")')
     partest = ro.r('lgomp.test({country}, "{cause}", {sex}, {startyear}, \
             {endyear}, {startage}, {endage}, {ageformat}, type="{ptype}", \
-            linear={linear})'.format(**locals()))
+            linear={linear}, pc="{pc}")'.format(**locals()))
     partest_sum = base.summary(partest[0])
     coef_vec = stats.coef(partest[0])
     b = coef_vec[0]
@@ -42,7 +49,7 @@ def paramsplot(country, cause, sex, startyear, endyear, startage, endage,
     ax = fig.add_subplot(111)
     ax.scatter(pardata['alpha'], pardata['log_r0'])
     ax.set_title('Gompertzparametrar {caalias} {sexalias} [{startage}, {endage}] \
-            {ctryalias} {startyear}\u2013{endyear}'.format(**locals())) 
+            {ctryalias} {yrstring}'.format(**locals())) 
     ax.set_xlabel(r'$\alpha$')
     ax.set_ylabel('$' + log_r0lab + '$')
     paramstring = ('$' + log_r0lab + r'\approx' + coeff_form(k) + 

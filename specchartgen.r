@@ -395,8 +395,20 @@ causedist.plot <- function(country, sex, year, startage, endage, ageformat,
 }
 
 lgomp.test <- function(country, cause, sex, startyear, endyear, startage,  
-			   endage, ageformat, type = 'rate', linear = FALSE)
+			   endage, ageformat, type = 'rate', linear = FALSE, pc = 'p')
 {
+	if (pc == 'p')
+	{
+		yearcol = 'Year'
+		yrseq <- sprintf('%d', seq(startyear, endyear))
+	}
+	else if (pc == 'c')
+	{
+		yearcol = 'cohort'
+		yrseq <- sprintf('%d', seq(startyear - endage +5, 
+					   endyear - startage - 5))
+	}
+	
 	col.gomp <- function(x)
 	{
 		coef(lm(log(df.catrend.wide.yrs[[x]]) ~ df.catrend.wide$age, 
@@ -404,9 +416,9 @@ lgomp.test <- function(country, cause, sex, startyear, endyear, startage,
 	}
 	col.gomp.nlslm <- function(x)
 	{
-		yr = df.catrend.wide.yrs[[x]]
-		age = df.catrend.wide[['age']]
-		wgths = sqrt(dno.wide[yrseq][[x]])
+		yr <- df.catrend.wide.yrs[[x]]
+		age <- df.catrend.wide[['age']]
+		wgths <- sqrt(dno.wide[yrseq][[x]])
 		coef(nlsLM(yr ~ r0 * exp(alpha * age),
 		   start = c(alpha = 0.14, r0 = exp(-18)), 
 		   control = nls.lm.control(maxiter = 100), 
@@ -416,7 +428,7 @@ lgomp.test <- function(country, cause, sex, startyear, endyear, startage,
 	catrend <- agetrends.plot(country, cause, sex, startyear, endyear, 
 			   startage, endage, type, ageformat)
 	
-	yrseq <- sprintf('%d', seq(startyear, endyear))
+	
 	
 	dno <- read.csv(sprintf('csv/%s%dno%d.csv', cause, country, sex))
 	dno$Pop36sum <- rowSums(dno[sprintf('Pop%d', seq(3, 6))])
@@ -424,10 +436,10 @@ lgomp.test <- function(country, cause, sex, startyear, endyear, startage,
 	popcols <- sprintf('Pop%s', c(seq(2, 25), '2325sum', '36sum'))
 	dno.long <- gather(dno[c('Year', popcols)], ageorig, no, Pop2:Pop36sum)
 	dno.merge <- merge(dno.long, catrend$data, c('Year', 'ageorig'))
-	dno.wide <- spread(dno.merge[c('Year', 'no', 'age')], Year, no)
+	dno.wide <- spread_(dno.merge[c(yearcol, 'no', 'age')], yearcol, 'no')
 	
-	df.catrend <- catrend$data[c('Year', 'mort', 'age')]
-	df.catrend.wide <- spread(df.catrend, Year, mort)
+	df.catrend <- catrend$data[c(yearcol, 'mort', 'age')]
+	df.catrend.wide <- spread_(df.catrend, yearcol, 'mort')
 	df.catrend.wide.yrs <- df.catrend.wide[yrseq]
 
 	if (linear)

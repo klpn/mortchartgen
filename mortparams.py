@@ -16,8 +16,9 @@ conf = yaml.safe_load(f)
 f.close()
 
 def paramsplot(country, cause, sex, startyear, endyear, startage, endage,
-        ageformat, ptype = 'rate', linear = 'FALSE', pc = 'p',
-        causes = conf['causes'], countries = conf['countries'], 
+        ageformat, ptype = 'rate', linear = 'FALSE', pc = 'p', 
+        alphastart = 0.14, r0start = 'exp(-18)',
+        causes = conf['causes'], countries = conf['countries'],
         sexes = conf['sexes'], types = conf['ptypes']):
     
     if (pc == 'p'):
@@ -36,7 +37,8 @@ def paramsplot(country, cause, sex, startyear, endyear, startage, endage,
     ro.r('source("specchartgen.r")')
     partest = ro.r('lgomp.test({country}, "{cause}", {sex}, {startyear}, \
             {endyear}, {startage}, {endage}, {ageformat}, type="{ptype}", \
-            linear={linear}, pc="{pc}")'.format(**locals()))
+            linear={linear}, pc="{pc}", alphastart={alphastart}, \
+             r0start={r0start})'.format(**locals()))
     partest_sum = base.summary(partest[0])
     coef_vec = stats.coef(partest[0])
     b = coef_vec[0]

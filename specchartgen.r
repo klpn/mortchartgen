@@ -395,7 +395,8 @@ causedist.plot <- function(country, sex, year, startage, endage, ageformat,
 }
 
 lgomp.test <- function(country, cause, sex, startyear, endyear, startage,  
-			   endage, ageformat, type = 'rate', linear = FALSE, pc = 'p')
+			   endage, ageformat, type = 'rate', linear = FALSE, pc = 'p', 
+			   alphastart = 0.14, r0start = exp(-18))
 {
 	if (pc == 'p')
 	{
@@ -420,7 +421,7 @@ lgomp.test <- function(country, cause, sex, startyear, endyear, startage,
 		age <- df.catrend.wide[['age']]
 		wgths <- sqrt(dno.wide[yrseq][[x]])
 		coef(nlsLM(yr ~ r0 * exp(alpha * age),
-		   start = c(alpha = 0.14, r0 = exp(-18)), 
+		   start = c(alpha = alphastart, r0 = r0start), 
 		   control = nls.lm.control(maxiter = 100), 
 		   weights = wgths))
 	}

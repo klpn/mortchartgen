@@ -398,6 +398,7 @@ lgomp.test <- function(country, cause, sex, startyear, endyear, startage,
 			   endage, ageformat, type = 'rate', linear = FALSE, pc = 'p', 
 			   alphastart = 0.14, r0start = exp(-18))
 {
+	nlsformula <- 'yr ~ r0 * exp(alpha * age)'
 	if (pc == 'p')
 	{
 		yearcol = 'Year'
@@ -420,7 +421,7 @@ lgomp.test <- function(country, cause, sex, startyear, endyear, startage,
 		yr <- df.catrend.wide.yrs[[x]]
 		age <- df.catrend.wide[['age']]
 		wgths <- sqrt(dno.wide[yrseq][[x]])
-		coef(nlsLM(yr ~ r0 * exp(alpha * age),
+		coef(nlsLM(as.formula(nlsformula),
 		   start = c(alpha = alphastart, r0 = r0start), 
 		   control = nls.lm.control(maxiter = 100), 
 		   weights = wgths))
@@ -459,6 +460,6 @@ lgomp.test <- function(country, cause, sex, startyear, endyear, startage,
 	long.gomp <- lm(log_r0 ~ alpha, data = df.gomp)
 
 
-	return(list(fit = long.gomp, mort = df.catrend.wide, no = dno.wide))
+	return(list(fit = long.gomp, mort = df.catrend.wide, no = dno.wide, yrseq = yrseq))
 }
 

@@ -417,10 +417,10 @@ lgomp.test <- function(country, cause, sex, startyear, endyear, startage,
 		yr <- df.catrend.wide.yrs[[x]]
 		age <- df.catrend.wide[['age']]
 		wgths <- sqrt(dno.wide[yrseq][[x]])
-		coef(nlsLM(as.formula(nlsformula),
+		nlsLM(as.formula(nlsformula),
 		   start = c(alpha = alphastart, r0 = r0start), 
 		   control = nls.lm.control(maxiter = 100), 
-		   weights = wgths))
+		   weights = wgths)
 	}
 	
 	catrend <- agetrends.plot(country, cause, sex, startyear, endyear, 
@@ -443,13 +443,15 @@ lgomp.test <- function(country, cause, sex, startyear, endyear, startage,
 
 	list.gomp <- sapply(colnames(df.catrend.wide.yrs), 
 		col.gomp.nlslm, simplify = FALSE)
-	df.gomp <- ldply(list.gomp)
-	rownames(df.gomp) <- df.gomp$Year
-	df.gomp$log_r0 <- log(df.gomp$r0)
+	list.gomp.coefs <- lapply(list.gomp, function(x) coef(x))
+	df.gomp.coefs <- ldply(list.gomp.coefs)
+	rownames(df.gomp.coefs) <- df.gomp.coefs$Year
+	df.gomp.coefs$log_r0 <- log(df.gomp.coefs$r0)
 
-	long.gomp <- lm(log_r0 ~ alpha, data = df.gomp)
+	long.gomp <- lm(log_r0 ~ alpha, data = df.gomp.coefs)
 
 
-	return(list(fit = long.gomp, mort = df.catrend.wide, no = dno.wide, yrseq = yrseq))
+	return(list(fit = long.gomp, mort = df.catrend.wide, no = dno.wide, 
+		    yrseq = yrseq, sourcefit = list.gomp))
 }
 

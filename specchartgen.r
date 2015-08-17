@@ -395,7 +395,7 @@ causedist.plot <- function(country, sex, year, startage, endage, ageformat,
 }
 
 lgomp.test <- function(country, cause, sex, startyear, endyear, startage,  
-			   endage, ageformat, type = 'rate', linear = FALSE, pc = 'p', 
+			   endage, ageformat, type = 'rate', pc = 'p', 
 			   alphastart = 0.14, r0start = exp(-18))
 {
 	nlsformula <- 'yr ~ r0 * exp(alpha * age)'
@@ -411,11 +411,7 @@ lgomp.test <- function(country, cause, sex, startyear, endyear, startage,
 					   endyear - startage - 5))
 	}
 	
-	col.gomp <- function(x)
-	{
-		coef(lm(log(df.catrend.wide.yrs[[x]]) ~ df.catrend.wide$age, 
-		   weights = sqrt(dno.wide[yrseq][[x]])))
-	}
+
 	col.gomp.nlslm <- function(x)
 	{
 		yr <- df.catrend.wide.yrs[[x]]
@@ -444,18 +440,12 @@ lgomp.test <- function(country, cause, sex, startyear, endyear, startage,
 	df.catrend.wide <- spread_(df.catrend, yearcol, 'mort')
 	df.catrend.wide.yrs <- df.catrend.wide[yrseq]
 
-	if (linear)
-		list.gomp <- sapply(colnames(df.catrend.wide.yrs), 
-				    col.gomp, simplify = FALSE)
-	else
-		list.gomp <- sapply(colnames(df.catrend.wide.yrs), 
-				    col.gomp.nlslm, simplify = FALSE)
+
+	list.gomp <- sapply(colnames(df.catrend.wide.yrs), 
+		col.gomp.nlslm, simplify = FALSE)
 	df.gomp <- ldply(list.gomp)
-	if (linear)
-		colnames(df.gomp) <- c('Year', 'log_r0', 'alpha')
 	rownames(df.gomp) <- df.gomp$Year
-	if (!linear)
-		df.gomp$log_r0 <- log(df.gomp$r0)
+	df.gomp$log_r0 <- log(df.gomp$r0)
 
 	long.gomp <- lm(log_r0 ~ alpha, data = df.gomp)
 

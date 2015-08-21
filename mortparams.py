@@ -19,8 +19,8 @@ f.close()
 
 def paramsplot(country, cause, sex, startyear, endyear, startage, endage,
         ageformat, ptype = 'rate', pc = 'p', mortfunc = 'gompertz', 
-        alphastart = 0.14, r0start = 'exp(-18)', plot = 'params',
-        causes = conf['causes'], countries = conf['countries'],
+        alphastart = 0.14, r0start = 'exp(-18)', astart = 10, taustart = 80,
+        plot = 'params', causes = conf['causes'], countries = conf['countries'],
         sexes = conf['sexes'], types = conf['ptypes']):
     
 
@@ -40,7 +40,7 @@ def paramsplot(country, cause, sex, startyear, endyear, startage, endage,
     partest = ro.r('lmortfunc.test({country}, "{cause}", {sex}, {startyear}, \
             {endyear}, {startage}, {endage}, {ageformat}, type="{ptype}", \
             pc="{pc}", mortfunc="{mortfunc}", alphastart={alphastart}, \
-             r0start={r0start})'.format(**locals()))
+             r0start={r0start}, astart={astart}, taustart={taustart})'.format(**locals()))
     partest_sum = base.summary(partest[0])
     coef_vec = stats.coef(partest[0])
     b = coef_vec[0]

@@ -2,6 +2,8 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import rpy2.robjects as ro
 import pandas as pd
+import numpy as np
+import statsmodels.api as sm
 import yaml
 from rpy2.robjects import pandas2ri
 from rpy2.robjects.packages import importr
@@ -16,7 +18,7 @@ conf = yaml.safe_load(f)
 f.close()
 
 def paramsplot(country, cause, sex, startyear, endyear, startage, endage,
-        ageformat, ptype = 'rate', pc = 'p', 
+        ageformat, ptype = 'rate', pc = 'p', mortfunc = 'gompertz', 
         alphastart = 0.14, r0start = 'exp(-18)', plot = 'params',
         causes = conf['causes'], countries = conf['countries'],
         sexes = conf['sexes'], types = conf['ptypes']):
@@ -27,13 +29,17 @@ def paramsplot(country, cause, sex, startyear, endyear, startage, endage,
     caalias = conf['causes'][cause]['alias']
     sexalias = conf['sexes'][sex]['alias']
     ctryalias = conf['countries'][country]['alias']
-    log_r0lab = r'\mathrm{log}(r_0)'
+    paramlabs = {'log_r0': r'\mathrm{log}(r_0)', 'alpha': r'\alpha', 'I(a - 1)': '(a-1)', 
+            'trans_atau': r'\mathrm{log}\frac{a}{\tau}-(a-1)\mathrm{log}(\tau)'}
+    
+
+    
     base = importr('base')
     stats = importr('stats')
     ro.r('source("specchartgen.r")')
-    partest = ro.r('lgomp.test({country}, "{cause}", {sex}, {startyear}, \
+    partest = ro.r('lmortfunc.test({country}, "{cause}", {sex}, {startyear}, \
             {endyear}, {startage}, {endage}, {ageformat}, type="{ptype}", \
-            pc="{pc}", alphastart={alphastart}, \
+            pc="{pc}", mortfunc="{mortfunc}", alphastart={alphastart}, \
              r0start={r0start})'.format(**locals()))
     partest_sum = base.summary(partest[0])
     coef_vec = stats.coef(partest[0])
@@ -52,27 +58,45 @@ def paramsplot(country, cause, sex, startyear, endyear, startage, endage,
     elif (pc == 'c'):
         pcstring = 'kohort'
         yrlab = 'Födelseår'
-    plottitle = 'Gompertzanalys {caalias}\n {sexalias} [{startage}, {endage}] \
+    
+    if (mortfunc == 'gompertz'):
+        xcol = 'alpha'
+        ycol = 'log_r0'
+        funclab = 'Gompertz'
+        i = -k
+    elif (mortfunc == 'weibull'):
+        xcol = 'I(a - 1)'
+        ycol = 'trans_atau'
+        funclab = 'Weibull'
+        i = np.exp(-k)
+    
+    plottitle = '{funclab}analys {caalias}\n {sexalias} [{startage}, {endage}] \
             {ctryalias} {pcstring} {yrstring}'.format(**locals())
     plt.close()
+    fig = plt.figure()
 
     if (plot == 'params'):
-        fig = plt.figure()
         ax = fig.add_subplot(111)
-        ax.scatter(pardata['alpha'], pardata['log_r0'])
+        ax.scatter(pardata[xcol], pardata[ycol])
         ax.set_title(plottitle) 
-        ax.set_xlabel(r'$\alpha$')
-        ax.set_ylabel('$' + log_r0lab + '$')
-        paramstring = ('$' + log_r0lab + r'\approx' + coeff_form(k) + 
-            r'\alpha +' + coeff_form(b) + '$')
-        rsqstring = r'$r^2\approx' + coeff_form(rsq) + '$'
-        ax.text(0.5, 0.9, paramstring, transform=ax.transAxes, fontdict = font)
-        ax.text(0.5, 0.84, rsqstring, transform=ax.transAxes, fontdict = font)
+        ax.set_xlabel('$' + paramlabs[xcol] + '$')
+        ax.set_ylabel('$' + paramlabs[ycol] + '$')
+        paramstring = ('$' + paramlabs[ycol] + r'\approx' + coeff_form(k) + 
+            paramlabs[xcol] + '+' + coeff_form(b) + '$')
+        rsqstring = r'$R^2\approx' + coeff_form(rsq) + '$'
+        istring = r'$i\approx' + coeff_form(i) + '$'
+        for string, ypos in [(paramstring, 0.9), (rsqstring, 0.84), (istring, 0.78)]:
+            ax.text(0.98, ypos, string, transform=ax.transAxes,
+                    fontdict = font, ha = 'right')
     elif (plot == 'yrs'):
-        pardata['alpha'].plot()
-        plt.ylabel(r'$\alpha$')
+        pardata[xcol].plot()
+        plt.plot(sm.nonparametric.lowess(pardata[xcol], 
+            pardata.index,frac=0.4)[:,1])
+        plt.ylabel('$' + paramlabs[xcol] + '$')
         plt.xlabel(yrlab)
         plt.title(plottitle)
+
+    return {'figure': fig, 'test': partest}
 
 def coeff_form(coeff):
     return str(round(coeff, 3)).replace('.', '{,}')

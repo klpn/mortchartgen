@@ -394,11 +394,26 @@ causedist.plot <- function(country, sex, year, startage, endage, ageformat,
 	return(df.plot)
 }
 
-lgomp.test <- function(country, cause, sex, startyear, endyear, startage,  
-			   endage, ageformat, type = 'rate', pc = 'p', 
-			   alphastart = 0.14, r0start = exp(-18))
+lmortfunc.test <- function(country, cause, sex, startyear, endyear, startage,  
+			   endage, ageformat, type = 'rate', pc = 'p', mortfunc = 'gompertz', 
+			   alphastart = 0.14, r0start = exp(-18), astart = 10, taustart = 80)
 {
-	nlsformula <- 'yr ~ r0 * exp(alpha * age)'
+	if (mortfunc == 'gompertz')
+	{
+		nlsformula <- 'yr ~ r0 * exp(alpha * age)'
+		lmformula <- 'log_r0 ~ alpha'
+		startvec <- c(alpha = alphastart, r0 = r0start)
+		transy.col <- 'log_r0'
+		transy.func <- quote(log(r0))
+	}
+	else if (mortfunc == 'weibull')
+	{
+		nlsformula <- 'yr ~ (a / tau) * (age / tau)^(a-1)'
+		lmformula <- 'trans_atau ~ I(a - 1)'
+		startvec <- c(a = astart, tau = taustart)
+		transy.col <- 'trans_atau'
+		transy.func <- quote(log(a / tau) - (a - 1) * log(tau))
+	}
 	if (pc == 'p')
 	{
 		yearcol = 'Year'
@@ -412,13 +427,13 @@ lgomp.test <- function(country, cause, sex, startyear, endyear, startage,
 	}
 	
 
-	col.gomp.nlslm <- function(x)
+	col.mortfunc.nlslm <- function(x)
 	{
 		yr <- df.catrend.wide.yrs[[x]]
 		age <- df.catrend.wide[['age']]
 		wgths <- sqrt(dno.wide[yrseq][[x]])
 		nlsLM(as.formula(nlsformula),
-		   start = c(alpha = alphastart, r0 = r0start), 
+		   start = startvec, 
 		   control = nls.lm.control(maxiter = 100), 
 		   weights = wgths)
 	}
@@ -441,17 +456,17 @@ lgomp.test <- function(country, cause, sex, startyear, endyear, startage,
 	df.catrend.wide.yrs <- df.catrend.wide[yrseq]
 
 
-	list.gomp <- sapply(colnames(df.catrend.wide.yrs), 
-		col.gomp.nlslm, simplify = FALSE)
-	list.gomp.coefs <- lapply(list.gomp, function(x) coef(x))
-	df.gomp.coefs <- ldply(list.gomp.coefs)
-	rownames(df.gomp.coefs) <- df.gomp.coefs$Year
-	df.gomp.coefs$log_r0 <- log(df.gomp.coefs$r0)
+	list.mortfunc <- sapply(colnames(df.catrend.wide.yrs), 
+		col.mortfunc.nlslm, simplify = FALSE)
+	list.mortfunc.coefs <- lapply(list.mortfunc, function(x) coef(x))
+	df.mortfunc.coefs <- ldply(list.mortfunc.coefs)
+	rownames(df.mortfunc.coefs) <- df.mortfunc.coefs$Year
+	df.mortfunc.coefs[[transy.col]] <- eval(transy.func, envir = df.mortfunc.coefs)
 
-	long.gomp <- lm(log_r0 ~ alpha, data = df.gomp.coefs)
+	long.mortfunc <- lm(as.formula(lmformula), data = df.mortfunc.coefs)
 
 
-	return(list(fit = long.gomp, mort = df.catrend.wide, no = dno.wide, 
-		    yrseq = yrseq, sourcefit = list.gomp))
+	return(list(fit = long.mortfunc, mort = df.catrend.wide, no = dno.wide, 
+		    yrseq = yrseq, sourcefit = list.mortfunc))
 }
 

@@ -68,15 +68,18 @@ def paramsplot(country, cause, sex, startyear, endyear, startage, endage,
         'xcol': {'rate': 'alpha', 'surv': 'alpha'}, 
         'ycol': {'rate': 'log_r0', 'surv': 'log_r0alpha'}, 'i': -k},
         'weibull': {'funclab': 'Weibull', 'xcol': {'rate': 'I(a - 1)', 'surv': 'a'},
-            'ycol': {'rate': 'trans_atau', 'surv': 'minalog_tau'}, 'i': np.exp(-k)}}
+            'ycol': {'rate': 'trans_atau', 'surv': 'minalog_tau'}, 'i': np.exp(-k)},
+        'ptypelab': {'rate': 'dödstal', 'surv': 'överlevnad'}}
     
     xcol = plotconf[mortfunc]['xcol'][ptype]
     ycol = plotconf[mortfunc]['ycol'][ptype]
     funclab = plotconf[mortfunc]['funclab']
     i = plotconf[mortfunc]['i']
+    ptypelab = plotconf['ptypelab'][ptype]
     
-    plottitle = '{funclab}analys {caalias}\n {sexalias} [{startage}, {endage}] \
-            {ctryalias} {pcstring} {yrstring}'.format(**locals())
+    plottitle = '{funclab}analys {ptypelab} {caalias}\n \
+                {sexalias} [{startage}, {endage}] \
+                {ctryalias} {pcstring} {yrstring}'.format(**locals())
     plt.close()
     fig = plt.figure()
 

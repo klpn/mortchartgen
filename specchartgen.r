@@ -6,6 +6,7 @@ library(XML)
 library(gridSVG)
 library(rjson)
 library(minpack.lm)
+library(LifeTables)
 conf <- yaml.load_file('chartgen.yaml')
 infs <- '\u221e'
 agralias <- 'Åldersgrupp'
@@ -396,23 +397,28 @@ causedist.plot <- function(country, sex, year, startage, endage, ageformat,
 
 lmortfunc.test <- function(country, cause, sex, startyear, endyear, startage,  
 			   endage, ageformat, type = 'rate', pc = 'p', mortfunc = 'gompertz', 
-			   alphastart = 0.14, r0start = exp(-18), astart = 10, taustart = 80)
+			   alphastart = 0.14, r0start = exp(-18), astart = 10, taustart = 80,
+			   normrate = FALSE)
 {
 	if (mortfunc == 'gompertz')
 	{
-		nlsformula <- 'yr ~ r0 * exp(alpha * age)'
-		lmformula <- 'log_r0 ~ alpha'
+		nlsformula <- c(rate = 'yr ~ r0 * exp(alpha * age)',
+				surv = 'yr ~ exp(-(r0/alpha) * (exp(alpha*age)-1))')
+		lmformula <- c(rate = 'log_r0 ~ alpha', surv = 'log_r0alpha ~ alpha')
 		startvec <- c(alpha = alphastart, r0 = r0start)
-		transy.col <- 'log_r0'
-		transy.func <- quote(log(r0))
+		transy.col <- c(rate = 'log_r0', surv = 'log_r0alpha')
+		transy.func <- c(rate = quote(log(r0)), surv = quote(log(r0/alpha)))
 	}
 	else if (mortfunc == 'weibull')
 	{
-		nlsformula <- 'yr ~ (a / tau) * (age / tau)^(a-1)'
-		lmformula <- 'trans_atau ~ I(a - 1)'
+		nlsformula <- c(rate = 'yr ~ (a / tau) * (age / tau)^(a-1)',
+				surv = 'yr ~ exp(-(age / tau)^a)')
+		lmformula <- c(rate = 'trans_atau ~ I(a - 1)',
+			       surv = 'minalog_tau ~ a')
 		startvec <- c(a = astart, tau = taustart)
-		transy.col <- 'trans_atau'
-		transy.func <- quote(log(a / tau) - (a - 1) * log(tau))
+		transy.col <- c(rate = 'trans_atau', surv = 'minalog_tau')
+		transy.func <- c(rate = quote(log(a / tau) - (a - 1) * log(tau)),
+				 surv = quote(-a * log(tau)))
 	}
 	if (pc == 'p')
 	{
@@ -422,7 +428,7 @@ lmortfunc.test <- function(country, cause, sex, startyear, endyear, startage,
 	else if (pc == 'c')
 	{
 		yearcol = 'cohort'
-		yrseq <- sprintf('%d', seq(startyear - endage +5, 
+		yrseq <- sprintf('%d', seq(startyear - endage + 5, 
 					   endyear - startage - 5))
 	}
 	
@@ -432,15 +438,33 @@ lmortfunc.test <- function(country, cause, sex, startyear, endyear, startage,
 		yr <- df.catrend.wide.yrs[[x]]
 		age <- df.catrend.wide[['age']]
 		wgths <- sqrt(dno.wide[yrseq][[x]])
-		nlsLM(as.formula(nlsformula),
+		nlsLM(as.formula(nlsformula[[type]]),
 		   start = startvec, 
 		   control = nls.lm.control(maxiter = 100), 
 		   weights = wgths)
 	}
 	
-	catrend <- agetrends.plot(country, cause, sex, startyear, endyear, 
-			   startage, endage, type, ageformat)
-	
+	if (type == 'rate' && !normrate)
+	{
+		datacol <- 'mort'
+		catrend <- agetrends.plot(country, cause, sex, startyear, endyear, 
+			   startage, endage, 'rate', ageformat)$data
+	}
+	else
+	{
+		if (type == 'rate')
+			datacol <- 'mx'
+		else if (type == 'surv')
+			datacol <- 'lx'
+		catrend <- data.frame()
+		for (yr in yrseq)
+		{
+			catrend.yr <- cause.life(country, cause, sex, as.numeric(yr), startage,
+						 endage, ageformat)
+			catrend.yr$Year <- yr
+			catrend <- rbind(catrend, catrend.yr)
+		}
+	}
 	
 	
 	dno <- read.csv(sprintf('csv/%s%dno%d.csv', cause, country, sex))
@@ -448,11 +472,11 @@ lmortfunc.test <- function(country, cause, sex, startyear, endyear, startage,
 	dno$Pop2325sum <- rowSums(dno[sprintf('Pop%d', seq(23, 25))])
 	popcols <- sprintf('Pop%s', c(seq(2, 25), '2325sum', '36sum'))
 	dno.long <- gather(dno[c('Year', popcols)], ageorig, no, Pop2:Pop36sum)
-	dno.merge <- merge(dno.long, catrend$data, c('Year', 'ageorig'))
+	dno.merge <- merge(dno.long, catrend, c('Year', 'ageorig'))
 	dno.wide <- spread_(dno.merge[c(yearcol, 'no', 'age')], yearcol, 'no')
 	
-	df.catrend <- catrend$data[c(yearcol, 'mort', 'age')]
-	df.catrend.wide <- spread_(df.catrend, yearcol, 'mort')
+	df.catrend <- catrend[c(yearcol, datacol, 'age')]
+	df.catrend.wide <- spread_(df.catrend, yearcol, datacol)
 	df.catrend.wide.yrs <- df.catrend.wide[yrseq]
 
 
@@ -461,12 +485,37 @@ lmortfunc.test <- function(country, cause, sex, startyear, endyear, startage,
 	list.mortfunc.coefs <- lapply(list.mortfunc, function(x) coef(x))
 	df.mortfunc.coefs <- ldply(list.mortfunc.coefs)
 	rownames(df.mortfunc.coefs) <- df.mortfunc.coefs$Year
-	df.mortfunc.coefs[[transy.col]] <- eval(transy.func, envir = df.mortfunc.coefs)
+	df.mortfunc.coefs[[transy.col[[type]]]] <- eval(transy.func[[type]], envir = df.mortfunc.coefs)
 
-	long.mortfunc <- lm(as.formula(lmformula), data = df.mortfunc.coefs)
+	long.mortfunc <- lm(as.formula(lmformula[[type]]), data = df.mortfunc.coefs)
 
 
 	return(list(fit = long.mortfunc, mort = df.catrend.wide, no = dno.wide, 
 		    yrseq = yrseq, sourcefit = list.mortfunc))
+}
+
+cause.life <- function(country, cause, sex, year, startage, endage, ageformat)
+{
+	if(sex == 1)
+		ltsex <- 'male'
+	else if(sex == 2)
+		ltsex <- 'female'
+	
+	allmort <- agetrends.plot(country, 'all', sex, year, year, startage,
+				  endage, 'rate', ageformat)
+	allmort.frame <- allmort$data[order(allmort$data$age),]
+	allmort.lt <- lt.mx(allmort.frame$mort, sex = ltsex, age = allmort.frame$age)
+	causeprop <- agetrends.plot(country, cause, sex, year, year, startage,
+				  endage, 'perc', ageformat)
+	causeprop.frame <- causeprop$data[order(causeprop$data$age),]
+	cause.dx <- causeprop.frame$mort * allmort.lt$lt[, 'ndx']
+	cause.lx0 <- rev(cumsum(rev(cause.dx)))
+	cause.freq <- cause.lx0 / allmort.lt$lt[, 'lx']
+	cause.lx <- cause.lx0 / cause.lx0[1]
+	cause.mx <- (allmort.lt$lt[, 'nmx'] * causeprop.frame$mort) / cause.freq
+
+	return(data.frame(age = causeprop.frame$age, ageorig = causeprop.frame$ageorig,
+		    freq = cause.freq, lx = cause.lx, mx = cause.mx))
+
 }
 

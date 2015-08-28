@@ -19,9 +19,9 @@ f.close()
 
 def paramsplot(country, cause, sex, startyear, endyear, startage, endage,
         ageformat, ptype = 'rate', pc = 'p', mortfunc = 'gompertz', 
-        alphastart = 0.14, r0start = 'exp(-18)', astart = 10, taustart = 80,
-        plot = 'params', causes = conf['causes'], countries = conf['countries'],
-        sexes = conf['sexes'], types = conf['ptypes']):
+        alphastart = 0.14, r0start = 'exp(-18)', astart = 10, taustart = 80, 
+        normrate = False, plot = 'params', causes = conf['causes'], 
+        countries = conf['countries'], sexes = conf['sexes'], types = conf['ptypes']):
     
 
     
@@ -29,18 +29,23 @@ def paramsplot(country, cause, sex, startyear, endyear, startage, endage,
     caalias = conf['causes'][cause]['alias']
     sexalias = conf['sexes'][sex]['alias']
     ctryalias = conf['countries'][country]['alias']
-    paramlabs = {'log_r0': r'\mathrm{log}(r_0)', 'alpha': r'\alpha', 'I(a - 1)': '(a-1)', 
-            'trans_atau': r'\mathrm{log}\frac{a}{\tau}-(a-1)\mathrm{log}(\tau)'}
+    paramlabs = {'log_r0': r'\mathrm{log}(r_0)', 
+            'log_r0alpha': r'\mathrm{log}\frac{r0}{\alpha}', 
+            'alpha': r'\alpha', 'I(a - 1)': '(a-1)', 'a': 'a', 
+            'trans_atau': r'\mathrm{log}\frac{a}{\tau}-(a-1)\mathrm{log}(\tau)',
+            'minalog_tau': r'-a\mathrm{log}(\tau)'}
     
 
     
     base = importr('base')
     stats = importr('stats')
     ro.r('source("specchartgen.r")')
+    normratestr = str(normrate).upper()
     partest = ro.r('lmortfunc.test({country}, "{cause}", {sex}, {startyear}, \
             {endyear}, {startage}, {endage}, {ageformat}, type="{ptype}", \
             pc="{pc}", mortfunc="{mortfunc}", alphastart={alphastart}, \
-             r0start={r0start}, astart={astart}, taustart={taustart})'.format(**locals()))
+            r0start={r0start}, astart={astart}, taustart={taustart}, \
+            normrate={normratestr})'.format(**locals()))
     partest_sum = base.summary(partest[0])
     coef_vec = stats.coef(partest[0])
     b = coef_vec[0]
@@ -59,16 +64,16 @@ def paramsplot(country, cause, sex, startyear, endyear, startage, endage,
         pcstring = 'kohort'
         yrlab = 'Födelseår'
     
-    if (mortfunc == 'gompertz'):
-        xcol = 'alpha'
-        ycol = 'log_r0'
-        funclab = 'Gompertz'
-        i = -k
-    elif (mortfunc == 'weibull'):
-        xcol = 'I(a - 1)'
-        ycol = 'trans_atau'
-        funclab = 'Weibull'
-        i = np.exp(-k)
+    plotconf = {'gompertz': {'funclab': 'Gompertz', 
+        'xcol': {'rate': 'alpha', 'surv': 'alpha'}, 
+        'ycol': {'rate': 'log_r0', 'surv': 'log_r0alpha'}, 'i': -k},
+        'weibull': {'funclab': 'Weibull', 'xcol': {'rate': 'I(a - 1)', 'surv': 'a'},
+            'ycol': {'rate': 'trans_atau', 'surv': 'minalog_tau'}, 'i': np.exp(-k)}}
+    
+    xcol = plotconf[mortfunc]['xcol'][ptype]
+    ycol = plotconf[mortfunc]['ycol'][ptype]
+    funclab = plotconf[mortfunc]['funclab']
+    i = plotconf[mortfunc]['i']
     
     plottitle = '{funclab}analys {caalias}\n {sexalias} [{startage}, {endage}] \
             {ctryalias} {pcstring} {yrstring}'.format(**locals())

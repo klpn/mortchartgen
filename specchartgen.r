@@ -490,7 +490,7 @@ lmortfunc.test <- function(country, cause, sex, startyear, endyear, startage,
 	long.mortfunc <- lm(as.formula(lmformula[[type]]), data = df.mortfunc.coefs)
 
 
-	return(list(fit = long.mortfunc, mort = df.catrend.wide, no = dno.wide, 
+	return(list(fit = long.mortfunc, obs = df.catrend.wide, no = dno.wide, 
 		    yrseq = yrseq, sourcefit = list.mortfunc))
 }
 

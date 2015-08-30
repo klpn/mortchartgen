@@ -144,6 +144,7 @@ def obspred_plot(paramsplot, fityrs, startage, endage,
         ax.xaxis.set_major_locator(plt.FixedLocator(predcols[trans]['x']))
         ax.xaxis.set_major_formatter(plt.FixedFormatter(predcols['none']['x']))
         ax.set_xlabel(plotlabs['none']['x'])
+        plt.xticks(rotation = 90)
     else:
         ax.set_xlabel(plotlabs[trans]['x'])
 

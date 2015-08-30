@@ -106,7 +106,7 @@ def coeff_form(coeff):
     return str(round(coeff, 3)).replace('.', '{,}')
 
 def obspred_plot(paramsplot, fityrs, startage, endage, 
-        trans = 'none'):
+        trans = 'none', trans_time_coords = False, trans_y_coords = False):
     obsframe = paramsplot['test'].rx2('obs')
     ptype = paramsplot['ptype']
     obsage = obsframe.rx2('age')
@@ -120,6 +120,10 @@ def obspred_plot(paramsplot, fityrs, startage, endage,
     plt.close()
     fig = plt.figure()
     ax = fig.add_subplot(111)
+
+    def trans_y_ticks(x, p):
+        ticks_round = np.round(predcols['none'][ptype], 6)
+        return str(ticks_round[p]).replace('.', ',')
 
     for yr in fityrs:
         obs = obsframe.rx2(str(yr))
@@ -136,8 +140,21 @@ def obspred_plot(paramsplot, fityrs, startage, endage,
     plt.legend(loc = 2, framealpha = 0.5)
     ax.set_title('Observerad vs förutsedd ' + paramsplot['plottitle'])
     
-    ax.set_xlabel(plotlabs[trans]['x'])
-    ax.set_ylabel(plotlabs[trans][ptype])
+    if (trans_time_coords):
+        ax.xaxis.set_major_locator(plt.FixedLocator(predcols[trans]['x']))
+        ax.xaxis.set_major_formatter(plt.FixedFormatter(predcols['none']['x']))
+        ax.set_xlabel(plotlabs['none']['x'])
+    else:
+        ax.set_xlabel(plotlabs[trans]['x'])
+
+    if (trans_y_coords):
+        ax.yaxis.set_major_locator(plt.FixedLocator(predcols[trans][ptype]))
+        ax.yaxis.set_major_formatter(plt.FuncFormatter(trans_y_ticks))
+        ax.set_ylabel(plotlabs['none'][ptype])
+    else:
+        ax.set_ylabel(plotlabs[trans][ptype])
+        
+
 
 def transdict(x, y):
     xlin = np.log(x)

@@ -77,11 +77,10 @@ def paramsplot(country, cause, sex, startyear, endyear, startage, endage,
                 {ctryalias} {pcstring} {yrstring}'.format(**locals())
     plt.close()
     fig = plt.figure()
+    ax = fig.add_subplot(111)
 
     if (plot == 'params'):
-        ax = fig.add_subplot(111)
         ax.scatter(pardata[xcol], pardata[ycol])
-        ax.set_title(plottitle) 
         ax.set_xlabel('$' + paramlabs[xcol] + '$')
         ax.set_ylabel('$' + paramlabs[ycol] + '$')
         paramstring = ('$' + paramlabs[ycol] + r'\approx' + coeff_form(k) + 
@@ -93,11 +92,12 @@ def paramsplot(country, cause, sex, startyear, endyear, startage, endage,
                     fontdict = font, ha = 'right')
     elif (plot == 'yrs'):
         pardata[xcol].plot()
-        plt.plot(sm.nonparametric.lowess(pardata[xcol], 
+        ax.plot(sm.nonparametric.lowess(pardata[xcol], 
             pardata.index,frac=0.4)[:,1])
-        plt.ylabel('$' + paramlabs[xcol] + '$')
-        plt.xlabel(yrlab)
-        plt.title(plottitle)
+        ax.set_ylabel('$' + paramlabs[xcol] + '$')
+        ax.set_xlabel(yrlab)
+    
+    ax.set_title(plottitle) 
 
     return {'figure': fig, 'test': partest, 'country': country, 'cause': cause, 
             'sex': sex, 'mortfunc': mortfunc, 'ptype': ptype, 'plottitle': plottitle}
@@ -105,8 +105,10 @@ def paramsplot(country, cause, sex, startyear, endyear, startage, endage,
 def coeff_form(coeff):
     return str(round(coeff, 3)).replace('.', '{,}')
 
-def obspred_plot(paramsplot, fityrs, startage, endage, trans = 'none'):
+def obspred_plot(paramsplot, fityrs, startage, endage, 
+        trans = 'none'):
     obsframe = paramsplot['test'].rx2('obs')
+    ptype = paramsplot['ptype']
     obsage = obsframe.rx2('age')
     predage = base.seq(startage, endage, by = 5)
     xlinlab = r'$\mathrm{log}(t)$'
@@ -116,22 +118,26 @@ def obspred_plot(paramsplot, fityrs, startage, endage, trans = 'none'):
             'gomp_lin': {'x': '$t$', 'rate': ratelinlab, 'surv': survlinlab},
             'weib_lin': {'x': xlinlab,'rate': ratelinlab, 'surv': survlinlab}}
     plt.close()
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+
     for yr in fityrs:
         obs = obsframe.rx2(str(yr))
         pred = stats.predict(paramsplot['test'].rx2('sourcefit').rx2(str(yr)), 
                 newdata = ro.r['list'](age = predage)) 
         obscols = transdict(np.array(obsage), np.array(obs))
         predcols = transdict(np.array(predage), np.array(pred))
-        obsplot = plt.plot(obscols[trans]['x'], obscols[trans][paramsplot['ptype']], 
+        obsplot = ax.plot(obscols[trans]['x'], obscols[trans][ptype], 
                 'o', label = str(yr))
         curcolor = obsplot[0].get_color()
-        predplot = plt.plot(predcols[trans]['x'], predcols[trans][paramsplot['ptype']], 
+        predplot = ax.plot(predcols[trans]['x'], predcols[trans][ptype], 
                 color = curcolor)
     
     plt.legend(loc = 2, framealpha = 0.5)
-    plt.xlabel(plotlabs[trans]['x'])
-    plt.ylabel(plotlabs[trans][paramsplot['ptype']])
-    plt.title('Observerad vs förutsedd ' + paramsplot['plottitle'])
+    ax.set_title('Observerad vs förutsedd ' + paramsplot['plottitle'])
+    
+    ax.set_xlabel(plotlabs[trans]['x'])
+    ax.set_ylabel(plotlabs[trans][ptype])
 
 def transdict(x, y):
     xlin = np.log(x)

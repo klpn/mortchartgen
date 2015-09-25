@@ -540,7 +540,7 @@ causes:
       '10': (C|D[0-4])
       '101': '1026'
     classtot: true
-    codedesc: "ICD-6/78/9: 140--239; ICD-10: C00--D48"
+    codedesc: "ICD-6/7/8/9: 140--239; ICD-10: C00--D48"
     sex: 0
   utc:
     alias: livmodercancer ej cervix
@@ -573,7 +573,6 @@ countries:
   3150:
     alias: Israel
     countryclass: 1
-    ctry_extrasql: and (Admin1='' or Year<1975)
     endyear: 2012
     iso3166: IL
     startyear: 1957
@@ -616,7 +615,6 @@ countries:
   4085:
     alias: Tyskland
     countryclass: 1
-    ctry_extrasql: or (Country=4100 and Year<1990)
     endyear: 2013
     iso3166: DE
     startyear: 1952
@@ -737,8 +735,9 @@ causedist:
     - tum
 #    - chresp
     - lfinf 
+#   - tb
 #    - genbact 
-#    - stihiv 
+    - stihiv 
     - neurdegnovd 
     - illdef 
     - sui 

@@ -1,6 +1,7 @@
 #! /usr/bin/python
-import mysql.connector
+from sqlalchemy import create_engine
 import pandas as pd
+import numexpr as ne
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import yaml
@@ -13,6 +14,10 @@ mpl.style.use('ggplot')
 f = open('chartgen.yaml')
 conf = yaml.safe_load(f)
 f.close()
+
+slengine = create_engine('sqlite:///chartgen.db')
+deaths = pd.read_sql_table('Deaths', slengine, index_col = 'Year')
+pop = pd.read_sql_table('Pop', slengine, index_col = 'Year')
 
 def batchplot(ages = conf['ages'], causes = conf['causes'], 
         countries = conf['countries'], sexes = conf['sexes'], 
@@ -70,19 +75,15 @@ def batchplot(ages = conf['ages'], causes = conf['causes'],
 
 def numbdict(country, startyear, endyear, numbtype = 'denom', cause = 'all', 
         sexlist = [2, 1], nomsrc = '', countries = conf['countries']):
-    if 'ctry_extrasql' in countries[country]:
-        extrasql = countries[country]['ctry_extrasql']
-    else:
-        extrasql = ''
     if numbtype == 'nom':
         if nomsrc != '': 
             numbdict={sex:nomsrc[sex]['perc'] for sex in sexlist}
         else: 
             numbdict = {sex: build_query(sex, country, startyear, endyear, 'mort', 
-            extrasql, cause) for sex in sexlist}
+            cause) for sex in sexlist}
     elif numbtype == 'denom':
-        numbdict = {sex:{'rate':build_query(sex, country, startyear, endyear, 'pop', 
-            extrasql), 'perc':build_query(sex, country, startyear, endyear, 'mort', extrasql)}
+        numbdict = {sex:{'rate':build_query(sex, country, startyear, endyear, 'pop'), 
+            'perc':build_query(sex, country, startyear, endyear, 'mort')}
             for sex in sexlist}
     
     numbdict['cause'] = cause
@@ -142,11 +143,6 @@ def smoother(frame, col):
     return sm.nonparametric.lowess(frame[col], frame.index, frac = 0.4)
 
 def propframe(popnom, popdenom):
-    for start, end in [('3', '6'), ('2', '22'), ('23', '25')]:
-        for frame in [popnom, popdenom]:
-            frame['Pop' + start + end + 'sum'] = \
-                    frame.loc[:, 'Pop' + start: 'Pop' + end].sum(1)
-
     prop = popnom.loc[:,'Pop1':'Pop2325sum']/popdenom.loc[:,'Pop1':'Pop2325sum']
     prop['Pop38mean'] = prop.loc[:,'Pop3':'Pop8'].mean(1)
     prop['Pop914mean'] = prop.loc[:,'Pop9':'Pop14'].mean(1)
@@ -157,52 +153,16 @@ def propframe(popnom, popdenom):
 
     return prop
 
-def build_query(sex, country, startyear, endyear, qtype, 
-        ctry_extrasql = '', cause = 'all'):
-    conn_config = conf['settings']['conn_config'] 
-    causeexpr = conf['causes'][cause]['causeexpr'] 
-    conn = mysql.connector.connect(**conn_config)
-    cur = conn.cursor()
+def build_query(sex, country, startyear, endyear, qtype, cause = 'all'):
     if qtype == 'mort':
-        sqlqkeys={'sex': sex, 'country': country, 'startyear': startyear, 
-                'endyear': endyear, 'ca07a': causeexpr['07A'], 'ca08a': causeexpr['08A'], 
-                'ca09b': causeexpr['09B'], 'ca101': causeexpr['101'], 'ca10': causeexpr['10']}
-        selstat=('Year,List,Sum(Deaths1) AS Pop1, Sum(Deaths2) AS Pop2,' 
-        'Sum(Deaths3) AS Pop3, Sum(Deaths4) AS Pop4, Sum(Deaths5) AS Pop5, Sum(Deaths6) ' 
-        'AS Pop6, Sum(Deaths7) AS Pop7, Sum(Deaths8) AS Pop8, Sum(Deaths9) AS Pop9,' 
-        'Sum(Deaths10) AS Pop10, Sum(Deaths11) AS Pop11, Sum(Deaths12) AS Pop12,' 
-        'Sum(Deaths13) AS Pop13, Sum(Deaths14) AS Pop14, Sum(Deaths15) AS Pop15,' 
-        'Sum(Deaths16) AS Pop16, Sum(Deaths17) AS Pop17, Sum(Deaths18) AS Pop18,' 
-        'Sum(Deaths19) AS Pop19, Sum(Deaths20) AS Pop20, Sum(Deaths21) AS Pop21,' 
-        'Sum(Deaths22) AS Pop22, Sum(Deaths23) AS Pop23, Sum(Deaths24) AS Pop24,' 
-        'Sum(Deaths25) AS Pop25, Sum(Deaths26) AS Pop26')
-        sqlq=('select ' + selstat + ' from Deaths where (case ' 
-        'when List=\'07A\' then Cause REGEXP %(ca07a)s '  
-        'when List=\'08A\' then Cause REGEXP %(ca08a)s '
-        'when List REGEXP \'09(B|N)\' then Cause REGEXP %(ca09b)s ' 
-        'when List=\'101\' then Cause REGEXP %(ca101)s ' 
-        'when List REGEXP \'10(M|[3-4])\' then Cause REGEXP %(ca10)s end)' 
-        'and Sex=%(sex)s and (Country=%(country)s ' + ctry_extrasql+ ')' 
-        'and Year>=%(startyear)s and Year<=%(endyear)s group by Year,List order by Year')
+        df = deaths.query('(Sex == {sex}) & (Country == {country}) & (Year >= {startyear}) &'
+                '(Year <= {endyear}) & (Cause == "{cause}")'.format(**locals()))
     elif qtype == 'pop':
-        sqlqkeys = {'sex': sex, 'country': country, 
-                'startyear': startyear, 'endyear' :endyear}
-        selstat = ('Pop1, Pop2, Pop3, Pop4, Pop5, Pop6, Pop7, Pop8, Pop9, Pop10,' 
-        'Pop11, Pop12, Pop13, Pop14, Pop15, Pop16, Pop17, Pop18, Pop19, Pop20,' 
-        'Pop21, Pop22, Pop23, Pop24, Pop25, Pop26, Year')
-        sqlq = ('select ' + selstat + ' from Pop where Sex=%(sex)s and' 
-        '(Country=%(country)s ' + ctry_extrasql + ') and Year>=%(startyear)s ' 
-        'and Year<=%(endyear)s order by Year')
-    else:
-        print('Okänd frågetyp!')
-
-    
-    df = pd.read_sql_query(sqlq, conn, params = sqlqkeys, index_col = 'Year')
-    
-    cur.close()
-    conn.close()
+        df = pop.query('(Sex == {sex}) & (Country == {country}) & (Year >= {startyear}) &'
+                '(Year <= {endyear})'.format(**locals()))
 
     return df
+
 
 if __name__ == '__main__':
     batchplot()

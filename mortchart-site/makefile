@@ -15,7 +15,7 @@ indexgen:
 	./indexgen.py
 
 siteapp:
-	ghc --make -threaded site.hs -package pandoc-1.14.1
+	ghc --make site.hs
 
 buildinit: indexgen docsrc siteapp
 	./site build

@@ -27,7 +27,7 @@ ages:
     alias: 85–
     ptype: perc
   Pop914mean:
-    agegroups: 0914
+    agegroups: '0914'
     alias: 15–44
     note: genomsnitt över åldrar
     ptype: rate
@@ -573,7 +573,7 @@ countries:
   3150:
     alias: Israel
     countryclass: 1
-    endyear: 2012
+    endyear: 2013
     iso3166: IL
     startyear: 1957
   3160:
@@ -585,49 +585,49 @@ countries:
   4010:
     alias: Österrike
     countryclass: 1
-    endyear: 2013
+    endyear: 2014
     iso3166: AT
     startyear: 1955
   4020:
     alias: Belgien
     countryclass: 1
-    endyear: 2012
+    endyear: 2013
     iso3166: BE
     startyear: 1954
   4050:
     alias: Danmark
     countryclass: 1
-    endyear: 2011
+    endyear: 2012
     iso3166: DK
     startyear: 1951
   4070:
     alias: Finland
     countryclass: 1
-    endyear: 2013
+    endyear: 2014
     iso3166: FI
     startyear: 1952
   4080:
     alias: Frankrike
     countryclass: 1
-    endyear: 2010
+    endyear: 2013
     iso3166: FR
     startyear: 1952
   4085:
     alias: Tyskland
     countryclass: 1
-    endyear: 2013
+    endyear: 2014
     iso3166: DE
     startyear: 1952
   4140:
     alias: Grekland
     countryclass: 1
-    endyear: 2012
+    endyear: 2013
     iso3166: GR
     startyear: 1961
   4170:
     alias: Irland
     countryclass: 1
-    endyear: 2009
+    endyear: 2013
     iso3166: IE
     startyear: 1950
   4180:
@@ -645,7 +645,7 @@ countries:
   4220:
     alias: Norge
     countryclass: 1
-    endyear: 2013
+    endyear: 2014
     iso3166: 'NO'
     startyear: 1951
   4240:
@@ -657,25 +657,25 @@ countries:
   4280:
     alias: Spanien
     countryclass: 1
-    endyear: 2013
+    endyear: 2014
     iso3166: ES
     startyear: 1951
   4290:
     alias: Sverige
     countryclass: 0
-    endyear: 2013
+    endyear: 2014
     iso3166: SE
     startyear: 1951
   4300:
     alias: Schweiz
     countryclass: 1
-    endyear: 2012
+    endyear: 2013
     iso3166: CH
     startyear: 1951
   4310:
     alias: England/Wales
     countryclass: 1
-    endyear: 2012
+    endyear: 2013
     iso3166: EAW
     startyear: 1950
   4320:
@@ -693,13 +693,13 @@ countries:
   5020:
     alias: Australien
     countryclass: 1
-    endyear: 2011
+    endyear: 2014
     iso3166: AU
     startyear: 1950
   5150:
     alias: Nya Zeeland
     countryclass: 1
-    endyear: 2011
+    endyear: 2012
     iso3166: NZ
     startyear: 1950
 ptypes:

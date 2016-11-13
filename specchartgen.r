@@ -169,7 +169,7 @@ agetrends.plot <- function(country, cause, sex, startyear, endyear,
 		theme(axis.text.x = element_text(angle = 45))
 
 	if (plotsmooth)
-		df.plot <- df.plot + geom_smooth()
+		df.plot <- df.plot + geom_smooth(method = 'loess')
 
 	return(df.plot)
 }
